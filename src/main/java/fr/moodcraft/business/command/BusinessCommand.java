@@ -6,10 +6,12 @@ import fr.moodcraft.business.gui.BusinessEmployeesGUI;
 import fr.moodcraft.business.gui.BusinessMainGUI;
 import fr.moodcraft.business.gui.BusinessStaffGUI;
 
+import fr.moodcraft.business.manager.AuditLogManager;
 import fr.moodcraft.business.manager.BusinessBankManager;
 import fr.moodcraft.business.manager.BusinessManager;
 import fr.moodcraft.business.manager.PayrollManager;
 
+import fr.moodcraft.business.model.AuditLogType;
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRole;
 import fr.moodcraft.business.model.BusinessStatus;
@@ -58,6 +60,23 @@ public class BusinessCommand implements CommandExecutor {
         String sub =
                 args[0].toLowerCase();
 
+        //
+        // 🔔 ALERTES
+        //
+
+        if (sub.equals("alertes")
+                || sub.equals("alerts")
+                || sub.equals("notifications")) {
+
+            fr.moodcraft.business.manager.AlertManager.showAlertHistory(p);
+
+            return true;
+        }
+
+        //
+        // 🛡 STAFF
+        //
+
         if (sub.equals("staff")) {
 
             if (!p.hasPermission("moodbusiness.staff")) {
@@ -75,6 +94,10 @@ public class BusinessCommand implements CommandExecutor {
 
             return true;
         }
+
+        //
+        // 🏢 CREATION ENTREPRISE
+        //
 
         if (sub.equals("creer")
                 || sub.equals("créer")
@@ -160,6 +183,10 @@ public class BusinessCommand implements CommandExecutor {
             return true;
         }
 
+        //
+        // 📄 INFO ENTREPRISE
+        //
+
         if (sub.equals("info")) {
 
             Business business;
@@ -206,6 +233,10 @@ public class BusinessCommand implements CommandExecutor {
             return true;
         }
 
+        //
+        // 👥 EMPLOYES
+        //
+
         if (sub.equals("employes")
                 || sub.equals("employés")
                 || sub.equals("employees")) {
@@ -234,6 +265,10 @@ public class BusinessCommand implements CommandExecutor {
             return true;
         }
 
+        //
+        // 📨 CANDIDATURES
+        //
+
         if (sub.equals("candidatures")
                 || sub.equals("candidature")
                 || sub.equals("postuler")) {
@@ -242,6 +277,10 @@ public class BusinessCommand implements CommandExecutor {
 
             return true;
         }
+
+        //
+        // 💰 BANQUE
+        //
 
         if (sub.equals("banque")
                 || sub.equals("bank")) {
@@ -269,6 +308,10 @@ public class BusinessCommand implements CommandExecutor {
 
             return true;
         }
+
+        //
+        // 💰 DEPOT
+        //
 
         if (sub.equals("depot")
                 || sub.equals("dépôt")
@@ -329,7 +372,9 @@ public class BusinessCommand implements CommandExecutor {
             );
 
             return true;
-        }
+        }//
+        // 💸 RETRAIT
+        //
 
         if (sub.equals("retrait")
                 || sub.equals("withdraw")) {
@@ -390,6 +435,10 @@ public class BusinessCommand implements CommandExecutor {
 
             return true;
         }
+
+        //
+        // 🎁 PRIME
+        //
 
         if (sub.equals("prime")
                 || sub.equals("bonus")) {
@@ -462,6 +511,10 @@ public class BusinessCommand implements CommandExecutor {
 
             return true;
         }
+
+        //
+        // 🧾 SALAIRE
+        //
 
         if (sub.equals("salaire")
                 || sub.equals("salary")) {
@@ -551,6 +604,10 @@ public class BusinessCommand implements CommandExecutor {
             return true;
         }
 
+        //
+        // 📆 PAIE MENSUELLE MANUELLE
+        //
+
         if (sub.equals("paie")
                 || sub.equals("payroll")) {
 
@@ -610,6 +667,10 @@ public class BusinessCommand implements CommandExecutor {
 
             return true;
         }
+
+        //
+        // ➕ RECRUTER
+        //
 
         if (sub.equals("recruter")
                 || sub.equals("inviter")
@@ -687,7 +748,9 @@ public class BusinessCommand implements CommandExecutor {
             );
 
             return true;
-        }
+        }//
+        // 🏷 ROLE
+        //
 
         if (sub.equals("role")
                 || sub.equals("rang")) {
@@ -760,4 +823,270 @@ public class BusinessCommand implements CommandExecutor {
 
             if (!result.success()) {
 
-                
+                BusinessMessages.deny(
+                        p,
+                        "Rôles Entreprise",
+                        result.message()
+                );
+
+                return true;
+            }
+
+            BusinessMessages.success(
+                    p,
+                    "Rôles Entreprise",
+                    result.message()
+            );
+
+            return true;
+        }
+
+        //
+        // ➖ RENVOYER
+        //
+
+        if (sub.equals("renvoyer")
+                || sub.equals("kick")
+                || sub.equals("retirer")) {
+
+            Business business =
+                    BusinessManager.getMemberBusiness(
+                            p.getUniqueId()
+                    );
+
+            if (business == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Vous n'appartenez à aucune entreprise active."
+                );
+
+                return true;
+            }
+
+            if (args.length < 2) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Utilisation: /entreprise renvoyer <joueur>"
+                );
+
+                return true;
+            }
+
+            UUID targetUuid =
+                    BusinessManager.getMemberUuidByName(
+                            business,
+                            args[1]
+                    );
+
+            if (targetUuid == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Ce joueur n'est pas dans votre entreprise."
+                );
+
+                return true;
+            }
+
+            BusinessManager.ActionResult result =
+                    BusinessManager.removeMember(
+                            p,
+                            business,
+                            targetUuid
+                    );
+
+            if (!result.success()) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        result.message()
+                );
+
+                return true;
+            }
+
+            BusinessMessages.success(
+                    p,
+                    "Employés Entreprise",
+                    result.message()
+            );
+
+            return true;
+        }
+
+        //
+        // ⛔ SUSPENDRE
+        //
+
+        if (sub.equals("suspendre")) {
+
+            if (!p.hasPermission("moodbusiness.staff.suspend")) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Gestion Entreprises",
+                        "Vous ne pouvez pas suspendre une entreprise."
+                );
+
+                return true;
+            }
+
+            if (args.length < 2) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Gestion Entreprises",
+                        "Utilisation: /entreprise suspendre <nom>"
+                );
+
+                return true;
+            }
+
+            String name =
+                    String.join(
+                            " ",
+                            Arrays.copyOfRange(
+                                    args,
+                                    1,
+                                    args.length
+                            )
+                    );
+
+            Business business =
+                    BusinessManager.getByName(name);
+
+            if (business == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Gestion Entreprises",
+                        "Entreprise introuvable."
+                );
+
+                return true;
+            }
+
+            BusinessManager.setStatus(
+                    business,
+                    BusinessStatus.SUSPENDUE
+            );
+
+            AuditLogManager.log(
+                    AuditLogType.BUSINESS_SUSPENDED,
+                    p,
+                    business.getName(),
+                    business,
+                    "Entreprise suspendue par l'administration."
+            );
+
+            BusinessMessages.success(
+                    p,
+                    "Gestion Entreprises",
+                    "Entreprise suspendue: §e" + business.getName()
+            );
+
+            return true;
+        }
+
+        //
+        // ✅ REACTIVER
+        //
+
+        if (sub.equals("reactiver")
+                || sub.equals("réactiver")) {
+
+            if (!p.hasPermission("moodbusiness.staff.suspend")) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Gestion Entreprises",
+                        "Vous ne pouvez pas réactiver une entreprise."
+                );
+
+                return true;
+            }
+
+            if (args.length < 2) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Gestion Entreprises",
+                        "Utilisation: /entreprise reactiver <nom>"
+                );
+
+                return true;
+            }
+
+            String name =
+                    String.join(
+                            " ",
+                            Arrays.copyOfRange(
+                                    args,
+                                    1,
+                                    args.length
+                            )
+                    );
+
+            Business business =
+                    BusinessManager.getByName(name);
+
+            if (business == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Gestion Entreprises",
+                        "Entreprise introuvable."
+                );
+
+                return true;
+            }
+
+            BusinessManager.setStatus(
+                    business,
+                    BusinessStatus.ACTIVE
+            );
+
+            AuditLogManager.log(
+                    AuditLogType.BUSINESS_REACTIVATED,
+                    p,
+                    business.getName(),
+                    business,
+                    "Entreprise réactivée par l'administration."
+            );
+
+            BusinessMessages.success(
+                    p,
+                    "Gestion Entreprises",
+                    "Entreprise réactivée: §e" + business.getName()
+            );
+
+            return true;
+        }
+
+        BusinessMainGUI.open(p);
+
+        return true;
+    }
+
+    private double parseDouble(
+            String text
+    ) {
+
+        try {
+
+            return Double.parseDouble(
+                    text.replace(",", ".")
+            );
+
+        } catch (Exception e) {
+
+            return -1;
+        }
+    }
+}
