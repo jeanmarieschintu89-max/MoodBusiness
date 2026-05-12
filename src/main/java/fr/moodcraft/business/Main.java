@@ -12,10 +12,12 @@ import fr.moodcraft.business.listener.ContractGUIListener;
 import fr.moodcraft.business.listener.RequestChatListener;
 import fr.moodcraft.business.listener.RequestGUIListener;
 
+import fr.moodcraft.business.manager.AuditLogManager;
 import fr.moodcraft.business.manager.BusinessManager;
 import fr.moodcraft.business.manager.PayrollManager;
 
 import fr.moodcraft.business.storage.ApplicationStorage;
+import fr.moodcraft.business.storage.AuditLogStorage;
 import fr.moodcraft.business.storage.BusinessStorage;
 import fr.moodcraft.business.storage.ContractStorage;
 import fr.moodcraft.business.storage.FinanceStorage;
@@ -51,6 +53,7 @@ public class Main extends JavaPlugin {
         ContractStorage.init();
         FinanceStorage.init();
         PayrollStorage.init();
+        AuditLogStorage.init();
 
         BusinessManager.init();
 
@@ -58,6 +61,10 @@ public class Main extends JavaPlugin {
         registerListeners();
 
         PayrollManager.startTask();
+
+        AuditLogManager.system(
+                "MoodBusiness chargé."
+        );
 
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage(
@@ -75,6 +82,10 @@ public class Main extends JavaPlugin {
     @Override
     public void onDisable() {
 
+        AuditLogManager.system(
+                "MoodBusiness arrêté."
+        );
+
         BusinessStorage.save();
         ApplicationStorage.save();
         RequestStorage.save();
@@ -82,6 +93,7 @@ public class Main extends JavaPlugin {
         ContractStorage.save();
         FinanceStorage.save();
         PayrollStorage.save();
+        AuditLogStorage.save();
 
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage(
