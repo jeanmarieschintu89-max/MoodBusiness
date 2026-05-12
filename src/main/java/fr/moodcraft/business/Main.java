@@ -9,6 +9,7 @@ import fr.moodcraft.business.listener.ApplicationChatListener;
 import fr.moodcraft.business.listener.BankChatListener;
 import fr.moodcraft.business.listener.BankGUIListener;
 import fr.moodcraft.business.listener.BusinessCreationChatListener;
+import fr.moodcraft.business.listener.BusinessDissolveGUIListener;
 import fr.moodcraft.business.listener.BusinessGUIListener;
 import fr.moodcraft.business.listener.ContractChatListener;
 import fr.moodcraft.business.listener.ContractGUIListener;
@@ -182,6 +183,11 @@ public class Main extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(
                 new BusinessCreationChatListener(),
+                this
+        );
+
+        Bukkit.getPluginManager().registerEvents(
+                new BusinessDissolveGUIListener(),
                 this
         );
 
