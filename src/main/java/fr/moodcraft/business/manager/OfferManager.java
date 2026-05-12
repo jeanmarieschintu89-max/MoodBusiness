@@ -224,6 +224,20 @@ public final class OfferManager {
             );
         }
 
+        ContractManager.ContractResult contractResult =
+                ContractManager.createFromOffer(
+                        player,
+                        request,
+                        offer
+                );
+
+        if (!contractResult.success()) {
+
+            return OfferResult.fail(
+                    contractResult.message()
+            );
+        }
+
         for (Offer other :
                 getByRequest(request.getId())) {
 
@@ -254,7 +268,7 @@ public final class OfferManager {
 
         return OfferResult.success(
                 offer,
-                "Offre acceptée. Le contrat sécurisé sera créé au Pack 6."
+                "Offre acceptée. Contrat sécurisé créé."
         );
     }
 
