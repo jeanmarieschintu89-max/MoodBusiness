@@ -4,6 +4,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import org.bukkit.entity.Player;
 
@@ -89,6 +90,24 @@ public final class VaultHook {
     ) {
 
         if (economy == null) {
+            return false;
+        }
+
+        EconomyResponse response =
+                economy.depositPlayer(
+                        player,
+                        amount
+                );
+
+        return response.transactionSuccess();
+    }
+
+    public static boolean deposit(
+            OfflinePlayer player,
+            double amount
+    ) {
+
+        if (economy == null || player == null) {
             return false;
         }
 
