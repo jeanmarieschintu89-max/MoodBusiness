@@ -22,7 +22,7 @@ import java.util.List;
 public final class OfferListGUI {
 
     public static final String TITLE =
-            "§8✦ §6Offres Reçues §8✦";
+            "§8✦ §6Offres §8✦";
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -56,13 +56,13 @@ public final class OfferListGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §f" + request.getTitle() + " §6✦")
+                        .name("§6✦ §f" + shortText(request.getTitle(), 22))
                         .lore(
-                                "§7Offres reçues: §e" + offers.size(),
-                                "§7Budget demandé: §e" + VaultHook.format(request.getBudget()),
+                                "§7Offres: §e" + offers.size(),
+                                "§7Budget: §e" + VaultHook.format(request.getBudget()),
                                 "",
-                                "§8• §7Accepter une offre créera",
-                                "§8• §7le contrat sécurisé au Pack 6."
+                                "§8• §7Accepter une offre",
+                                "§8• §7créera un contrat."
                         )
                         .build()
         );
@@ -75,20 +75,24 @@ public final class OfferListGUI {
                 break;
             }
 
+            Material icon =
+                    offer.getStatus().isActive()
+                            ? Material.EMERALD
+                            : Material.GRAY_DYE;
+
             SafeGUI.set(
                     inv,
                     SLOTS[index],
-                    new ItemBuilder(Material.EMERALD)
-                            .name("§6✦ §f" + offer.getBusinessName() + " §6✦")
+                    new ItemBuilder(icon)
+                            .name("§6✦ §f" + shortText(offer.getBusinessName(), 18))
                             .lore(
-                                    "§7Envoyée par: §e" + offer.getSenderName(),
+                                    "§7Auteur: §e" + shortText(offer.getSenderName(), 14),
                                     "§7Montant: §e" + VaultHook.format(offer.getAmount()),
-                                    "§7Délai proposé: §b" + offer.getDueDays() + " jours",
+                                    "§7Délai: §b" + offer.getDueDays() + "j",
                                     "§7Statut: " + offer.getStatus().getDisplayName(),
-                                    "§7Date: §f" + TimeUtil.formatDate(offer.getCreatedAt()),
+                                    "§7Date: §f" + shortDate(offer.getCreatedAt()),
                                     "",
-                                    "§6✦ §fCommentaire",
-                                    "§7" + crop(offer.getComment()),
+                                    "§7Note: §f" + shortText(offer.getComment(), 26),
                                     "",
                                     offer.getStatus().isActive()
                                             ? "§a✔ Clique pour accepter"
@@ -112,7 +116,7 @@ public final class OfferListGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au dossier de demande."
+                                "§7Dossier demande"
                         )
                         .action("request_detail")
                         .target(request.getId())
@@ -122,18 +126,41 @@ public final class OfferListGUI {
         p.openInventory(inv);
     }
 
-    private static String crop(
-            String text
+    private static String shortText(
+            String text,
+            int max
     ) {
 
         if (text == null || text.isBlank()) {
-            return "Aucun commentaire.";
+            return "Aucun";
         }
 
-        if (text.length() <= 45) {
-            return text;
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
         }
 
-        return text.substring(0, 45) + "...";
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
+    }
+
+    private static String shortDate(
+            long time
+    ) {
+
+        String date =
+                TimeUtil.formatDate(time);
+
+        if (date == null || date.equalsIgnoreCase("Jamais")) {
+            return "Aucune";
+        }
+
+        if (date.length() <= 10) {
+            return date;
+        }
+
+        return date.substring(0, 10);
     }
 }
