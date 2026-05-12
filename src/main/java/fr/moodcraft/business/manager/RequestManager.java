@@ -2,6 +2,8 @@ package fr.moodcraft.business.manager;
 
 import fr.moodcraft.business.Main;
 
+import fr.moodcraft.business.model.AlertType;
+import fr.moodcraft.business.model.AuditLogType;
 import fr.moodcraft.business.model.BusinessRequest;
 import fr.moodcraft.business.model.RequestCategory;
 import fr.moodcraft.business.model.RequestStatus;
@@ -9,6 +11,7 @@ import fr.moodcraft.business.model.RequestStatus;
 import fr.moodcraft.business.storage.RequestStorage;
 
 import fr.moodcraft.business.util.TimeUtil;
+import fr.moodcraft.business.util.VaultHook;
 
 import org.bukkit.entity.Player;
 
@@ -134,6 +137,28 @@ public final class RequestManager {
                 );
 
         RequestStorage.add(request);
+
+        AuditLogManager.log(
+                AuditLogType.REQUEST_CREATED,
+                player,
+                request.getTitle(),
+                null,
+                "Demande créée. Budget: "
+                        + VaultHook.format(budget)
+                        + ", délai: "
+                        + dueDays
+                        + " jour(s), catégorie: "
+                        + category.getDisplayName()
+        );
+
+        AlertManager.add(
+                player,
+                AlertType.REQUEST,
+                "Demande publiée",
+                "Votre demande "
+                        + request.getTitle()
+                        + " est visible par les entreprises."
+        );
 
         return RequestResult.success(
                 request,
@@ -261,6 +286,23 @@ public final class RequestManager {
         );
 
         RequestStorage.save();
+
+        AuditLogManager.log(
+                AuditLogType.REQUEST_CREATED,
+                player,
+                request.getTitle(),
+                null,
+                "Demande annulée."
+        );
+
+        AlertManager.add(
+                player,
+                AlertType.REQUEST,
+                "Demande annulée",
+                "Votre demande "
+                        + request.getTitle()
+                        + " a été annulée."
+        );
 
         return RequestResult.success(
                 request,
