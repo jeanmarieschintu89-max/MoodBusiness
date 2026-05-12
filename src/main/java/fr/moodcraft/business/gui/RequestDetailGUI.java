@@ -21,7 +21,7 @@ import org.bukkit.inventory.Inventory;
 public final class RequestDetailGUI {
 
     public static final String TITLE =
-            "§8✦ §6Dossier Demande §8✦";
+            "§8✦ §6Demande §8✦";
 
     private RequestDetailGUI() {}
 
@@ -43,17 +43,17 @@ public final class RequestDetailGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §f" + request.getTitle() + " §6✦")
+                        .name("§6✦ §f" + shortText(request.getTitle(), 24))
                         .lore(
-                                "§7Demandeur: §e" + request.getCreatorName(),
-                                "§7Catégorie: " + request.getCategory().getDisplayName(),
+                                "§7Auteur: §e" + shortText(request.getCreatorName(), 14),
+                                "§7Type: " + request.getCategory().getDisplayName(),
                                 "§7Budget: §e" + VaultHook.format(request.getBudget()),
-                                "§7Délai souhaité: §b" + request.getDueDays() + " jours",
+                                "§7Délai: §b" + request.getDueDays() + "j",
                                 "§7Statut: " + request.getStatus().getDisplayName(),
-                                "§7Créée le: §f" + TimeUtil.formatDate(request.getCreatedAt()),
+                                "§7Créée: §f" + shortDate(request.getCreatedAt()),
                                 "",
                                 "§6✦ §fDescription",
-                                "§7" + crop(request.getDescription())
+                                "§7" + shortText(request.getDescription(), 32)
                         )
                         .build()
         );
@@ -73,28 +73,34 @@ public final class RequestDetailGUI {
                 p.getUniqueId()
         )) {
 
+            boolean hasOffer =
+                    OfferManager.hasActiveOffer(
+                            request.getId(),
+                            business.getId()
+                    );
+
             SafeGUI.set(
                     inv,
                     21,
-                    new ItemBuilder(Material.EMERALD)
+                    new ItemBuilder(
+                            hasOffer
+                                    ? Material.GRAY_DYE
+                                    : Material.EMERALD
+                    )
                             .name("§6✦ §fProposer une offre §6✦")
                             .lore(
-                                    "§7Entreprise: §e" + business.getName(),
-                                    "§7Envoyer un montant, un délai",
-                                    "§7et un commentaire au demandeur.",
+                                    "§7Entreprise: §e" + shortText(business.getName(), 16),
                                     "",
-                                    OfferManager.hasActiveOffer(
-                                            request.getId(),
-                                            business.getId()
-                                    )
+                                    hasOffer
                                             ? "§cOffre déjà envoyée"
-                                            : "§a✔ Formulaire guidé"
+                                            : "§a✔ Formulaire guidé",
+                                    "",
+                                    "§8• §7Montant",
+                                    "§8• §7Délai",
+                                    "§8• §7Commentaire"
                             )
                             .action(
-                                    OfferManager.hasActiveOffer(
-                                            request.getId(),
-                                            business.getId()
-                                    )
+                                    hasOffer
                                             ? "coming_soon"
                                             : "offer_start"
                             )
@@ -113,10 +119,10 @@ public final class RequestDetailGUI {
                     new ItemBuilder(Material.CHEST)
                             .name("§6✦ §fOffres reçues §6✦")
                             .lore(
-                                    "§7Voir les propositions envoyées",
-                                    "§7par les entreprises.",
+                                    "§7Voir les propositions",
+                                    "§7des entreprises.",
                                     "",
-                                    "§eClique pour consulter"
+                                    "§eClique pour ouvrir"
                             )
                             .action("offer_list")
                             .target(request.getId())
@@ -130,7 +136,7 @@ public final class RequestDetailGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir aux demandes."
+                                "§7Menu demandes"
                         )
                         .action("open_requests")
                         .build()
@@ -139,18 +145,41 @@ public final class RequestDetailGUI {
         p.openInventory(inv);
     }
 
-    private static String crop(
-            String text
+    private static String shortText(
+            String text,
+            int max
     ) {
 
         if (text == null || text.isBlank()) {
-            return "Non renseigné.";
+            return "Non renseigné";
         }
 
-        if (text.length() <= 80) {
-            return text;
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
         }
 
-        return text.substring(0, 80) + "...";
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
+    }
+
+    private static String shortDate(
+            long time
+    ) {
+
+        String date =
+                TimeUtil.formatDate(time);
+
+        if (date == null || date.equalsIgnoreCase("Jamais")) {
+            return "Aucune";
+        }
+
+        if (date.length() <= 10) {
+            return date;
+        }
+
+        return date.substring(0, 10);
     }
 }
