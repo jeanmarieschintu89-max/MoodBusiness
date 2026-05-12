@@ -5,6 +5,7 @@ import fr.moodcraft.business.command.ContractCommand;
 import fr.moodcraft.business.command.RequestsCommand;
 
 import fr.moodcraft.business.listener.ApplicationChatListener;
+import fr.moodcraft.business.listener.BankGUIListener;
 import fr.moodcraft.business.listener.BusinessGUIListener;
 import fr.moodcraft.business.listener.ContractChatListener;
 import fr.moodcraft.business.listener.ContractGUIListener;
@@ -12,11 +13,14 @@ import fr.moodcraft.business.listener.RequestChatListener;
 import fr.moodcraft.business.listener.RequestGUIListener;
 
 import fr.moodcraft.business.manager.BusinessManager;
+import fr.moodcraft.business.manager.PayrollManager;
 
 import fr.moodcraft.business.storage.ApplicationStorage;
 import fr.moodcraft.business.storage.BusinessStorage;
 import fr.moodcraft.business.storage.ContractStorage;
+import fr.moodcraft.business.storage.FinanceStorage;
 import fr.moodcraft.business.storage.OfferStorage;
+import fr.moodcraft.business.storage.PayrollStorage;
 import fr.moodcraft.business.storage.RequestStorage;
 
 import fr.moodcraft.business.util.VaultHook;
@@ -45,11 +49,15 @@ public class Main extends JavaPlugin {
         RequestStorage.init();
         OfferStorage.init();
         ContractStorage.init();
+        FinanceStorage.init();
+        PayrollStorage.init();
 
         BusinessManager.init();
 
         registerCommands();
         registerListeners();
+
+        PayrollManager.startTask();
 
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage(
@@ -72,6 +80,8 @@ public class Main extends JavaPlugin {
         RequestStorage.save();
         OfferStorage.save();
         ContractStorage.save();
+        FinanceStorage.save();
+        PayrollStorage.save();
 
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage(
@@ -145,6 +155,11 @@ public class Main extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(
                 new ContractChatListener(),
+                this
+        );
+
+        Bukkit.getPluginManager().registerEvents(
+                new BankGUIListener(),
                 this
         );
     }
