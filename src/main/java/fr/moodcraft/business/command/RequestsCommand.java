@@ -1,5 +1,9 @@
 package fr.moodcraft.business.command;
 
+import fr.moodcraft.business.gui.RequestCategoryGUI;
+import fr.moodcraft.business.gui.RequestListGUI;
+import fr.moodcraft.business.gui.RequestMainGUI;
+
 import fr.moodcraft.business.util.BusinessMessages;
 
 import org.bukkit.command.Command;
@@ -27,25 +31,52 @@ public class RequestsCommand implements CommandExecutor {
             return true;
         }
 
+        if (args.length == 0) {
+
+            RequestMainGUI.open(p);
+
+            return true;
+        }
+
+        String sub =
+                args[0].toLowerCase();
+
+        if (sub.equals("creer")
+                || sub.equals("créer")
+                || sub.equals("create")) {
+
+            RequestCategoryGUI.open(p);
+
+            return true;
+        }
+
+        if (sub.equals("mes")
+                || sub.equals("mine")) {
+
+            RequestListGUI.openMy(p);
+
+            return true;
+        }
+
+        if (sub.equals("publiques")
+                || sub.equals("public")
+                || sub.equals("liste")) {
+
+            RequestListGUI.openPublic(p);
+
+            return true;
+        }
+
         BusinessMessages.header(
                 p,
-                "Demandes " + "§aMood§6Craft"
+                "Demandes " + BusinessMessages.brand()
         );
 
-        p.sendMessage("§6✦ §fCréer une demande §6✦");
-        p.sendMessage("§7Publier une recherche de service,");
-        p.sendMessage("§7construction, livraison ou commerce.");
-        p.sendMessage("");
-
-        p.sendMessage("§6✦ §fMes demandes §6✦");
-        p.sendMessage("§7Consulter vos demandes actives.");
-        p.sendMessage("");
-
-        p.sendMessage("§6✦ §fDemandes publiques §6✦");
-        p.sendMessage("§7Voir les besoins ouverts aux entreprises.");
-        p.sendMessage("");
-
-        p.sendMessage("§8• §7Module complet dans un prochain pack.");
+        p.sendMessage("§7Utilisation:");
+        p.sendMessage("§8• §e/demandes");
+        p.sendMessage("§8• §e/demandes creer");
+        p.sendMessage("§8• §e/demandes mes");
+        p.sendMessage("§8• §e/demandes publiques");
 
         BusinessMessages.footer(p);
 
