@@ -64,7 +64,10 @@ public final class BusinessPayrollGUI {
                                 "§7Configuration: "
                                         + (canConfig
                                         ? "§aDirigeant"
-                                        : "§cLecture seule")
+                                        : "§cLecture seule"),
+                                "",
+                                "§8• §7Les salaires sont versés",
+                                "§8• §7une fois par mois."
                         )
                         .build()
         );
@@ -100,16 +103,18 @@ public final class BusinessPayrollGUI {
                                     "§7Salaire mensuel: §e"
                                             + VaultHook.format(salary),
                                     "",
-                                    "§eCommande:",
-                                    "§f/entreprise salaire "
-                                            + role.name().toLowerCase()
-                                            + " <montant>",
-                                    "",
                                     canConfig
-                                            ? "§a✔ Modifiable par dirigeant"
-                                            : "§cRéservé au dirigeant"
+                                            ? "§a✔ Clique pour modifier"
+                                            : "§cRéservé au dirigeant",
+                                    "",
+                                    "§8• §7Le montant sera saisi",
+                                    "§8• §7directement dans le chat."
                             )
-                            .action("payroll_salary_help")
+                            .action(
+                                    canConfig
+                                            ? "payroll_salary_input"
+                                            : "coming_soon"
+                            )
                             .target(business.getId() + ":" + role.name())
                             .build()
             );
@@ -139,14 +144,18 @@ public final class BusinessPayrollGUI {
                                 "§7Utile pour tester ou rattraper",
                                 "§7une paie bloquée.",
                                 "",
-                                "§eCommande:",
-                                "§f/entreprise paie",
-                                "",
                                 canConfig
-                                        ? "§a✔ Autorisé"
-                                        : "§cRéservé au dirigeant"
+                                        ? "§a✔ Lancer maintenant"
+                                        : "§cRéservé au dirigeant",
+                                "",
+                                "§8• §7Commande alternative:",
+                                "§f/entreprise paie"
                         )
-                        .action("payroll_run_help")
+                        .action(
+                                canConfig
+                                        ? "payroll_run_help"
+                                        : "coming_soon"
+                        )
                         .target(business.getId())
                         .build()
         );
