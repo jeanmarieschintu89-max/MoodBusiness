@@ -11,6 +11,7 @@ import fr.moodcraft.business.listener.BusinessCreationChatListener;
 import fr.moodcraft.business.listener.BusinessGUIListener;
 import fr.moodcraft.business.listener.ContractChatListener;
 import fr.moodcraft.business.listener.ContractGUIListener;
+import fr.moodcraft.business.listener.PayrollChatListener;
 import fr.moodcraft.business.listener.RequestChatListener;
 import fr.moodcraft.business.listener.RequestGUIListener;
 
@@ -182,6 +183,11 @@ public class Main extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(
                 new BankGUIListener(),
+                this
+        );
+
+        Bukkit.getPluginManager().registerEvents(
+                new PayrollChatListener(),
                 this
         );
 
