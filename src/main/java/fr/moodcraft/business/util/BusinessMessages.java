@@ -1,5 +1,7 @@
 package fr.moodcraft.business.util;
 
+import fr.moodcraft.business.model.Business;
+
 import org.bukkit.command.CommandSender;
 
 public final class BusinessMessages {
@@ -75,6 +77,30 @@ public final class BusinessMessages {
         );
 
         sender.sendMessage("§7" + message);
+
+        footer(sender);
+    }
+
+    public static void businessInfo(
+            CommandSender sender,
+            Business business
+    ) {
+
+        header(
+                sender,
+                "Dossier Entreprise"
+        );
+
+        sender.sendMessage("§6✦ §f" + business.getName() + " §6✦");
+        sender.sendMessage("");
+        sender.sendMessage("§7Dirigeant: §e" + business.getOwnerName());
+        sender.sendMessage("§7Statut: " + business.getStatus().getDisplayName());
+        sender.sendMessage("§7Solde entreprise: §e" + money(business.getBalance()));
+        sender.sendMessage("§7Création n°: §e" + business.getCreationIndex());
+        sender.sendMessage("§7Frais d'enregistrement: §e" + money(business.getCreationFee()));
+        sender.sendMessage("§7Créée le: §f" + TimeUtil.formatDate(business.getCreatedAt()));
+        sender.sendMessage("");
+        sender.sendMessage("§8• §7Service officiel de §aMood§6Craft§7.");
 
         footer(sender);
     }
