@@ -83,7 +83,8 @@ public final class BusinessBankGUI {
                                 "§7Transférer de l'argent personnel",
                                 "§7vers la banque entreprise.",
                                 "",
-                                "§8• §7Saisie dans le chat",
+                                "§8• §7Saisie directe dans le chat",
+                                "§8• §7Exemple: §e5000",
                                 "§8• §7Historique sauvegardé",
                                 "",
                                 "§a✔ Cliquer pour saisir"
@@ -106,7 +107,7 @@ public final class BusinessBankGUI {
                                 "§7Retirer depuis la banque entreprise",
                                 "§7vers votre compte personnel.",
                                 "",
-                                "§8• §7Saisie dans le chat",
+                                "§8• §7Saisie directe dans le chat",
                                 "§8• §7Accès: dirigeant, gérant, trésorier",
                                 "",
                                 canManage
