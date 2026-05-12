@@ -1,0 +1,125 @@
+business:
+  creation:
+    enabled: true
+
+    # 1ère entreprise = 15000
+    # 2ème création historique = 30000
+    # 3ème création historique = 45000
+    base-price: 15000
+    price-step: 15000
+
+    # Pour la V1: un joueur ne dirige qu'une entreprise active.
+    max-active-owned: 1
+
+    # Même si une entreprise est archivée, le compteur de créations reste.
+    count-archived-businesses: true
+
+    cooldown-hours-after-dissolution: 24
+
+  name:
+    min-length: 3
+    max-length: 24
+    allowed-regex: "^[A-Za-z0-9_À-ÿ -]+$"
+    banned-words:
+      - admin
+      - staff
+      - modo
+      - modérateur
+      - moderation
+      - official
+      - officiel
+      - mojang
+      - minecraft
+      - nazi
+      - hitler
+      - pute
+      - salope
+      - bite
+      - couille
+      - cul
+      - merde
+      - connard
+
+  staff:
+    recent-days: 7
+
+roles:
+  dirigeant:
+    can-manage-all: true
+
+  gerant:
+    can-manage-employees: true
+    can-assign-roles: true
+    can-assign-gerant: false
+    can-transfer-ownership: false
+
+  responsable-contrats:
+    can-manage-contracts: true
+    can-answer-requests: true
+
+  tresorier:
+    can-view-bank: true
+    can-deposit: true
+    can-withdraw: true
+
+applications:
+  enabled: true
+  max-active-per-player: 3
+  expire-after-days: 7
+  cooldown-after-refusal-hours: 24
+
+requests:
+  enabled: true
+  max-active-per-player: 5
+  expire-after-days: 14
+
+contracts:
+  enabled: true
+
+  accept-delay-hours: 48
+  validation-delay-hours: 48
+
+  allowed-due-days:
+    - 1
+    - 3
+    - 7
+    - 14
+
+  default-due-days: 7
+
+  escrow:
+    enabled: true
+
+economy:
+  tax-rate: 20.0
+  tax-contract-payments: true
+  tax-business-withdrawals: false
+  tax-payroll: false
+
+bank:
+  starting-balance: 0
+  max-withdraw-without-confirmation: 10000
+
+payroll:
+  enabled: true
+  interval: MONTHLY
+  default-payday: 1
+
+  default-salaries:
+    STAGIAIRE: 500
+    APPRENTI: 1500
+    EMPLOYE: 4000
+    RESPONSABLE_CONTRATS: 6000
+    TRESORIER: 6000
+    GERANT: 8000
+
+  max-bonus-without-confirmation: 10000
+  max-daily-bonus: 50000
+
+alerts:
+  send-on-join-if-no-auth-plugin: false
+  send-after-login: true
+
+gui:
+  rows: 6
+  filler: BLACK_STAINED_GLASS_PANE
