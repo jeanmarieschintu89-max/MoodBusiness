@@ -85,6 +85,72 @@ public class BankGUIListener implements Listener {
                 );
             }
 
+            case "bank_deposit_chat" -> {
+
+                Business business =
+                        BusinessManager.getById(target);
+
+                if (business == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Banque Entreprise",
+                            "Entreprise introuvable."
+                    );
+
+                    return;
+                }
+
+                BankChatListener.startDeposit(
+                        p,
+                        business
+                );
+            }
+
+            case "bank_withdraw_chat" -> {
+
+                Business business =
+                        BusinessManager.getById(target);
+
+                if (business == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Banque Entreprise",
+                            "Entreprise introuvable."
+                    );
+
+                    return;
+                }
+
+                BankChatListener.startWithdraw(
+                        p,
+                        business
+                );
+            }
+
+            case "bank_prime_chat" -> {
+
+                Business business =
+                        BusinessManager.getById(target);
+
+                if (business == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Paie Entreprise",
+                            "Entreprise introuvable."
+                    );
+
+                    return;
+                }
+
+                BankChatListener.startPrime(
+                        p,
+                        business
+                );
+            }
+
             case "open_payroll" -> {
 
                 Business business =
@@ -98,57 +164,6 @@ public class BankGUIListener implements Listener {
                         p,
                         business
                 );
-            }
-
-            case "bank_deposit_help" -> {
-
-                p.closeInventory();
-
-                BusinessMessages.header(
-                        p,
-                        "Banque Entreprise"
-                );
-
-                p.sendMessage("§fDéposer des fonds.");
-                p.sendMessage("§7Commande: §e/entreprise depot <montant>");
-                p.sendMessage("§8Exemple: §e/entreprise depot 5000");
-
-                BusinessMessages.footer(p);
-            }
-
-            case "bank_withdraw_help" -> {
-
-                p.closeInventory();
-
-                BusinessMessages.header(
-                        p,
-                        "Banque Entreprise"
-                );
-
-                p.sendMessage("§fRetirer des fonds.");
-                p.sendMessage("§7Commande: §e/entreprise retrait <montant>");
-                p.sendMessage("§8Exemple: §e/entreprise retrait 5000");
-                p.sendMessage("§7Accès: §eDirigeant, Gérant, Trésorier");
-
-                BusinessMessages.footer(p);
-            }
-
-            case "bank_prime_help" -> {
-
-                p.closeInventory();
-
-                BusinessMessages.header(
-                        p,
-                        "Paie Entreprise"
-                );
-
-                p.sendMessage("§fVerser une prime.");
-                p.sendMessage("§7Commande: §e/entreprise prime <joueur> <montant>");
-                p.sendMessage("§8Exemple: §e/entreprise prime Steven2621 2500");
-                p.sendMessage("§7Pour une grosse prime:");
-                p.sendMessage("§e/entreprise prime Steven2621 20000 confirmer");
-
-                BusinessMessages.footer(p);
             }
 
             case "payroll_salary_input" -> {
@@ -224,7 +239,7 @@ public class BankGUIListener implements Listener {
                 BusinessMessages.footer(p);
             }
 
-            case "back_main" ->
+            case "back_main", "back_business_main" ->
                     BusinessMainGUI.open(p);
 
             default -> {}
@@ -236,13 +251,13 @@ public class BankGUIListener implements Listener {
     ) {
 
         return action.equals("open_bank")
+                || action.equals("bank_deposit_chat")
+                || action.equals("bank_withdraw_chat")
+                || action.equals("bank_prime_chat")
                 || action.equals("open_payroll")
-                || action.equals("bank_deposit_help")
-                || action.equals("bank_withdraw_help")
-                || action.equals("bank_prime_help")
-                || action.equals("payroll_salary_help")
                 || action.equals("payroll_salary_input")
                 || action.equals("payroll_run_help")
-                || action.equals("back_main");
+                || action.equals("back_main")
+                || action.equals("back_business_main");
     }
 }
