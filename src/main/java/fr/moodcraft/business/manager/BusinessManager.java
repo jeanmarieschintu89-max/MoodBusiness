@@ -1,0 +1,357 @@
+package fr.moodcraft.business.manager;
+
+import fr.moodcraft.business.Main;
+
+import fr.moodcraft.business.model.Business;
+import fr.moodcraft.business.model.BusinessStatus;
+
+import fr.moodcraft.business.storage.BusinessStorage;
+
+import fr.moodcraft.business.util.NameFilter;
+import fr.moodcraft.business.util.VaultHook;
+
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
+
+public final class BusinessManager {
+
+    private BusinessManager() {}
+
+    public static void init() {}
+
+    public static CreationResult createBusiness(
+            Player player,
+            String rawName
+    ) {
+
+        if (!Main.getInstance()
+                .getConfig()
+                .getBoolean(
+                        "business.creation.enabled",
+                        true
+                )) {
+
+            return CreationResult.fail(
+                    "La création d'entreprise est temporairement fermée."
+            );
+        }
+
+        if (!VaultHook.isReady()) {
+
+            return CreationResult.fail(
+                    "Le service économique n'est pas disponible."
+            );
+        }
+
+        if (!player.hasPermission("moodbusiness.create")) {
+
+            return CreationResult.fail(
+                    "Vous ne pouvez pas créer d'entreprise."
+            );
+        }
+
+        UUID uuid =
+                player.getUniqueId();
+
+        if (BusinessStorage.isRegisterSuspended(uuid)
+                && !player.hasPermission("moodbusiness.bypass")) {
+
+            return CreationResult.fail(
+                    "Vous êtes suspendu du registre économique."
+            );
+        }
+
+        long cooldown =
+                BusinessStorage.getCooldownUntil(uuid);
+
+        if (cooldown > System.currentTimeMillis()
+                && !player.hasPermission("moodbusiness.bypass")) {
+
+            long seconds =
+                    Math.max(
+                            1,
+                            (cooldown - System.currentTimeMillis()) / 1000
+                    );
+
+            return CreationResult.fail(
+                    "Vous devez attendre encore §e"
+                            + seconds
+                            + "s §7avant une nouvelle création."
+            );
+        }
+
+        int maxActive =
+                Main.getInstance()
+                        .getConfig()
+                        .getInt(
+                                "business.creation.max-active-owned",
+                                1
+                        );
+
+        if (!player.hasPermission("moodbusiness.bypass")
+                && countActiveOwned(uuid) >= maxActive) {
+
+            return CreationResult.fail(
+                    "Vous avez déjà une entreprise active."
+            );
+        }
+
+        String name =
+                NameFilter.clean(rawName);
+
+        String error =
+                NameFilter.validate(name);
+
+        if (error != null) {
+
+            return CreationResult.fail(error);
+        }
+
+        String id =
+                NameFilter.toId(name);
+
+        if (BusinessStorage.exists(id)) {
+
+            return CreationResult.fail(
+                    "Ce nom d'entreprise est déjà utilisé."
+            );
+        }
+
+        double price =
+                getCreationPrice(uuid);
+
+        if (!player.hasPermission("moodbusiness.bypass")) {
+
+            if (!VaultHook.has(
+                    player,
+                    price
+            )) {
+
+                return CreationResult.fail(
+                        "Fonds insuffisants. Frais requis: §e"
+                                + VaultHook.format(price)
+                );
+            }
+
+            if (!VaultHook.withdraw(
+                    player,
+                    price
+            )) {
+
+                return CreationResult.fail(
+                        "Le paiement des frais d'enregistrement a échoué."
+                );
+            }
+        }
+
+        int creationIndex =
+                BusinessStorage.getCreatedCount(uuid) + 1;
+
+        Business business =
+                new Business(
+                        id,
+                        name,
+                        uuid,
+                        player.getName(),
+                        BusinessStatus.ACTIVE,
+                        Main.getInstance()
+                                .getConfig()
+                                .getDouble(
+                                        "bank.starting-balance",
+                                        0
+                                ),
+                        creationIndex,
+                        price,
+                        System.currentTimeMillis()
+                );
+
+        BusinessStorage.addBusiness(business);
+
+        BusinessStorage.setCreatedCount(
+                uuid,
+                creationIndex
+        );
+
+        return CreationResult.success(
+                business,
+                "Entreprise créée."
+        );
+    }
+
+    public static double getCreationPrice(
+            UUID uuid
+    ) {
+
+        double base =
+                Main.getInstance()
+                        .getConfig()
+                        .getDouble(
+                                "business.creation.base-price",
+                                15000
+                        );
+
+        double step =
+                Main.getInstance()
+                        .getConfig()
+                        .getDouble(
+                                "business.creation.price-step",
+                                15000
+                        );
+
+        int alreadyCreated =
+                BusinessStorage.getCreatedCount(uuid);
+
+        return base + (alreadyCreated * step);
+    }
+
+    public static int countActiveOwned(
+            UUID uuid
+    ) {
+
+        int count = 0;
+
+        for (Business business :
+                BusinessStorage.getBusinesses()) {
+
+            if (business.getOwnerUuid().equals(uuid)
+                    && business.getStatus() == BusinessStatus.ACTIVE) {
+
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    public static Business getOwnedBusiness(
+            UUID uuid
+    ) {
+
+        for (Business business :
+                BusinessStorage.getBusinesses()) {
+
+            if (business.getOwnerUuid().equals(uuid)
+                    && business.getStatus() == BusinessStatus.ACTIVE) {
+
+                return business;
+            }
+        }
+
+        return null;
+    }
+
+    public static Business getMemberBusiness(
+            UUID uuid
+    ) {
+
+        for (Business business :
+                BusinessStorage.getBusinesses()) {
+
+            if (business.isMember(uuid)
+                    && business.getStatus() == BusinessStatus.ACTIVE) {
+
+                return business;
+            }
+        }
+
+        return null;
+    }
+
+    public static Business getByName(
+            String name
+    ) {
+
+        return BusinessStorage.getBusiness(
+                NameFilter.toId(name)
+        );
+    }
+
+    public static List<Business> getAll() {
+
+        return new ArrayList<>(
+                BusinessStorage.getBusinesses()
+        );
+    }
+
+    public static List<Business> getByStatus(
+            BusinessStatus status
+    ) {
+
+        List<Business> list =
+                new ArrayList<>();
+
+        for (Business business :
+                BusinessStorage.getBusinesses()) {
+
+            if (business.getStatus() == status) {
+
+                list.add(business);
+            }
+        }
+
+        list.sort(
+                Comparator.comparingLong(
+                        Business::getCreatedAt
+                ).reversed()
+        );
+
+        return list;
+    }
+
+    public static List<Business> getRecent() {
+
+        List<Business> list =
+                getAll();
+
+        list.sort(
+                Comparator.comparingLong(
+                        Business::getCreatedAt
+                ).reversed()
+        );
+
+        return list;
+    }
+
+    public static void setStatus(
+            Business business,
+            BusinessStatus status
+    ) {
+
+        business.setStatus(status);
+        BusinessStorage.save();
+    }
+
+    public record CreationResult(
+            boolean success,
+            Business business,
+            String message
+    ) {
+
+        public static CreationResult success(
+                Business business,
+                String message
+        ) {
+
+            return new CreationResult(
+                    true,
+                    business,
+                    message
+            );
+        }
+
+        public static CreationResult fail(
+                String message
+        ) {
+
+            return new CreationResult(
+                    false,
+                    null,
+                    message
+            );
+        }
+    }
+}
