@@ -320,9 +320,7 @@ public final class ContractManager {
         sort(list);
 
         return list;
-    }
-
-    public static ContractResult complete(
+    }public static ContractResult complete(
             Player actor,
             Contract contract,
             String comment
@@ -669,9 +667,7 @@ public final class ContractManager {
                 contract,
                 "Litige ouvert. Les fonds restent bloqués."
         );
-    }
-
-    public static boolean canView(
+    }public static boolean canView(
             Player player,
             Contract contract
     ) {
@@ -741,4 +737,114 @@ public final class ContractManager {
         }
 
         if (contract.getStatus() == ContractStatus.EN_COURS
-   
+                && contract.getDueAt() > 0
+                && System.currentTimeMillis() > contract.getDueAt()) {
+
+            contract.setStatus(
+                    ContractStatus.EN_RETARD
+            );
+
+            contract.addHistory(
+                    "§8• §cRetard automatique §7Le délai prévu est dépassé."
+            );
+
+            ContractStorage.save();
+
+            Business business =
+                    BusinessManager.getById(
+                            contract.getBusinessId()
+                    );
+
+            AuditLogManager.log(
+                    AuditLogType.CONTRACT_COMPLETED,
+                    "Système",
+                    contract.getTitle(),
+                    business,
+                    "Contrat marqué automatiquement en retard."
+            );
+
+            OfflinePlayer client =
+                    Bukkit.getOfflinePlayer(
+                            contract.getClientUuid()
+                    );
+
+            AlertManager.add(
+                    client,
+                    AlertType.CONTRACT,
+                    "Contrat en retard",
+                    "Le contrat "
+                            + contract.getTitle()
+                            + " a dépassé son délai."
+            );
+
+            if (business != null) {
+
+                AlertManager.add(
+                        business.getOwnerUuid(),
+                        business.getOwnerName(),
+                        AlertType.CONTRACT,
+                        "Contrat en retard",
+                        "Le contrat "
+                                + contract.getTitle()
+                                + " a dépassé son délai."
+                );
+            }
+        }
+    }
+
+    private static String safeComment(
+            String comment
+    ) {
+
+        if (comment == null || comment.isBlank()) {
+            return "Aucun commentaire.";
+        }
+
+        if (comment.length() > 120) {
+            return comment.substring(0, 120) + "...";
+        }
+
+        return comment;
+    }
+
+    private static void sort(
+            List<Contract> list
+    ) {
+
+        list.sort(
+                Comparator.comparingLong(
+                        Contract::getCreatedAt
+                ).reversed()
+        );
+    }
+
+    public record ContractResult(
+            boolean success,
+            Contract contract,
+            String message
+    ) {
+
+        public static ContractResult success(
+                Contract contract,
+                String message
+        ) {
+
+            return new ContractResult(
+                    true,
+                    contract,
+                    message
+            );
+        }
+
+        public static ContractResult fail(
+                String message
+        ) {
+
+            return new ContractResult(
+                    false,
+                    null,
+                    message
+            );
+        }
+    }
+}
