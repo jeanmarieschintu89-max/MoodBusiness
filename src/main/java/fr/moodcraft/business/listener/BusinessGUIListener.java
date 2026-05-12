@@ -6,11 +6,15 @@ import fr.moodcraft.business.gui.ApplicationMainGUI;
 import fr.moodcraft.business.gui.ApplicationReviewGUI;
 import fr.moodcraft.business.gui.ApplicationTypeGUI;
 
+import fr.moodcraft.business.gui.AuditLogGUI;
+
 import fr.moodcraft.business.gui.BusinessEmployeesGUI;
 import fr.moodcraft.business.gui.BusinessListGUI;
 import fr.moodcraft.business.gui.BusinessMainGUI;
 import fr.moodcraft.business.gui.BusinessRoleAssignGUI;
 import fr.moodcraft.business.gui.BusinessStaffGUI;
+
+import fr.moodcraft.business.gui.ContractListGUI;
 
 import fr.moodcraft.business.manager.ApplicationManager;
 import fr.moodcraft.business.manager.BusinessManager;
@@ -71,6 +75,10 @@ public class BusinessGUIListener implements Listener {
 
         switch (action) {
 
+            //
+            // 🏢 CREATION
+            //
+
             case "main_create" -> {
 
                 p.closeInventory();
@@ -87,6 +95,10 @@ public class BusinessGUIListener implements Listener {
                 BusinessMessages.footer(p);
             }
 
+            //
+            // 🛡 STAFF
+            //
+
             case "open_staff" -> {
 
                 if (!p.hasPermission("moodbusiness.staff")) {
@@ -102,6 +114,42 @@ public class BusinessGUIListener implements Listener {
 
                 BusinessStaffGUI.open(p);
             }
+
+            case "audit_logs" -> {
+
+                if (!p.hasPermission("moodbusiness.staff")) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Historique Administratif",
+                            "Accès réservé à l'administration économique."
+                    );
+
+                    return;
+                }
+
+                AuditLogGUI.open(p);
+            }
+
+            case "contract_litige_list" -> {
+
+                if (!p.hasPermission("moodbusiness.staff.litige")) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Litiges Économiques",
+                            "Accès réservé à l'administration économique."
+                    );
+
+                    return;
+                }
+
+                ContractListGUI.openLitiges(p);
+            }
+
+            //
+            // 📚 LISTES ENTREPRISES
+            //
 
             case "open_public_active", "staff_active" ->
                     BusinessListGUI.openActive(
@@ -120,6 +168,10 @@ public class BusinessGUIListener implements Listener {
                             p,
                             1
                     );
+
+            //
+            // 📄 DOSSIER ENTREPRISE
+            //
 
             case "owned_info", "business_info" -> {
 
@@ -146,6 +198,10 @@ public class BusinessGUIListener implements Listener {
                         business
                 );
             }
+
+            //
+            // 👥 EMPLOYES
+            //
 
             case "open_employees" -> {
 
@@ -220,6 +276,10 @@ public class BusinessGUIListener implements Listener {
                 BusinessMessages.footer(p);
             }
 
+            //
+            // 📨 CANDIDATURES
+            //
+
             case "open_applications" ->
                     ApplicationMainGUI.open(p);
 
@@ -259,7 +319,9 @@ public class BusinessGUIListener implements Listener {
             case "application_select_business" -> {
 
                 Business business =
-                        BusinessManager.getByName(target);
+                        BusinessManager.getByName(
+                                target
+                        );
 
                 if (business == null) {
 
@@ -292,7 +354,9 @@ public class BusinessGUIListener implements Listener {
                 }
 
                 Business business =
-                        BusinessManager.getByName(split[0]);
+                        BusinessManager.getByName(
+                                split[0]
+                        );
 
                 if (business == null) {
 
@@ -310,7 +374,9 @@ public class BusinessGUIListener implements Listener {
                 try {
 
                     type =
-                            ApplicationType.valueOf(split[1]);
+                            ApplicationType.valueOf(
+                                    split[1]
+                            );
 
                 } catch (Exception ex) {
 
@@ -327,7 +393,9 @@ public class BusinessGUIListener implements Listener {
             case "application_review" -> {
 
                 Application application =
-                        ApplicationManager.get(target);
+                        ApplicationManager.get(
+                                target
+                        );
 
                 if (application == null) {
 
@@ -349,7 +417,9 @@ public class BusinessGUIListener implements Listener {
             case "application_interview" -> {
 
                 Application application =
-                        ApplicationManager.get(target);
+                        ApplicationManager.get(
+                                target
+                        );
 
                 if (application == null) {
                     return;
@@ -377,14 +447,17 @@ public class BusinessGUIListener implements Listener {
                 BusinessMessages.success(
                         p,
                         "Candidature " + BusinessMessages.brand(),
-                        "Entretien demandé pour §e" + application.getApplicantName()
+                        "Entretien demandé pour §e"
+                                + application.getApplicantName()
                 );
             }
 
             case "application_refuse" -> {
 
                 Application application =
-                        ApplicationManager.get(target);
+                        ApplicationManager.get(
+                                target
+                        );
 
                 if (application == null) {
                     return;
@@ -420,7 +493,9 @@ public class BusinessGUIListener implements Listener {
             case "application_accept_stage" -> {
 
                 Application application =
-                        ApplicationManager.get(target);
+                        ApplicationManager.get(
+                                target
+                        );
 
                 if (application == null) {
                     return;
@@ -456,7 +531,9 @@ public class BusinessGUIListener implements Listener {
             case "application_accept_apprentice" -> {
 
                 Application application =
-                        ApplicationManager.get(target);
+                        ApplicationManager.get(
+                                target
+                        );
 
                 if (application == null) {
                     return;
@@ -489,17 +566,29 @@ public class BusinessGUIListener implements Listener {
                 );
             }
 
+            //
+            // 📄 PAGES
+            //
+
             case "list_prev", "list_next" ->
                     openListTarget(
                             p,
                             target
                     );
 
+            //
+            // ↩ RETOURS
+            //
+
             case "back_main" ->
                     BusinessMainGUI.open(p);
 
             case "back_staff" ->
                     BusinessStaffGUI.open(p);
+
+            //
+            // 💤 PLACEHOLDER
+            //
 
             case "coming_soon" -> {
 
@@ -541,7 +630,8 @@ public class BusinessGUIListener implements Listener {
                 || title.equals(ApplicationTypeGUI.TITLE)
                 || title.equals(ApplicationListGUI.TITLE_MY)
                 || title.equals(ApplicationListGUI.TITLE_RECEIVED)
-                || title.equals(ApplicationReviewGUI.TITLE);
+                || title.equals(ApplicationReviewGUI.TITLE)
+                || title.equals(AuditLogGUI.TITLE);
     }
 
     private void openRoleManager(
@@ -574,7 +664,9 @@ public class BusinessGUIListener implements Listener {
         try {
 
             targetUuid =
-                    UUID.fromString(split[1]);
+                    UUID.fromString(
+                            split[1]
+                    );
 
         } catch (Exception e) {
 
@@ -632,7 +724,9 @@ public class BusinessGUIListener implements Listener {
         try {
 
             targetUuid =
-                    UUID.fromString(split[1]);
+                    UUID.fromString(
+                            split[1]
+                    );
 
         } catch (Exception e) {
 
@@ -644,7 +738,9 @@ public class BusinessGUIListener implements Listener {
         try {
 
             role =
-                    BusinessRole.valueOf(split[2]);
+                    BusinessRole.valueOf(
+                            split[2]
+                    );
 
         } catch (Exception e) {
 
@@ -655,87 +751,4 @@ public class BusinessGUIListener implements Listener {
                 BusinessManager.assignRole(
                         p,
                         business,
-                        targetUuid,
-                        role
-                );
-
-        if (!result.success()) {
-
-            BusinessMessages.deny(
-                    p,
-                    "Rôles Entreprise",
-                    result.message()
-            );
-
-            return;
-        }
-
-        p.closeInventory();
-
-        BusinessMessages.success(
-                p,
-                "Rôles Entreprise",
-                result.message()
-        );
-
-        BusinessEmployeesGUI.open(
-                p,
-                business
-        );
-    }
-
-    private void openListTarget(
-            Player p,
-            String target
-    ) {
-
-        if (target == null || !target.contains(":")) {
-            return;
-        }
-
-        String[] split =
-                target.split(":");
-
-        if (split.length < 2) {
-            return;
-        }
-
-        String type =
-                split[0];
-
-        int page;
-
-        try {
-
-            page =
-                    Integer.parseInt(split[1]);
-
-        } catch (Exception e) {
-
-            page = 1;
-        }
-
-        switch (type) {
-
-            case "ACTIVE" ->
-                    BusinessListGUI.openActive(
-                            p,
-                            page
-                    );
-
-            case "RECENT" ->
-                    BusinessListGUI.openRecent(
-                            p,
-                            page
-                    );
-
-            case "SUSPENDUE" ->
-                    BusinessListGUI.openSuspended(
-                            p,
-                            page
-                    );
-
-            default -> {}
-        }
-    }
-}
+                        ta
