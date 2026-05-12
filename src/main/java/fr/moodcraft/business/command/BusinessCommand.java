@@ -1,5 +1,6 @@
 package fr.moodcraft.business.command;
 
+import fr.moodcraft.business.gui.ApplicationMainGUI;
 import fr.moodcraft.business.gui.BusinessEmployeesGUI;
 import fr.moodcraft.business.gui.BusinessMainGUI;
 import fr.moodcraft.business.gui.BusinessStaffGUI;
@@ -54,6 +55,10 @@ public class BusinessCommand implements CommandExecutor {
         String sub =
                 args[0].toLowerCase();
 
+        //
+        // 🛡 STAFF
+        //
+
         if (sub.equals("staff")) {
 
             if (!p.hasPermission("moodbusiness.staff")) {
@@ -71,6 +76,10 @@ public class BusinessCommand implements CommandExecutor {
 
             return true;
         }
+
+        //
+        // 🏢 CREATION
+        //
 
         if (sub.equals("creer")
                 || sub.equals("créer")
@@ -156,6 +165,10 @@ public class BusinessCommand implements CommandExecutor {
             return true;
         }
 
+        //
+        // 📄 INFO
+        //
+
         if (sub.equals("info")) {
 
             Business business;
@@ -202,6 +215,10 @@ public class BusinessCommand implements CommandExecutor {
             return true;
         }
 
+        //
+        // 👥 EMPLOYES
+        //
+
         if (sub.equals("employes")
                 || sub.equals("employés")
                 || sub.equals("employees")) {
@@ -229,6 +246,23 @@ public class BusinessCommand implements CommandExecutor {
 
             return true;
         }
+
+        //
+        // 📨 CANDIDATURES
+        //
+
+        if (sub.equals("candidatures")
+                || sub.equals("candidature")
+                || sub.equals("postuler")) {
+
+            ApplicationMainGUI.open(p);
+
+            return true;
+        }
+
+        //
+        // ➕ RECRUTER
+        //
 
         if (sub.equals("recruter")
                 || sub.equals("inviter")
@@ -307,6 +341,10 @@ public class BusinessCommand implements CommandExecutor {
 
             return true;
         }
+
+        //
+        // 🏷 ROLE
+        //
 
         if (sub.equals("role")
                 || sub.equals("rang")) {
@@ -397,6 +435,10 @@ public class BusinessCommand implements CommandExecutor {
             return true;
         }
 
+        //
+        // ➖ RENVOYER
+        //
+
         if (sub.equals("renvoyer")
                 || sub.equals("kick")
                 || sub.equals("retirer")) {
@@ -472,6 +514,10 @@ public class BusinessCommand implements CommandExecutor {
             return true;
         }
 
+        //
+        // ⛔ SUSPENDRE
+        //
+
         if (sub.equals("suspendre")) {
 
             if (!p.hasPermission("moodbusiness.staff.suspend")) {
@@ -533,6 +579,10 @@ public class BusinessCommand implements CommandExecutor {
 
             return true;
         }
+
+        //
+        // ✅ REACTIVER
+        //
 
         if (sub.equals("reactiver")
                 || sub.equals("réactiver")) {
