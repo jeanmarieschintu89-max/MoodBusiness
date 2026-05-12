@@ -129,6 +129,9 @@ public final class BusinessListGUI {
                         list.size()
                 );
 
+        boolean staff =
+                p.hasPermission("moodbusiness.staff");
+
         int slotIndex = 0;
 
         for (int i = start; i < end; i++) {
@@ -168,10 +171,18 @@ public final class BusinessListGUI {
                                             business.getCreatedAt()
                                     ),
                                     "",
+                                    staff
+                                            ? "§cClique pour administrer"
+                                            : "§eClique pour consulter",
+                                    "",
                                     "§8• §7ID: §8"
                                             + business.getId()
                             )
-                            .action("business_info")
+                            .action(
+                                    staff
+                                            ? "admin_manage_business"
+                                            : "business_info"
+                            )
                             .target(business.getId())
                             .build()
             );
