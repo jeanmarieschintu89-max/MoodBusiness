@@ -2,6 +2,7 @@ package fr.moodcraft.business.manager;
 
 import fr.moodcraft.business.Main;
 
+import fr.moodcraft.business.model.AuditLogType;
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRole;
 import fr.moodcraft.business.model.BusinessStatus;
@@ -177,6 +178,15 @@ public final class BusinessManager {
         BusinessStorage.setCreatedCount(
                 uuid,
                 creationIndex
+        );
+
+        AuditLogManager.log(
+                AuditLogType.BUSINESS_CREATED,
+                player,
+                business.getName(),
+                business,
+                "Entreprise créée avec frais d'enregistrement: "
+                        + VaultHook.format(price)
         );
 
         return CreationResult.success(
@@ -511,6 +521,15 @@ public final class BusinessManager {
 
         BusinessStorage.save();
 
+        AuditLogManager.log(
+                AuditLogType.MEMBER_ADDED,
+                actor,
+                name,
+                business,
+                "Membre recruté avec rôle: "
+                        + role.getDisplayName()
+        );
+
         return ActionResult.success(
                 "Joueur recruté: §e"
                         + name
@@ -555,6 +574,15 @@ public final class BusinessManager {
         }
 
         BusinessStorage.save();
+
+        AuditLogManager.log(
+                AuditLogType.ROLE_CHANGED,
+                actor,
+                business.getMemberName(targetUuid),
+                business,
+                "Nouveau rôle: "
+                        + role.getDisplayName()
+        );
 
         return ActionResult.success(
                 "Rôle mis à jour pour §e"
@@ -619,6 +647,14 @@ public final class BusinessManager {
         business.removeMember(targetUuid);
 
         BusinessStorage.save();
+
+        AuditLogManager.log(
+                AuditLogType.MEMBER_REMOVED,
+                actor,
+                name,
+                business,
+                "Membre retiré de l'entreprise."
+        );
 
         return ActionResult.success(
                 "Membre retiré de l'entreprise: §e" + name
