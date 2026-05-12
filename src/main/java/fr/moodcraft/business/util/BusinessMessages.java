@@ -8,6 +8,19 @@ public final class BusinessMessages {
 
     private BusinessMessages() {}
 
+    //
+    // 🟢 BRAND
+    //
+
+    public static String brand() {
+
+        return "§aMood§6Craft";
+    }
+
+    //
+    // 🎨 HEADER PREMIUM
+    //
+
     public static void header(
             CommandSender sender,
             String title
@@ -16,10 +29,15 @@ public final class BusinessMessages {
         sender.sendMessage("");
         sender.sendMessage(
                 "§8----- §6✦ "
-                        + title
+                        + cleanTitle(title)
                         + " §6✦ §8-----"
         );
+        sender.sendMessage("");
     }
+
+    //
+    // 🎨 FOOTER
+    //
 
     public static void footer(
             CommandSender sender
@@ -32,6 +50,10 @@ public final class BusinessMessages {
         sender.sendMessage("");
     }
 
+    //
+    // ❌ REFUS
+    //
+
     public static void deny(
             CommandSender sender,
             String title,
@@ -43,11 +65,16 @@ public final class BusinessMessages {
                 title
         );
 
-        sender.sendMessage("§cAccès refusé.");
+        sender.sendMessage("§c✘ §fAction refusée.");
+        sender.sendMessage("");
         sender.sendMessage("§7" + reason);
 
         footer(sender);
     }
+
+    //
+    // ✅ SUCCÈS
+    //
 
     public static void success(
             CommandSender sender,
@@ -65,6 +92,10 @@ public final class BusinessMessages {
         footer(sender);
     }
 
+    //
+    // ℹ INFO
+    //
+
     public static void info(
             CommandSender sender,
             String title,
@@ -81,6 +112,10 @@ public final class BusinessMessages {
         footer(sender);
     }
 
+    //
+    // 🏢 DOSSIER ENTREPRISE
+    //
+
     public static void businessInfo(
             CommandSender sender,
             Business business
@@ -91,19 +126,23 @@ public final class BusinessMessages {
                 "Dossier Entreprise"
         );
 
-        sender.sendMessage("§6✦ §f" + business.getName() + " §6✦");
+        sender.sendMessage("§6✦ §f" + business.getName());
         sender.sendMessage("");
         sender.sendMessage("§7Dirigeant: §e" + business.getOwnerName());
         sender.sendMessage("§7Statut: " + business.getStatus().getDisplayName());
-        sender.sendMessage("§7Solde entreprise: §e" + money(business.getBalance()));
+        sender.sendMessage("§7Solde: §e" + money(business.getBalance()));
         sender.sendMessage("§7Création n°: §e" + business.getCreationIndex());
-        sender.sendMessage("§7Frais d'enregistrement: §e" + money(business.getCreationFee()));
-        sender.sendMessage("§7Créée le: §f" + TimeUtil.formatDate(business.getCreatedAt()));
+        sender.sendMessage("§7Frais: §e" + money(business.getCreationFee()));
+        sender.sendMessage("§7Créée: §f" + TimeUtil.formatDate(business.getCreatedAt()));
         sender.sendMessage("");
-        sender.sendMessage("§8• §7Service officiel de §aMood§6Craft§7.");
+        sender.sendMessage("§8• §7Service officiel de " + brand() + "§7.");
 
         footer(sender);
     }
+
+    //
+    // 💶 MONEY
+    //
 
     public static String money(
             double amount
@@ -112,8 +151,24 @@ public final class BusinessMessages {
         return VaultHook.format(amount);
     }
 
-    public static String brand() {
+    //
+    // 🧼 TITLE CLEANER
+    //
 
-        return "§aMood§6Craft";
+    private static String cleanTitle(
+            String title
+    ) {
+
+        if (title == null || title.isBlank()) {
+            return "Bureau des Entreprises";
+        }
+
+        return title
+                .replace("§6✦", "")
+                .replace("§f", "")
+                .replace("§a", "")
+                .replace("§6", "")
+                .replace("✦", "")
+                .trim();
     }
 }
