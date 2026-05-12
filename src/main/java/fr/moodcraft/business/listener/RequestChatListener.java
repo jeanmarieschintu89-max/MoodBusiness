@@ -52,8 +52,10 @@ public class RequestChatListener implements Listener {
         );
 
         player.sendMessage("§fÉcris le titre de ta demande.");
-        player.sendMessage("§7Exemple: Maison médiévale à Utopia");
-        player.sendMessage("§7Tape §cannuler §7pour quitter.");
+        player.sendMessage("§7Exemple: §eMaison médiévale à Utopia");
+        player.sendMessage("");
+        player.sendMessage("§8• §7Minimum: §e3 caractères");
+        player.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
 
         BusinessMessages.footer(player);
     }
@@ -77,7 +79,9 @@ public class RequestChatListener implements Listener {
 
         player.sendMessage("§fIndique le montant de votre offre.");
         player.sendMessage("§7Budget demandé: §e" + VaultHook.format(request.getBudget()));
-        player.sendMessage("§7Tape §cannuler §7pour quitter.");
+        player.sendMessage("");
+        player.sendMessage("§8• §7Exemple: §e25000");
+        player.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
 
         BusinessMessages.footer(player);
     }
@@ -154,10 +158,38 @@ public class RequestChatListener implements Listener {
             return;
         }
 
+        //
+        // 1. TITRE
+        //
+
         if (draft.step == 0) {
 
-            draft.title = message.trim();
-            draft.step = 1;
+            String title =
+                    message.trim();
+
+            if (title.length() < 3) {
+
+                BusinessMessages.header(
+                        player,
+                        "Demandes " + BusinessMessages.brand()
+                );
+
+                player.sendMessage("§cTitre trop court.");
+                player.sendMessage("§7Écris un titre plus clair.");
+                player.sendMessage("§8Exemple: §eMaison médiévale à Utopia");
+                player.sendMessage("");
+                player.sendMessage("§7Tape §cannuler §7pour quitter.");
+
+                BusinessMessages.footer(player);
+
+                return;
+            }
+
+            draft.title =
+                    title;
+
+            draft.step =
+                    1;
 
             BusinessMessages.header(
                     player,
@@ -166,17 +198,50 @@ public class RequestChatListener implements Listener {
 
             player.sendMessage("§fDécris ta demande.");
             player.sendMessage("§7Indique le style, la quantité, le lieu ou les détails.");
-            player.sendMessage("§7Tape §cannuler §7pour quitter.");
+            player.sendMessage("");
+            player.sendMessage("§8• §7Minimum: §e10 caractères");
+            player.sendMessage("§8• §7Exemple: §eMaison médiévale avec intérieur et jardin.");
+            player.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
 
             BusinessMessages.footer(player);
 
             return;
         }
 
+        //
+        // 2. DESCRIPTION
+        //
+
         if (draft.step == 1) {
 
-            draft.description = message.trim();
-            draft.step = 2;
+            String description =
+                    message.trim();
+
+            if (description.length() < 10) {
+
+                BusinessMessages.header(
+                        player,
+                        "Demandes " + BusinessMessages.brand()
+                );
+
+                player.sendMessage("§cDescription trop courte.");
+                player.sendMessage("§7Ajoute plus de détails pour les entreprises.");
+                player.sendMessage("");
+                player.sendMessage("§8Exemple:");
+                player.sendMessage("§eMaison médiévale avec intérieur, jardin et stockage.");
+                player.sendMessage("");
+                player.sendMessage("§7Tape §cannuler §7pour quitter.");
+
+                BusinessMessages.footer(player);
+
+                return;
+            }
+
+            draft.description =
+                    description;
+
+            draft.step =
+                    2;
 
             BusinessMessages.header(
                     player,
@@ -185,34 +250,69 @@ public class RequestChatListener implements Listener {
 
             player.sendMessage("§fIndique ton budget.");
             player.sendMessage("§7Exemple: §e25000");
-            player.sendMessage("§7Tape §cannuler §7pour quitter.");
+            player.sendMessage("");
+            player.sendMessage("§8• §7Montant en euros");
+            player.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
 
             BusinessMessages.footer(player);
 
             return;
         }
 
+        //
+        // 3. BUDGET
+        //
+
         if (draft.step == 2) {
+
+            double budget;
 
             try {
 
-                draft.budget =
+                budget =
                         Double.parseDouble(
                                 message.replace(",", ".")
                         );
 
             } catch (Exception e) {
 
-                BusinessMessages.deny(
+                BusinessMessages.header(
                         player,
-                        "Demandes " + BusinessMessages.brand(),
-                        "Budget invalide. Écris un nombre."
+                        "Demandes " + BusinessMessages.brand()
                 );
+
+                player.sendMessage("§cBudget invalide.");
+                player.sendMessage("§7Écris seulement un nombre.");
+                player.sendMessage("§8Exemple: §e25000");
+                player.sendMessage("");
+                player.sendMessage("§7Tape §cannuler §7pour quitter.");
+
+                BusinessMessages.footer(player);
 
                 return;
             }
 
-            draft.step = 3;
+            if (budget <= 0) {
+
+                BusinessMessages.header(
+                        player,
+                        "Demandes " + BusinessMessages.brand()
+                );
+
+                player.sendMessage("§cBudget invalide.");
+                player.sendMessage("§7Le budget doit être supérieur à zéro.");
+                player.sendMessage("§8Exemple: §e25000");
+
+                BusinessMessages.footer(player);
+
+                return;
+            }
+
+            draft.budget =
+                    budget;
+
+            draft.step =
+                    3;
 
             BusinessMessages.header(
                     player,
@@ -221,30 +321,64 @@ public class RequestChatListener implements Listener {
 
             player.sendMessage("§fIndique le délai souhaité en jours.");
             player.sendMessage("§7Exemple: §e7");
-            player.sendMessage("§7Tape §cannuler §7pour quitter.");
+            player.sendMessage("");
+            player.sendMessage("§8• §7Nombre de jours uniquement");
+            player.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
 
             BusinessMessages.footer(player);
 
             return;
         }
 
+        //
+        // 4. DELAI
+        //
+
         if (draft.step == 3) {
+
+            int dueDays;
 
             try {
 
-                draft.dueDays =
+                dueDays =
                         Integer.parseInt(message);
 
             } catch (Exception e) {
 
-                BusinessMessages.deny(
+                BusinessMessages.header(
                         player,
-                        "Demandes " + BusinessMessages.brand(),
-                        "Délai invalide. Écris un nombre de jours."
+                        "Demandes " + BusinessMessages.brand()
                 );
+
+                player.sendMessage("§cDélai invalide.");
+                player.sendMessage("§7Écris un nombre de jours.");
+                player.sendMessage("§8Exemple: §e7");
+                player.sendMessage("");
+                player.sendMessage("§7Tape §cannuler §7pour quitter.");
+
+                BusinessMessages.footer(player);
 
                 return;
             }
+
+            if (dueDays <= 0) {
+
+                BusinessMessages.header(
+                        player,
+                        "Demandes " + BusinessMessages.brand()
+                );
+
+                player.sendMessage("§cDélai invalide.");
+                player.sendMessage("§7Le délai doit être supérieur à zéro.");
+                player.sendMessage("§8Exemple: §e7");
+
+                BusinessMessages.footer(player);
+
+                return;
+            }
+
+            draft.dueDays =
+                    dueDays;
 
             RequestManager.RequestResult result =
                     RequestManager.createRequest(
@@ -280,7 +414,9 @@ public class RequestChatListener implements Listener {
             player.sendMessage("§7Titre: §e" + result.request().getTitle());
             player.sendMessage("§7Budget: §e" + VaultHook.format(result.request().getBudget()));
             player.sendMessage("§7Délai: §b" + result.request().getDueDays() + " jours");
-            player.sendMessage("§a✔ Le registre économique a été mis à jour.");
+            player.sendMessage("§7Catégorie: " + result.request().getCategory().getDisplayName());
+            player.sendMessage("");
+            player.sendMessage("§a✔ Le Bureau des Entreprises a été mis à jour.");
 
             BusinessMessages.footer(player);
         }
@@ -307,27 +443,57 @@ public class RequestChatListener implements Listener {
             return;
         }
 
+        //
+        // 1. MONTANT
+        //
+
         if (draft.step == 0) {
+
+            double amount;
 
             try {
 
-                draft.amount =
+                amount =
                         Double.parseDouble(
                                 message.replace(",", ".")
                         );
 
             } catch (Exception e) {
 
-                BusinessMessages.deny(
+                BusinessMessages.header(
                         player,
-                        "Offre Entreprise",
-                        "Montant invalide. Écris un nombre."
+                        "Offre Entreprise"
                 );
+
+                player.sendMessage("§cMontant invalide.");
+                player.sendMessage("§7Écris seulement un nombre.");
+                player.sendMessage("§8Exemple: §e25000");
+
+                BusinessMessages.footer(player);
 
                 return;
             }
 
-            draft.step = 1;
+            if (amount <= 0) {
+
+                BusinessMessages.header(
+                        player,
+                        "Offre Entreprise"
+                );
+
+                player.sendMessage("§cMontant invalide.");
+                player.sendMessage("§7Le montant doit être supérieur à zéro.");
+
+                BusinessMessages.footer(player);
+
+                return;
+            }
+
+            draft.amount =
+                    amount;
+
+            draft.step =
+                    1;
 
             BusinessMessages.header(
                     player,
@@ -336,6 +502,7 @@ public class RequestChatListener implements Listener {
 
             player.sendMessage("§fIndique le délai proposé en jours.");
             player.sendMessage("§7Exemple: §e5");
+            player.sendMessage("");
             player.sendMessage("§7Tape §cannuler §7pour quitter.");
 
             BusinessMessages.footer(player);
@@ -343,25 +510,55 @@ public class RequestChatListener implements Listener {
             return;
         }
 
+        //
+        // 2. DELAI
+        //
+
         if (draft.step == 1) {
+
+            int dueDays;
 
             try {
 
-                draft.dueDays =
+                dueDays =
                         Integer.parseInt(message);
 
             } catch (Exception e) {
 
-                BusinessMessages.deny(
+                BusinessMessages.header(
                         player,
-                        "Offre Entreprise",
-                        "Délai invalide. Écris un nombre de jours."
+                        "Offre Entreprise"
                 );
+
+                player.sendMessage("§cDélai invalide.");
+                player.sendMessage("§7Écris un nombre de jours.");
+                player.sendMessage("§8Exemple: §e5");
+
+                BusinessMessages.footer(player);
 
                 return;
             }
 
-            draft.step = 2;
+            if (dueDays <= 0) {
+
+                BusinessMessages.header(
+                        player,
+                        "Offre Entreprise"
+                );
+
+                player.sendMessage("§cDélai invalide.");
+                player.sendMessage("§7Le délai doit être supérieur à zéro.");
+
+                BusinessMessages.footer(player);
+
+                return;
+            }
+
+            draft.dueDays =
+                    dueDays;
+
+            draft.step =
+                    2;
 
             BusinessMessages.header(
                     player,
@@ -370,6 +567,7 @@ public class RequestChatListener implements Listener {
 
             player.sendMessage("§fAjoute un commentaire à l'offre.");
             player.sendMessage("§7Exemple: Livraison complète avec intérieur inclus.");
+            player.sendMessage("");
             player.sendMessage("§7Tape §cannuler §7pour quitter.");
 
             BusinessMessages.footer(player);
@@ -377,9 +575,33 @@ public class RequestChatListener implements Listener {
             return;
         }
 
+        //
+        // 3. COMMENTAIRE
+        //
+
         if (draft.step == 2) {
 
-            draft.comment = message;
+            String comment =
+                    message.trim();
+
+            if (comment.length() < 5) {
+
+                BusinessMessages.header(
+                        player,
+                        "Offre Entreprise"
+                );
+
+                player.sendMessage("§cCommentaire trop court.");
+                player.sendMessage("§7Ajoute une petite précision pour le demandeur.");
+                player.sendMessage("§8Exemple: §eTravail complet avec matériaux inclus.");
+
+                BusinessMessages.footer(player);
+
+                return;
+            }
+
+            draft.comment =
+                    comment;
 
             BusinessRequest request =
                     RequestManager.get(
@@ -424,6 +646,7 @@ public class RequestChatListener implements Listener {
             player.sendMessage("§fOffre envoyée avec succès.");
             player.sendMessage("§7Montant: §e" + VaultHook.format(result.offer().getAmount()));
             player.sendMessage("§7Délai: §b" + result.offer().getDueDays() + " jours");
+            player.sendMessage("");
             player.sendMessage("§a✔ Le demandeur peut consulter votre proposition.");
 
             BusinessMessages.footer(player);
