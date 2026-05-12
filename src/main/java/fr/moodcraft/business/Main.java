@@ -4,6 +4,7 @@ import fr.moodcraft.business.command.BusinessCommand;
 import fr.moodcraft.business.command.ContractCommand;
 import fr.moodcraft.business.command.RequestsCommand;
 
+import fr.moodcraft.business.listener.AlertJoinListener;
 import fr.moodcraft.business.listener.ApplicationChatListener;
 import fr.moodcraft.business.listener.BankGUIListener;
 import fr.moodcraft.business.listener.BusinessGUIListener;
@@ -16,6 +17,7 @@ import fr.moodcraft.business.manager.AuditLogManager;
 import fr.moodcraft.business.manager.BusinessManager;
 import fr.moodcraft.business.manager.PayrollManager;
 
+import fr.moodcraft.business.storage.AlertStorage;
 import fr.moodcraft.business.storage.ApplicationStorage;
 import fr.moodcraft.business.storage.AuditLogStorage;
 import fr.moodcraft.business.storage.BusinessStorage;
@@ -54,6 +56,7 @@ public class Main extends JavaPlugin {
         FinanceStorage.init();
         PayrollStorage.init();
         AuditLogStorage.init();
+        AlertStorage.init();
 
         BusinessManager.init();
 
@@ -94,6 +97,7 @@ public class Main extends JavaPlugin {
         FinanceStorage.save();
         PayrollStorage.save();
         AuditLogStorage.save();
+        AlertStorage.save();
 
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage(
@@ -172,6 +176,11 @@ public class Main extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(
                 new BankGUIListener(),
+                this
+        );
+
+        Bukkit.getPluginManager().registerEvents(
+                new AlertJoinListener(),
                 this
         );
     }
