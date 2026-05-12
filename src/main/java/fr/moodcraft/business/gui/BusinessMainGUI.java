@@ -187,9 +187,9 @@ public final class BusinessMainGUI {
                                 "§7Stage, apprentissage ou emploi",
                                 "§7dans une entreprise.",
                                 "",
-                                "§8• §7Bientôt disponible."
+                                "§a✔ Ouvrir le registre"
                         )
-                        .action("coming_soon")
+                        .action("open_applications")
                         .build()
         );
 
