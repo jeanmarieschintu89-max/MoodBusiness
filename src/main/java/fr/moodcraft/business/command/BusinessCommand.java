@@ -2,6 +2,7 @@ package fr.moodcraft.business.command;
 
 import fr.moodcraft.business.gui.ApplicationMainGUI;
 import fr.moodcraft.business.gui.BusinessBankGUI;
+import fr.moodcraft.business.gui.BusinessDissolveConfirmGUI;
 import fr.moodcraft.business.gui.BusinessEmployeesGUI;
 import fr.moodcraft.business.gui.BusinessMainGUI;
 import fr.moodcraft.business.gui.BusinessStaffGUI;
@@ -107,7 +108,7 @@ public class BusinessCommand implements CommandExecutor {
 
                 BusinessMessages.header(
                         p,
-                        "Registre Économique"
+                        "Bureau des Entreprises"
                 );
 
                 p.sendMessage("§7Utilisation: §e/entreprise creer <nom>");
@@ -138,7 +139,7 @@ public class BusinessCommand implements CommandExecutor {
 
                 BusinessMessages.deny(
                         p,
-                        "Registre Économique",
+                        "Bureau des Entreprises",
                         result.message()
                 );
 
@@ -150,7 +151,7 @@ public class BusinessCommand implements CommandExecutor {
 
             BusinessMessages.header(
                     p,
-                    "Registre Économique"
+                    "Bureau des Entreprises"
             );
 
             p.sendMessage("§fEntreprise créée avec succès.");
@@ -166,7 +167,7 @@ public class BusinessCommand implements CommandExecutor {
                             + business.getStatus().getDisplayName()
             );
             p.sendMessage(
-                    "§a✔ Dossier inscrit au registre §aMood§6Craft§a."
+                    "§a✔ Dossier inscrit au Bureau des Entreprises §aMood§6Craft§a."
             );
 
             BusinessMessages.footer(p);
@@ -276,9 +277,7 @@ public class BusinessCommand implements CommandExecutor {
             ApplicationMainGUI.open(p);
 
             return true;
-        }
-
-        //
+        }//
         // 💰 BANQUE
         //
 
@@ -372,7 +371,9 @@ public class BusinessCommand implements CommandExecutor {
             );
 
             return true;
-        }//
+        }
+
+        //
         // 💸 RETRAIT
         //
 
@@ -602,9 +603,7 @@ public class BusinessCommand implements CommandExecutor {
             );
 
             return true;
-        }
-
-        //
+        }//
         // 📆 PAIE MENSUELLE MANUELLE
         //
 
@@ -748,7 +747,9 @@ public class BusinessCommand implements CommandExecutor {
             );
 
             return true;
-        }//
+        }
+
+        //
         // 🏷 ROLE
         //
 
@@ -915,6 +916,50 @@ public class BusinessCommand implements CommandExecutor {
                     p,
                     "Employés Entreprise",
                     result.message()
+            );
+
+            return true;
+        }//
+        // 🧨 DISSOLUTION
+        //
+
+        if (sub.equals("dissoudre")
+                || sub.equals("dissolution")
+                || sub.equals("supprimer")
+                || sub.equals("delete")) {
+
+            Business business =
+                    BusinessManager.getMemberBusiness(
+                            p.getUniqueId()
+                    );
+
+            if (business == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Dissolution Entreprise",
+                        "Vous n'appartenez à aucune entreprise active."
+                );
+
+                return true;
+            }
+
+            if (!business.isOwner(
+                    p.getUniqueId()
+            )) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Dissolution Entreprise",
+                        "Seul le dirigeant peut dissoudre l'entreprise."
+                );
+
+                return true;
+            }
+
+            BusinessDissolveConfirmGUI.open(
+                    p,
+                    business
             );
 
             return true;
