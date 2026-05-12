@@ -8,6 +8,8 @@ import fr.moodcraft.business.gui.ApplicationTypeGUI;
 
 import fr.moodcraft.business.gui.AuditLogGUI;
 
+import fr.moodcraft.business.gui.BusinessBankGUI;
+import fr.moodcraft.business.gui.BusinessDashboardGUI;
 import fr.moodcraft.business.gui.BusinessEmployeesGUI;
 import fr.moodcraft.business.gui.BusinessListGUI;
 import fr.moodcraft.business.gui.BusinessMainGUI;
@@ -15,6 +17,8 @@ import fr.moodcraft.business.gui.BusinessRoleAssignGUI;
 import fr.moodcraft.business.gui.BusinessStaffGUI;
 
 import fr.moodcraft.business.gui.ContractListGUI;
+import fr.moodcraft.business.gui.ContractMainGUI;
+import fr.moodcraft.business.gui.RequestMainGUI;
 
 import fr.moodcraft.business.manager.ApplicationManager;
 import fr.moodcraft.business.manager.BusinessManager;
@@ -76,24 +80,128 @@ public class BusinessGUIListener implements Listener {
         switch (action) {
 
             //
-            // 🏢 CREATION
+            // 🏢 CREATION ENTREPRISE PAR CHAT
             //
 
-            case "main_create" -> {
+            case "business_creation_chat", "main_create" -> {
 
-                p.closeInventory();
-
-                BusinessMessages.header(
-                        p,
-                        "Registre Économique"
-                );
-
-                p.sendMessage("§fCréation d'entreprise.");
-                p.sendMessage("§7Utilisation: §e/entreprise creer <nom>");
-                p.sendMessage("§8Exemple: §e/entreprise creer NordBuild");
-
-                BusinessMessages.footer(p);
+                BusinessCreationChatListener.start(p);
             }
+
+            //
+            // 🏢 GESTION ENTREPRISE
+            //
+
+            case "open_business_dashboard", "owned_info" -> {
+
+                Business business =
+                        BusinessManager.getByName(
+                                target
+                        );
+
+                if (business == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Bureau des Entreprises",
+                            "Entreprise introuvable."
+                    );
+
+                    return;
+                }
+
+                if (!business.isMember(
+                        p.getUniqueId()
+                )) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Bureau des Entreprises",
+                            "Vous n'appartenez pas à cette entreprise."
+                    );
+
+                    return;
+                }
+
+                BusinessDashboardGUI.open(
+                        p,
+                        business
+                );
+            }
+
+            case "dashboard_employees", "open_employees" -> {
+
+                Business business =
+                        BusinessManager.getByName(
+                                target
+                        );
+
+                if (business == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Employés Entreprise",
+                            "Entreprise introuvable."
+                    );
+
+                    return;
+                }
+
+                if (!BusinessManager.canSeeEmployees(
+                        p,
+                        business
+                )) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Employés Entreprise",
+                            "Vous n'appartenez pas à cette entreprise."
+                    );
+
+                    return;
+                }
+
+                BusinessEmployeesGUI.open(
+                        p,
+                        business
+                );
+            }
+
+            case "dashboard_bank" -> {
+
+                Business business =
+                        BusinessManager.getByName(
+                                target
+                        );
+
+                if (business == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Banque Entreprise",
+                            "Entreprise introuvable."
+                    );
+
+                    return;
+                }
+
+                BusinessBankGUI.open(
+                        p,
+                        business
+                );
+            }
+
+            case "dashboard_contracts", "open_contracts" ->
+                    ContractMainGUI.open(p);
+
+            case "dashboard_applications", "open_applications" ->
+                    ApplicationMainGUI.open(p);
+
+            case "dashboard_requests", "open_requests" ->
+                    RequestMainGUI.open(p);
+
+            case "back_business_main", "back_main" ->
+                    BusinessMainGUI.open(p);
 
             //
             // 🛡 STAFF
@@ -170,76 +278,8 @@ public class BusinessGUIListener implements Listener {
                     );
 
             //
-            // 📄 DOSSIER ENTREPRISE
+            // 👥 ROLES
             //
-
-            case "owned_info", "business_info" -> {
-
-                Business business =
-                        BusinessManager.getByName(
-                                target
-                        );
-
-                if (business == null) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Dossier Entreprise",
-                            "Entreprise introuvable."
-                    );
-
-                    return;
-                }
-
-                p.closeInventory();
-
-                BusinessMessages.businessInfo(
-                        p,
-                        business
-                );
-            }
-
-            //
-            // 👥 EMPLOYES
-            //
-
-            case "open_employees" -> {
-
-                Business business =
-                        BusinessManager.getByName(
-                                target
-                        );
-
-                if (business == null) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Employés Entreprise",
-                            "Entreprise introuvable."
-                    );
-
-                    return;
-                }
-
-                if (!BusinessManager.canSeeEmployees(
-                        p,
-                        business
-                )) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Employés Entreprise",
-                            "Vous n'appartenez pas à cette entreprise."
-                    );
-
-                    return;
-                }
-
-                BusinessEmployeesGUI.open(
-                        p,
-                        business
-                );
-            }
 
             case "employee_manage" ->
                     openRoleManager(
@@ -279,9 +319,6 @@ public class BusinessGUIListener implements Listener {
             //
             // 📨 CANDIDATURES
             //
-
-            case "open_applications" ->
-                    ApplicationMainGUI.open(p);
 
             case "application_choose_business" ->
                     ApplicationBusinessSelectGUI.open(p);
@@ -388,9 +425,7 @@ public class BusinessGUIListener implements Listener {
                         business,
                         type
                 );
-            }
-
-            case "application_review" -> {
+            }case "application_review" -> {
 
                 Application application =
                         ApplicationManager.get(
@@ -450,7 +485,9 @@ public class BusinessGUIListener implements Listener {
                         "Entretien demandé pour §e"
                                 + application.getApplicantName()
                 );
-            }case "application_refuse" -> {
+            }
+
+            case "application_refuse" -> {
 
                 Application application =
                         ApplicationManager.get(
@@ -578,9 +615,6 @@ public class BusinessGUIListener implements Listener {
             // ↩ RETOURS
             //
 
-            case "back_main" ->
-                    BusinessMainGUI.open(p);
-
             case "back_staff" ->
                     BusinessStaffGUI.open(p);
 
@@ -599,11 +633,11 @@ public class BusinessGUIListener implements Listener {
 
                 BusinessMessages.header(
                         p,
-                        "Registre Économique"
+                        "Bureau des Entreprises"
                 );
 
                 p.sendMessage("§eModule en préparation.");
-                p.sendMessage("§7Cette partie arrive dans un prochain pack.");
+                p.sendMessage("§7Cette partie arrive dans une prochaine mise à jour.");
 
                 BusinessMessages.footer(p);
             }
@@ -617,6 +651,7 @@ public class BusinessGUIListener implements Listener {
     ) {
 
         return title.equals(BusinessMainGUI.TITLE)
+                || title.equals(BusinessDashboardGUI.TITLE)
                 || title.equals(BusinessStaffGUI.TITLE)
                 || title.equals(BusinessListGUI.TITLE_ACTIVE)
                 || title.equals(BusinessListGUI.TITLE_RECENT)
