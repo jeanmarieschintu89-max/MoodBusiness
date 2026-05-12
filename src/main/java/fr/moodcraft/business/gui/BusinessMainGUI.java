@@ -125,8 +125,8 @@ public final class BusinessMainGUI {
                                             business.getBalance()
                                     ),
                                     "",
-                                    "§8• §7Contrats, salaires mensuels",
-                                    "§8• §7et primes arriveront ensuite."
+                                    "§8• §7Salaires mensuels",
+                                    "§8• §7et primes arrivent au Pack 7."
                             )
                             .action("coming_soon")
                             .build()
@@ -141,9 +141,9 @@ public final class BusinessMainGUI {
                                     "§7Contrats sécurisés, délais,",
                                     "§7fonds bloqués et litiges.",
                                     "",
-                                    "§8• §7Module prévu au Pack 6."
+                                    "§a✔ Ouvrir le registre"
                             )
-                            .action("coming_soon")
+                            .action("open_contracts")
                             .build()
             );
         }
