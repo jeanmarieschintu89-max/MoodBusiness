@@ -273,6 +273,13 @@ public final class BusinessManager {
         );
     }
 
+    public static Business getById(
+            String id
+    ) {
+
+        return BusinessStorage.getBusiness(id);
+    }
+
     public static List<Business> getAll() {
 
         return new ArrayList<>(
@@ -365,6 +372,21 @@ public final class BusinessManager {
 
         return role != null
                 && role.canManageRoles();
+    }
+
+    public static boolean canManageContracts(
+            Player player,
+            Business business
+    ) {
+
+        BusinessRole role =
+                getRole(
+                        player,
+                        business
+                );
+
+        return role != null
+                && role.canManageContracts();
     }
 
     public static boolean canAssignRole(
