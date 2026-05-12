@@ -7,6 +7,8 @@ import fr.moodcraft.business.command.RequestsCommand;
 import fr.moodcraft.business.listener.AlertJoinListener;
 import fr.moodcraft.business.listener.ApplicationChatListener;
 import fr.moodcraft.business.listener.BankGUIListener;
+import fr.moodcraft.business.listener.BusinessActionGUIListener;
+import fr.moodcraft.business.listener.BusinessCreationChatListener;
 import fr.moodcraft.business.listener.BusinessGUIListener;
 import fr.moodcraft.business.listener.ContractChatListener;
 import fr.moodcraft.business.listener.ContractGUIListener;
@@ -74,7 +76,7 @@ public class Main extends JavaPlugin {
                 "§8----- §6✦ §aMood§6Business §6✦ §8-----"
         );
         Bukkit.getConsoleSender().sendMessage(
-                "§a✔ §fRegistre économique chargé."
+                "§a✔ §fBureau des Entreprises chargé."
         );
         Bukkit.getConsoleSender().sendMessage(
                 "§7Service officiel de §aMood§6Craft§7."
@@ -104,7 +106,7 @@ public class Main extends JavaPlugin {
                 "§8----- §6✦ §aMood§6Business §6✦ §8-----"
         );
         Bukkit.getConsoleSender().sendMessage(
-                "§c✘ §fRegistre économique arrêté."
+                "§c✘ §fBureau des Entreprises arrêté."
         );
         Bukkit.getConsoleSender().sendMessage("");
     }
@@ -146,6 +148,16 @@ public class Main extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(
                 new BusinessGUIListener(),
+                this
+        );
+
+        Bukkit.getPluginManager().registerEvents(
+                new BusinessActionGUIListener(),
+                this
+        );
+
+        Bukkit.getPluginManager().registerEvents(
+                new BusinessCreationChatListener(),
                 this
         );
 
