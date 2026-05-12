@@ -2,18 +2,24 @@ package fr.moodcraft.business.manager;
 
 import fr.moodcraft.business.Main;
 
+import fr.moodcraft.business.model.AlertType;
+import fr.moodcraft.business.model.AuditLogType;
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRequest;
 import fr.moodcraft.business.model.Contract;
 import fr.moodcraft.business.model.ContractStatus;
 import fr.moodcraft.business.model.Offer;
+import fr.moodcraft.business.model.TransactionType;
 
 import fr.moodcraft.business.storage.BusinessStorage;
 import fr.moodcraft.business.storage.ContractStorage;
+import fr.moodcraft.business.storage.FinanceStorage;
 
-import fr.moodcraft.business.util.BusinessMessages;
 import fr.moodcraft.business.util.TimeUtil;
 import fr.moodcraft.business.util.VaultHook;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import org.bukkit.entity.Player;
 
@@ -171,6 +177,56 @@ public final class ContractManager {
         );
 
         ContractStorage.add(contract);
+
+        AuditLogManager.log(
+                AuditLogType.CONTRACT_CREATED,
+                client,
+                business.getName(),
+                business,
+                "Contrat sécurisé créé. Brut: "
+                        + VaultHook.format(gross)
+                        + ", taxe prévue: "
+                        + VaultHook.format(taxAmount)
+                        + ", net entreprise: "
+                        + VaultHook.format(net)
+        );
+
+        AlertManager.add(
+                client,
+                AlertType.CONTRACT,
+                "Contrat sécurisé créé",
+                "Les fonds ont été bloqués pour le contrat: "
+                        + request.getTitle()
+                        + ". Montant: "
+                        + VaultHook.format(gross)
+                        + "."
+        );
+
+        AlertManager.add(
+                business.getOwnerUuid(),
+                business.getOwnerName(),
+                AlertType.CONTRACT,
+                "Nouveau contrat",
+                "Un contrat sécurisé a été créé pour "
+                        + business.getName()
+                        + ": "
+                        + request.getTitle()
+                        + "."
+        );
+
+        OfflinePlayer businessActor =
+                Bukkit.getOfflinePlayer(
+                        offer.getSenderUuid()
+                );
+
+        AlertManager.add(
+                businessActor,
+                AlertType.CONTRACT,
+                "Contrat accepté",
+                "Votre offre pour "
+                        + request.getTitle()
+                        + " a été acceptée."
+        );
 
         return ContractResult.success(
                 contract,
@@ -338,6 +394,31 @@ public final class ContractManager {
 
         ContractStorage.save();
 
+        AuditLogManager.log(
+                AuditLogType.CONTRACT_COMPLETED,
+                actor,
+                contract.getClientName(),
+                business,
+                "Contrat marqué comme terminé: "
+                        + contract.getTitle()
+                        + ". Commentaire: "
+                        + safeComment(comment)
+        );
+
+        OfflinePlayer client =
+                Bukkit.getOfflinePlayer(
+                        contract.getClientUuid()
+                );
+
+        AlertManager.add(
+                client,
+                AlertType.CONTRACT,
+                "Contrat terminé",
+                "Le contrat "
+                        + contract.getTitle()
+                        + " est marqué comme terminé. Vous pouvez le valider ou ouvrir un litige."
+        );
+
         return ContractResult.success(
                 contract,
                 "Contrat marqué comme terminé."
@@ -412,6 +493,78 @@ public final class ContractManager {
         BusinessStorage.save();
         ContractStorage.save();
 
+        FinanceStorage.add(
+                business,
+                TransactionType.CONTRAT_VERSEMENT,
+                contract.getNetAmount(),
+                client.getName(),
+                business.getName(),
+                "Versement net du contrat "
+                        + contract.getId()
+        );
+
+        FinanceStorage.add(
+                business,
+                TransactionType.TAXE,
+                contract.getTaxAmount(),
+                "Registre économique",
+                business.getName(),
+                "Taxe économique "
+                        + contract.getTaxRate()
+                        + "% sur le contrat "
+                        + contract.getId()
+        );
+
+        AuditLogManager.log(
+                AuditLogType.CONTRACT_VALIDATED,
+                client,
+                business.getName(),
+                business,
+                "Contrat validé: "
+                        + contract.getTitle()
+                        + ". Brut: "
+                        + VaultHook.format(contract.getGrossAmount())
+                        + ", taxe: "
+                        + VaultHook.format(contract.getTaxAmount())
+                        + ", net entreprise: "
+                        + VaultHook.format(contract.getNetAmount())
+        );
+
+        AlertManager.add(
+                business.getOwnerUuid(),
+                business.getOwnerName(),
+                AlertType.BANK,
+                "Versement contrat",
+                "Le contrat "
+                        + contract.getTitle()
+                        + " a été validé. Net reçu: "
+                        + VaultHook.format(contract.getNetAmount())
+                        + "."
+        );
+
+        OfflinePlayer businessActor =
+                Bukkit.getOfflinePlayer(
+                        contract.getBusinessActorUuid()
+                );
+
+        AlertManager.add(
+                businessActor,
+                AlertType.CONTRACT,
+                "Contrat validé",
+                "Le client a validé le contrat "
+                        + contract.getTitle()
+                        + "."
+        );
+
+        AlertManager.add(
+                client,
+                AlertType.CONTRACT,
+                "Contrat validé",
+                "Vous avez validé le contrat "
+                        + contract.getTitle()
+                        + "."
+        );
+
         return ContractResult.success(
                 contract,
                 "Contrat validé. Paiement versé à l'entreprise."
@@ -475,6 +628,42 @@ public final class ContractManager {
         );
 
         ContractStorage.save();
+
+        AuditLogManager.log(
+                AuditLogType.CONTRACT_LITIGE,
+                actor,
+                contract.getTitle(),
+                business,
+                "Litige ouvert sur contrat. Raison: "
+                        + safeComment(reason)
+        );
+
+        OfflinePlayer clientPlayer =
+                Bukkit.getOfflinePlayer(
+                        contract.getClientUuid()
+                );
+
+        AlertManager.add(
+                clientPlayer,
+                AlertType.LITIGE,
+                "Litige ouvert",
+                "Un litige a été ouvert sur le contrat "
+                        + contract.getTitle()
+                        + "."
+        );
+
+        if (business != null) {
+
+            AlertManager.add(
+                    business.getOwnerUuid(),
+                    business.getOwnerName(),
+                    AlertType.LITIGE,
+                    "Litige ouvert",
+                    "Un litige a été ouvert sur le contrat "
+                            + contract.getTitle()
+                            + "."
+            );
+        }
 
         return ContractResult.success(
                 contract,
@@ -552,74 +741,4 @@ public final class ContractManager {
         }
 
         if (contract.getStatus() == ContractStatus.EN_COURS
-                && contract.getDueAt() > 0
-                && System.currentTimeMillis() > contract.getDueAt()) {
-
-            contract.setStatus(
-                    ContractStatus.EN_RETARD
-            );
-
-            contract.addHistory(
-                    "§8• §cRetard automatique §7Le délai prévu est dépassé."
-            );
-
-            ContractStorage.save();
-        }
-    }
-
-    private static String safeComment(
-            String comment
-    ) {
-
-        if (comment == null || comment.isBlank()) {
-            return "Aucun commentaire.";
-        }
-
-        if (comment.length() > 120) {
-            return comment.substring(0, 120) + "...";
-        }
-
-        return comment;
-    }
-
-    private static void sort(
-            List<Contract> list
-    ) {
-
-        list.sort(
-                Comparator.comparingLong(
-                        Contract::getCreatedAt
-                ).reversed()
-        );
-    }
-
-    public record ContractResult(
-            boolean success,
-            Contract contract,
-            String message
-    ) {
-
-        public static ContractResult success(
-                Contract contract,
-                String message
-        ) {
-
-            return new ContractResult(
-                    true,
-                    contract,
-                    message
-            );
-        }
-
-        public static ContractResult fail(
-                String message
-        ) {
-
-            return new ContractResult(
-                    false,
-                    null,
-                    message
-            );
-        }
-    }
-}
+   
