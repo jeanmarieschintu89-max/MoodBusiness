@@ -1,5 +1,7 @@
 package fr.moodcraft.business.manager;
 
+import fr.moodcraft.business.model.AlertType;
+import fr.moodcraft.business.model.AuditLogType;
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRequest;
 import fr.moodcraft.business.model.Offer;
@@ -8,6 +10,11 @@ import fr.moodcraft.business.model.RequestStatus;
 
 import fr.moodcraft.business.storage.OfferStorage;
 import fr.moodcraft.business.storage.RequestStorage;
+
+import fr.moodcraft.business.util.VaultHook;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import org.bukkit.entity.Player;
 
@@ -129,6 +136,35 @@ public final class OfferManager {
 
             RequestStorage.save();
         }
+
+        AuditLogManager.log(
+                AuditLogType.OFFER_CREATED,
+                player,
+                request.getTitle(),
+                business,
+                "Offre envoyée. Montant: "
+                        + VaultHook.format(amount)
+                        + ", délai: "
+                        + dueDays
+                        + " jour(s)."
+        );
+
+        OfflinePlayer requester =
+                Bukkit.getOfflinePlayer(
+                        request.getCreatorUuid()
+                );
+
+        AlertManager.add(
+                requester,
+                AlertType.OFFER,
+                "Nouvelle offre reçue",
+                business.getName()
+                        + " a proposé "
+                        + VaultHook.format(amount)
+                        + " pour votre demande: "
+                        + request.getTitle()
+                        + "."
+        );
 
         return OfferResult.success(
                 offer,
@@ -265,6 +301,43 @@ public final class OfferManager {
 
         OfferStorage.save();
         RequestStorage.save();
+
+        Business business =
+                BusinessManager.getById(
+                        offer.getBusinessId()
+                );
+
+        AuditLogManager.log(
+                AuditLogType.OFFER_ACCEPTED,
+                player,
+                offer.getBusinessName(),
+                business,
+                "Offre acceptée pour la demande: "
+                        + request.getTitle()
+                        + ". Contrat sécurisé créé."
+        );
+
+        if (business != null) {
+
+            AlertManager.add(
+                    business.getOwnerUuid(),
+                    business.getOwnerName(),
+                    AlertType.CONTRACT,
+                    "Offre acceptée",
+                    "Votre offre pour "
+                            + request.getTitle()
+                            + " a été acceptée. Un contrat sécurisé a été créé."
+            );
+        }
+
+        AlertManager.add(
+                player,
+                AlertType.CONTRACT,
+                "Contrat sécurisé créé",
+                "Les fonds ont été bloqués pour la demande: "
+                        + request.getTitle()
+                        + "."
+        );
 
         return OfferResult.success(
                 offer,
