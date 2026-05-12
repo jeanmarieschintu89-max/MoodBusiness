@@ -3,6 +3,7 @@ package fr.moodcraft.business.gui;
 import fr.moodcraft.business.manager.ContractManager;
 
 import fr.moodcraft.business.model.Contract;
+import fr.moodcraft.business.model.ContractStatus;
 
 import fr.moodcraft.business.util.ItemBuilder;
 import fr.moodcraft.business.util.SafeGUI;
@@ -97,8 +98,8 @@ public final class ContractDetailGUI {
                     new ItemBuilder(Material.GOLD_INGOT)
                             .name("§6✦ §fValider le contrat §6✦")
                             .lore(
-                                    "§7Confirmer que le travail est conforme.",
-                                    "§7Les fonds seront versés à l'entreprise.",
+                                    "§7Confirme que le travail est conforme.",
+                                    "§7Les fonds seront versés à l’entreprise.",
                                     "",
                                     "§7Taxe: §c" + VaultHook.format(contract.getTaxAmount()),
                                     "§7Net entreprise: §a" + VaultHook.format(contract.getNetAmount()),
@@ -121,11 +122,34 @@ public final class ContractDetailGUI {
                             .lore(
                                     "§7Signaler un problème sur ce contrat.",
                                     "§7Les fonds resteront bloqués",
-                                    "§7jusqu'à décision administrative.",
+                                    "§7jusqu’à décision administrative.",
                                     "",
                                     "§c⚖ Procédure sensible"
                             )
                             .action("contract_litige_chat")
+                            .target(contract.getId())
+                            .build()
+            );
+        }
+
+        if (p.hasPermission("moodbusiness.staff.litige")
+                && contract.getStatus() == ContractStatus.LITIGE) {
+
+            SafeGUI.set(
+                    inv,
+                    40,
+                    new ItemBuilder(Material.NETHER_STAR)
+                            .name("§6✦ §fDécision staff §6✦")
+                            .lore(
+                                    "§7Résoudre officiellement le litige.",
+                                    "",
+                                    "§8• §7Payer l’entreprise",
+                                    "§8• §7Rembourser le client",
+                                    "§8• §7Clôturer le dossier",
+                                    "",
+                                    "§cAccès administratif"
+                            )
+                            .action("contract_admin_resolve")
                             .target(contract.getId())
                             .build()
             );
