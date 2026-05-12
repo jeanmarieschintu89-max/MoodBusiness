@@ -1,5 +1,11 @@
 package fr.moodcraft.business.command;
 
+import fr.moodcraft.business.gui.ContractMainGUI;
+
+import fr.moodcraft.business.manager.ContractManager;
+
+import fr.moodcraft.business.model.Contract;
+
 import fr.moodcraft.business.util.BusinessMessages;
 
 import org.bukkit.command.Command;
@@ -7,6 +13,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import org.bukkit.entity.Player;
+
+import java.util.Arrays;
 
 public class ContractCommand implements CommandExecutor {
 
@@ -27,31 +35,175 @@ public class ContractCommand implements CommandExecutor {
             return true;
         }
 
-        BusinessMessages.header(
-                p,
-                "Contrats Officiels"
-        );
+        if (args.length == 0) {
 
-        p.sendMessage("§6✦ §fMes contrats §6✦");
-        p.sendMessage("§7Suivre vos contrats personnels.");
-        p.sendMessage("");
+            ContractMainGUI.open(p);
 
-        p.sendMessage("§6✦ §fContrats d'entreprise §6✦");
-        p.sendMessage("§7Voir les contrats liés à votre entreprise.");
-        p.sendMessage("");
+            return true;
+        }
 
-        p.sendMessage("§6✦ §fSécurité des fonds §6✦");
-        p.sendMessage("§7Les paiements seront bloqués");
-        p.sendMessage("§7jusqu'à validation finale.");
-        p.sendMessage("");
+        String sub =
+                args[0].toLowerCase();
 
-        p.sendMessage("§6✦ §fTaxe économique §6✦");
-        p.sendMessage("§7Taxe prévue: §c20% §7sur les contrats validés.");
-        p.sendMessage("");
+        if (sub.equals("info")
+                && args.length >= 2) {
 
-        p.sendMessage("§8• §7Module complet dans un prochain pack.");
+            Contract contract =
+                    ContractManager.get(args[1]);
 
-        BusinessMessages.footer(p);
+            if (contract == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Contrat Officiel",
+                        "Contrat introuvable."
+                );
+
+                return true;
+            }
+
+            BusinessMessages.header(
+                    p,
+                    "Contrat Officiel"
+            );
+
+            p.sendMessage("§7Titre: §e" + contract.getTitle());
+            p.sendMessage("§7Client: §e" + contract.getClientName());
+            p.sendMessage("§7Entreprise: §b" + contract.getBusinessName());
+            p.sendMessage("§7Statut: " + contract.getStatus().getDisplayName());
+            p.sendMessage("§7Montant brut: §e" + BusinessMessages.money(contract.getGrossAmount()));
+            p.sendMessage("§7Taxe: §c" + BusinessMessages.money(contract.getTaxAmount()));
+            p.sendMessage("§7Net entreprise: §a" + BusinessMessages.money(contract.getNetAmount()));
+            p.sendMessage("§7Fonds bloqués: §e" + BusinessMessages.money(contract.getEscrowAmount()));
+
+            BusinessMessages.footer(p);
+
+            return true;
+        }
+
+        if (sub.equals("terminer")
+                && args.length >= 2) {
+
+            Contract contract =
+                    ContractManager.get(args[1]);
+
+            String comment =
+                    args.length >= 3
+                            ? String.join(
+                            " ",
+                            Arrays.copyOfRange(
+                                    args,
+                                    2,
+                                    args.length
+                            )
+                    )
+                            : "Travail terminé.";
+
+            ContractManager.ContractResult result =
+                    ContractManager.complete(
+                            p,
+                            contract,
+                            comment
+                    );
+
+            if (!result.success()) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Contrat Officiel",
+                        result.message()
+                );
+
+                return true;
+            }
+
+            BusinessMessages.success(
+                    p,
+                    "Contrat Officiel",
+                    result.message()
+            );
+
+            return true;
+        }
+
+        if (sub.equals("valider")
+                && args.length >= 2) {
+
+            Contract contract =
+                    ContractManager.get(args[1]);
+
+            ContractManager.ContractResult result =
+                    ContractManager.validate(
+                            p,
+                            contract
+                    );
+
+            if (!result.success()) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Contrat Officiel",
+                        result.message()
+                );
+
+                return true;
+            }
+
+            BusinessMessages.success(
+                    p,
+                    "Contrat Officiel",
+                    result.message()
+            );
+
+            return true;
+        }
+
+        if (sub.equals("litige")
+                && args.length >= 2) {
+
+            Contract contract =
+                    ContractManager.get(args[1]);
+
+            String reason =
+                    args.length >= 3
+                            ? String.join(
+                            " ",
+                            Arrays.copyOfRange(
+                                    args,
+                                    2,
+                                    args.length
+                            )
+                    )
+                            : "Litige ouvert sans précision.";
+
+            ContractManager.ContractResult result =
+                    ContractManager.openLitige(
+                            p,
+                            contract,
+                            reason
+                    );
+
+            if (!result.success()) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Litige Économique",
+                        result.message()
+                );
+
+                return true;
+            }
+
+            BusinessMessages.success(
+                    p,
+                    "Litige Économique",
+                    result.message()
+            );
+
+            return true;
+        }
+
+        ContractMainGUI.open(p);
 
         return true;
     }
