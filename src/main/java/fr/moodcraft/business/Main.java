@@ -15,6 +15,7 @@ import fr.moodcraft.business.listener.BusinessGUIListener;
 import fr.moodcraft.business.listener.ContractChatListener;
 import fr.moodcraft.business.listener.ContractGUIListener;
 import fr.moodcraft.business.listener.PayrollChatListener;
+import fr.moodcraft.business.listener.RecruitmentChatListener;
 import fr.moodcraft.business.listener.RequestChatListener;
 import fr.moodcraft.business.listener.RequestGUIListener;
 
@@ -58,10 +59,6 @@ public class Main extends JavaPlugin {
 
         VaultHook.setup();
 
-        //
-        // 💾 STORAGE
-        //
-
         BusinessStorage.init();
         ApplicationStorage.init();
         RequestStorage.init();
@@ -72,28 +69,12 @@ public class Main extends JavaPlugin {
         AuditLogStorage.init();
         AlertStorage.init();
 
-        //
-        // 🧠 MANAGERS
-        //
-
         BusinessManager.init();
-
-        //
-        // ⚙️ COMMANDES + LISTENERS
-        //
 
         registerCommands();
         registerListeners();
 
-        //
-        // 💰 PAIE MENSUELLE
-        //
-
         PayrollManager.startTask();
-
-        //
-        // 🧾 LOG SYSTEME
-        //
 
         AuditLogManager.system(
                 "MoodBusiness chargé."
@@ -118,10 +99,6 @@ public class Main extends JavaPlugin {
         AuditLogManager.system(
                 "MoodBusiness arrêté."
         );
-
-        //
-        // 💾 SAVE
-        //
 
         BusinessStorage.save();
         ApplicationStorage.save();
@@ -178,10 +155,6 @@ public class Main extends JavaPlugin {
 
     private void registerListeners() {
 
-        //
-        // 🏢 ENTREPRISES
-        //
-
         Bukkit.getPluginManager().registerEvents(
                 new BusinessGUIListener(),
                 this
@@ -202,18 +175,15 @@ public class Main extends JavaPlugin {
                 this
         );
 
-        //
-        // 📨 CANDIDATURES
-        //
+        Bukkit.getPluginManager().registerEvents(
+                new RecruitmentChatListener(),
+                this
+        );
 
         Bukkit.getPluginManager().registerEvents(
                 new ApplicationChatListener(),
                 this
         );
-
-        //
-        // 📋 DEMANDES / OFFRES
-        //
 
         Bukkit.getPluginManager().registerEvents(
                 new RequestGUIListener(),
@@ -225,10 +195,6 @@ public class Main extends JavaPlugin {
                 this
         );
 
-        //
-        // 📜 CONTRATS
-        //
-
         Bukkit.getPluginManager().registerEvents(
                 new ContractGUIListener(),
                 this
@@ -238,10 +204,6 @@ public class Main extends JavaPlugin {
                 new ContractChatListener(),
                 this
         );
-
-        //
-        // 💰 BANQUE ENTREPRISE
-        //
 
         Bukkit.getPluginManager().registerEvents(
                 new BankGUIListener(),
@@ -253,18 +215,10 @@ public class Main extends JavaPlugin {
                 this
         );
 
-        //
-        // 🧾 PAIE MENSUELLE
-        //
-
         Bukkit.getPluginManager().registerEvents(
                 new PayrollChatListener(),
                 this
         );
-
-        //
-        // 🔔 ALERTES
-        //
 
         Bukkit.getPluginManager().registerEvents(
                 new AlertJoinListener(),
