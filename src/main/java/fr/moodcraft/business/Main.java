@@ -8,6 +8,7 @@ import fr.moodcraft.business.listener.AlertJoinListener;
 import fr.moodcraft.business.listener.ApplicationChatListener;
 import fr.moodcraft.business.listener.BankChatListener;
 import fr.moodcraft.business.listener.BankGUIListener;
+import fr.moodcraft.business.listener.BusinessAdminGUIListener;
 import fr.moodcraft.business.listener.BusinessCreationChatListener;
 import fr.moodcraft.business.listener.BusinessDissolveGUIListener;
 import fr.moodcraft.business.listener.BusinessGUIListener;
@@ -42,6 +43,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Main extends JavaPlugin {
 
     private static Main instance;
+
+    public static Main getInstance() {
+
+        return instance;
+    }
 
     @Override
     public void onEnable() {
@@ -191,6 +197,11 @@ public class Main extends JavaPlugin {
                 this
         );
 
+        Bukkit.getPluginManager().registerEvents(
+                new BusinessAdminGUIListener(),
+                this
+        );
+
         //
         // 📨 CANDIDATURES
         //
@@ -259,10 +270,5 @@ public class Main extends JavaPlugin {
                 new AlertJoinListener(),
                 this
         );
-    }
-
-    public static Main getInstance() {
-
-        return instance;
     }
 }
