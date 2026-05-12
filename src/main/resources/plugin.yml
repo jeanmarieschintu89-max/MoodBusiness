@@ -1,0 +1,65 @@
+name: MoodBusiness
+version: 1.0.0
+main: fr.moodcraft.business.Main
+api-version: '1.21'
+author: MoodCraft
+
+depend:
+  - Vault
+
+softdepend:
+  - Towny
+  - MoodAuth
+  - MoodCraftBridge
+  - MoodTownMenu
+
+commands:
+  entreprise:
+    description: Ouvre le registre économique des entreprises MoodCraft.
+    aliases:
+      - business
+      - company
+      - societe
+      - société
+    usage: /entreprise
+
+  demandes:
+    description: Ouvre les demandes économiques MoodCraft.
+    aliases:
+      - demande
+      - requests
+      - request
+    usage: /demandes
+
+  contrat:
+    description: Ouvre les contrats officiels MoodCraft.
+    aliases:
+      - contrats
+      - contract
+      - contracts
+    usage: /contrat
+
+permissions:
+  moodbusiness.create:
+    description: Permet de créer une entreprise.
+    default: true
+
+  moodbusiness.staff:
+    description: Accès au menu staff MoodBusiness.
+    default: op
+
+  moodbusiness.staff.suspend:
+    description: Permet de suspendre ou réactiver une entreprise.
+    default: op
+
+  moodbusiness.staff.litige:
+    description: Permet de gérer les litiges économiques.
+    default: op
+
+  moodbusiness.staff.tax:
+    description: Permet de consulter l'historique fiscal.
+    default: op
+
+  moodbusiness.bypass:
+    description: Ignore certaines limites anti-abus.
+    default: op
