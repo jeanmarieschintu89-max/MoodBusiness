@@ -162,9 +162,8 @@ public final class BusinessStorage {
                                 createdAt
                         );
 
-                business.setUpdatedAt(updatedAt);
-
                 business.getMembers().clear();
+                business.getMemberNames().clear();
 
                 ConfigurationSection members =
                         config.getConfigurationSection(
@@ -180,18 +179,49 @@ public final class BusinessStorage {
                             UUID uuid =
                                     UUID.fromString(uuidText);
 
-                            BusinessRole role =
-                                    parseRole(
-                                            config.getString(
-                                                    path
-                                                            + "members."
-                                                            + uuidText,
-                                                    "EMPLOYE"
-                                            )
-                                    );
+                            String memberPath =
+                                    path
+                                            + "members."
+                                            + uuidText;
 
-                            business.setRole(
+                            BusinessRole role;
+                            String memberName;
+
+                            if (config.isConfigurationSection(memberPath)) {
+
+                                role =
+                                        parseRole(
+                                                config.getString(
+                                                        memberPath + ".role",
+                                                        "EMPLOYE"
+                                                )
+                                        );
+
+                                memberName =
+                                        config.getString(
+                                                memberPath + ".name",
+                                                "Inconnu"
+                                        );
+
+                            } else {
+
+                                role =
+                                        parseRole(
+                                                config.getString(
+                                                        memberPath,
+                                                        "EMPLOYE"
+                                                )
+                                        );
+
+                                memberName =
+                                        uuid.equals(owner)
+                                                ? ownerName
+                                                : "Inconnu";
+                            }
+
+                            business.addMember(
                                     uuid,
+                                    memberName,
                                     role
                             );
 
@@ -201,11 +231,14 @@ public final class BusinessStorage {
 
                 if (!business.getMembers().containsKey(owner)) {
 
-                    business.setRole(
+                    business.addMember(
                             owner,
+                            ownerName,
                             BusinessRole.DIRIGEANT
                     );
                 }
+
+                business.setUpdatedAt(updatedAt);
 
                 businesses.put(
                         id,
@@ -340,10 +373,22 @@ public final class BusinessStorage {
             for (Map.Entry<UUID, BusinessRole> entry :
                     business.getMembers().entrySet()) {
 
+                UUID uuid =
+                        entry.getKey();
+
                 config.set(
                         path
                                 + "members."
-                                + entry.getKey(),
+                                + uuid
+                                + ".name",
+                        business.getMemberName(uuid)
+                );
+
+                config.set(
+                        path
+                                + "members."
+                                + uuid
+                                + ".role",
                         entry.getValue().name()
                 );
             }
