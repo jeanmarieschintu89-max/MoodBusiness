@@ -4,9 +4,12 @@ import fr.moodcraft.business.command.BusinessCommand;
 import fr.moodcraft.business.command.ContractCommand;
 import fr.moodcraft.business.command.RequestsCommand;
 
+import fr.moodcraft.business.listener.ApplicationChatListener;
 import fr.moodcraft.business.listener.BusinessGUIListener;
 
 import fr.moodcraft.business.manager.BusinessManager;
+
+import fr.moodcraft.business.storage.ApplicationStorage;
 import fr.moodcraft.business.storage.BusinessStorage;
 
 import fr.moodcraft.business.util.VaultHook;
@@ -31,6 +34,8 @@ public class Main extends JavaPlugin {
         VaultHook.setup();
 
         BusinessStorage.init();
+        ApplicationStorage.init();
+
         BusinessManager.init();
 
         registerCommands();
@@ -53,6 +58,7 @@ public class Main extends JavaPlugin {
     public void onDisable() {
 
         BusinessStorage.save();
+        ApplicationStorage.save();
 
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage(
@@ -101,6 +107,11 @@ public class Main extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(
                 new BusinessGUIListener(),
+                this
+        );
+
+        Bukkit.getPluginManager().registerEvents(
+                new ApplicationChatListener(),
                 this
         );
     }
