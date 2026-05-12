@@ -32,7 +32,7 @@ public final class BusinessStaffGUI {
 
         SafeGUI.set(
                 inv,
-                20,
+                19,
                 new ItemBuilder(Material.LIME_BANNER)
                         .name("§6✦ §fEntreprises actives §6✦")
                         .lore(
@@ -47,7 +47,7 @@ public final class BusinessStaffGUI {
 
         SafeGUI.set(
                 inv,
-                22,
+                21,
                 new ItemBuilder(Material.CLOCK)
                         .name("§6✦ §fEntreprises récentes §6✦")
                         .lore(
@@ -62,7 +62,7 @@ public final class BusinessStaffGUI {
 
         SafeGUI.set(
                 inv,
-                24,
+                23,
                 new ItemBuilder(Material.RED_BANNER)
                         .name("§6✦ §fEntreprises suspendues §6✦")
                         .lore(
@@ -77,16 +77,32 @@ public final class BusinessStaffGUI {
 
         SafeGUI.set(
                 inv,
-                31,
+                25,
                 new ItemBuilder(Material.ANVIL)
                         .name("§6✦ §fLitiges économiques §6✦")
                         .lore(
-                                "§7Les litiges arriveront avec",
-                                "§7le module contrats sécurisés.",
+                                "§7Consulter les contrats en litige.",
+                                "§7Les fonds restent bloqués",
+                                "§7jusqu'à décision administrative.",
                                 "",
-                                "§8• §7Bientôt disponible."
+                                "§cAccès staff"
                         )
-                        .action("coming_soon")
+                        .action("contract_litige_list")
+                        .build()
+        );
+
+        SafeGUI.set(
+                inv,
+                31,
+                new ItemBuilder(Material.WRITABLE_BOOK)
+                        .name("§6✦ §fHistorique administratif §6✦")
+                        .lore(
+                                "§7Voir les dernières actions",
+                                "§7du Registre Économique.",
+                                "",
+                                "§eAudit central"
+                        )
+                        .action("audit_logs")
                         .build()
         );
 
