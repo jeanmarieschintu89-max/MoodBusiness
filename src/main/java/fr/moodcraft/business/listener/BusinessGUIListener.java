@@ -1,12 +1,15 @@
 package fr.moodcraft.business.listener;
 
+import fr.moodcraft.business.gui.BusinessEmployeesGUI;
 import fr.moodcraft.business.gui.BusinessListGUI;
 import fr.moodcraft.business.gui.BusinessMainGUI;
+import fr.moodcraft.business.gui.BusinessRoleAssignGUI;
 import fr.moodcraft.business.gui.BusinessStaffGUI;
 
 import fr.moodcraft.business.manager.BusinessManager;
 
 import fr.moodcraft.business.model.Business;
+import fr.moodcraft.business.model.BusinessRole;
 
 import fr.moodcraft.business.util.BusinessMessages;
 import fr.moodcraft.business.util.ItemBuilder;
@@ -21,6 +24,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 import org.bukkit.inventory.ItemStack;
+
+import java.util.UUID;
 
 public class BusinessGUIListener implements Listener {
 
@@ -133,6 +138,79 @@ public class BusinessGUIListener implements Listener {
                 );
             }
 
+            case "open_employees" -> {
+
+                Business business =
+                        BusinessManager.getByName(
+                                target
+                        );
+
+                if (business == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Employés Entreprise",
+                            "Entreprise introuvable."
+                    );
+
+                    return;
+                }
+
+                if (!BusinessManager.canSeeEmployees(
+                        p,
+                        business
+                )) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Employés Entreprise",
+                            "Vous n'appartenez pas à cette entreprise."
+                    );
+
+                    return;
+                }
+
+                BusinessEmployeesGUI.open(
+                        p,
+                        business
+                );
+            }
+
+            case "employee_manage" ->
+                    openRoleManager(
+                            p,
+                            target
+                    );
+
+            case "assign_role" ->
+                    assignRole(
+                            p,
+                            target
+                    );
+
+            case "employee_recruit_help" -> {
+
+                p.closeInventory();
+
+                BusinessMessages.header(
+                        p,
+                        "Employés Entreprise"
+                );
+
+                p.sendMessage("§fRecruter un membre.");
+                p.sendMessage("§7Commande: §e/entreprise recruter <joueur> [role]");
+                p.sendMessage("");
+                p.sendMessage("§7Rôles possibles:");
+                p.sendMessage("§8• §eStagiaire");
+                p.sendMessage("§8• §eApprenti");
+                p.sendMessage("§8• §eEmploye");
+                p.sendMessage("§8• §eTresorier");
+                p.sendMessage("§8• §eResponsable");
+                p.sendMessage("§8• §eGerant §7(dirigeant seulement)");
+
+                BusinessMessages.footer(p);
+            }
+
             case "list_prev", "list_next" ->
                     openListTarget(
                             p,
@@ -177,7 +255,149 @@ public class BusinessGUIListener implements Listener {
                 || title.equals(BusinessStaffGUI.TITLE)
                 || title.equals(BusinessListGUI.TITLE_ACTIVE)
                 || title.equals(BusinessListGUI.TITLE_RECENT)
-                || title.equals(BusinessListGUI.TITLE_SUSPENDED);
+                || title.equals(BusinessListGUI.TITLE_SUSPENDED)
+                || title.equals(BusinessEmployeesGUI.TITLE)
+                || title.equals(BusinessRoleAssignGUI.TITLE);
+    }
+
+    private void openRoleManager(
+            Player p,
+            String target
+    ) {
+
+        if (target == null || !target.contains(":")) {
+            return;
+        }
+
+        String[] split =
+                target.split(":");
+
+        if (split.length < 2) {
+            return;
+        }
+
+        Business business =
+                BusinessManager.getByName(
+                        split[0]
+                );
+
+        if (business == null) {
+            return;
+        }
+
+        UUID targetUuid;
+
+        try {
+
+            targetUuid =
+                    UUID.fromString(split[1]);
+
+        } catch (Exception e) {
+
+            return;
+        }
+
+        if (!BusinessManager.canManageRoles(
+                p,
+                business
+        )) {
+
+            BusinessMessages.deny(
+                    p,
+                    "Rôles Entreprise",
+                    "Vous ne pouvez pas modifier les rôles."
+            );
+
+            return;
+        }
+
+        BusinessRoleAssignGUI.open(
+                p,
+                business,
+                targetUuid
+        );
+    }
+
+    private void assignRole(
+            Player p,
+            String target
+    ) {
+
+        if (target == null || !target.contains(":")) {
+            return;
+        }
+
+        String[] split =
+                target.split(":");
+
+        if (split.length < 3) {
+            return;
+        }
+
+        Business business =
+                BusinessManager.getByName(
+                        split[0]
+                );
+
+        if (business == null) {
+            return;
+        }
+
+        UUID targetUuid;
+
+        try {
+
+            targetUuid =
+                    UUID.fromString(split[1]);
+
+        } catch (Exception e) {
+
+            return;
+        }
+
+        BusinessRole role;
+
+        try {
+
+            role =
+                    BusinessRole.valueOf(split[2]);
+
+        } catch (Exception e) {
+
+            return;
+        }
+
+        BusinessManager.ActionResult result =
+                BusinessManager.assignRole(
+                        p,
+                        business,
+                        targetUuid,
+                        role
+                );
+
+        if (!result.success()) {
+
+            BusinessMessages.deny(
+                    p,
+                    "Rôles Entreprise",
+                    result.message()
+            );
+
+            return;
+        }
+
+        p.closeInventory();
+
+        BusinessMessages.success(
+                p,
+                "Rôles Entreprise",
+                result.message()
+        );
+
+        BusinessEmployeesGUI.open(
+                p,
+                business
+        );
     }
 
     private void openListTarget(
