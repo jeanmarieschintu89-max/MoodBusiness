@@ -450,9 +450,7 @@ public class BusinessGUIListener implements Listener {
                         "Entretien demandé pour §e"
                                 + application.getApplicantName()
                 );
-            }
-
-            case "application_refuse" -> {
+            }case "application_refuse" -> {
 
                 Application application =
                         ApplicationManager.get(
@@ -751,4 +749,89 @@ public class BusinessGUIListener implements Listener {
                 BusinessManager.assignRole(
                         p,
                         business,
-                        ta
+                        targetUuid,
+                        role
+                );
+
+        if (!result.success()) {
+
+            BusinessMessages.deny(
+                    p,
+                    "Rôles Entreprise",
+                    result.message()
+            );
+
+            return;
+        }
+
+        p.closeInventory();
+
+        BusinessMessages.success(
+                p,
+                "Rôles Entreprise",
+                result.message()
+        );
+
+        BusinessEmployeesGUI.open(
+                p,
+                business
+        );
+    }
+
+    private void openListTarget(
+            Player p,
+            String target
+    ) {
+
+        if (target == null || !target.contains(":")) {
+            return;
+        }
+
+        String[] split =
+                target.split(":");
+
+        if (split.length < 2) {
+            return;
+        }
+
+        String type =
+                split[0];
+
+        int page;
+
+        try {
+
+            page =
+                    Integer.parseInt(
+                            split[1]
+                    );
+
+        } catch (Exception e) {
+
+            page = 1;
+        }
+
+        switch (type) {
+
+            case "ACTIVE" ->
+                    BusinessListGUI.openActive(
+                            p,
+                            page
+                    );
+
+            case "RECENT" ->
+                    BusinessListGUI.openRecent(
+                            p,
+                            page
+                    );
+
+            case "SUSPENDUE" ->
+                    BusinessListGUI.openSuspended(
+                            p,
+                            page
+                    );
+
+            default -> {}
+        }
+    }
+}
