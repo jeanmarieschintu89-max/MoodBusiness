@@ -7,6 +7,7 @@ import fr.moodcraft.business.gui.BusinessPayrollGUI;
 import fr.moodcraft.business.manager.BusinessManager;
 
 import fr.moodcraft.business.model.Business;
+import fr.moodcraft.business.model.BusinessRole;
 
 import fr.moodcraft.business.util.BusinessMessages;
 import fr.moodcraft.business.util.ItemBuilder;
@@ -150,21 +151,60 @@ public class BankGUIListener implements Listener {
                 BusinessMessages.footer(p);
             }
 
-            case "payroll_salary_help" -> {
+            case "payroll_salary_input" -> {
 
-                p.closeInventory();
+                if (target == null || !target.contains(":")) {
+                    return;
+                }
 
-                BusinessMessages.header(
+                String[] split =
+                        target.split(":");
+
+                if (split.length < 2) {
+                    return;
+                }
+
+                Business business =
+                        BusinessManager.getById(
+                                split[0]
+                        );
+
+                if (business == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Paie Entreprise",
+                            "Entreprise introuvable."
+                    );
+
+                    return;
+                }
+
+                BusinessRole role;
+
+                try {
+
+                    role =
+                            BusinessRole.valueOf(
+                                    split[1]
+                            );
+
+                } catch (Exception ex) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Paie Entreprise",
+                            "Rôle invalide."
+                    );
+
+                    return;
+                }
+
+                PayrollChatListener.start(
                         p,
-                        "Paie Entreprise"
+                        business,
+                        role
                 );
-
-                p.sendMessage("§fConfigurer un salaire mensuel.");
-                p.sendMessage("§7Commande: §e/entreprise salaire <role> <montant>");
-                p.sendMessage("§8Exemple: §e/entreprise salaire employe 4000");
-                p.sendMessage("§7Rôles: stagiaire, apprenti, employe, responsable, tresorier, gerant");
-
-                BusinessMessages.footer(p);
             }
 
             case "payroll_run_help" -> {
@@ -201,6 +241,7 @@ public class BankGUIListener implements Listener {
                 || action.equals("bank_withdraw_help")
                 || action.equals("bank_prime_help")
                 || action.equals("payroll_salary_help")
+                || action.equals("payroll_salary_input")
                 || action.equals("payroll_run_help")
                 || action.equals("back_main");
     }
