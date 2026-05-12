@@ -141,7 +141,7 @@ public final class BusinessMainGUI {
                                     "§7Contrats sécurisés, délais,",
                                     "§7fonds bloqués et litiges.",
                                     "",
-                                    "§8• §7Module prévu après les rôles."
+                                    "§8• §7Module prévu au Pack 6."
                             )
                             .action("coming_soon")
                             .build()
@@ -172,9 +172,9 @@ public final class BusinessMainGUI {
                                 "§7Créer ou consulter des demandes",
                                 "§7publiques pour les entreprises.",
                                 "",
-                                "§8• §7Bientôt disponible."
+                                "§a✔ Ouvrir le registre"
                         )
-                        .action("coming_soon")
+                        .action("open_requests")
                         .build()
         );
 
