@@ -23,7 +23,7 @@ import java.util.UUID;
 public final class BusinessEmployeesGUI {
 
     public static final String TITLE =
-            "§8✦ §6Employés Entreprise §8✦";
+            "§8✦ §6Employés §8✦";
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -58,16 +58,15 @@ public final class BusinessEmployeesGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §f" + business.getName() + " §6✦")
+                        .name("§6✦ §f" + shortText(business.getName(), 20))
                         .lore(
-                                "§7Membres enregistrés: §e"
-                                        + business.getMembers().size(),
+                                "§7Membres: §e" + business.getMembers().size(),
                                 "§7Gestion: "
                                         + (canManage
-                                        ? "§aAutorisée"
-                                        : "§cLecture seule"),
+                                        ? "§aOui"
+                                        : "§cNon"),
                                 "",
-                                "§8• §7Service officiel de §aMood§6Craft§7."
+                                "§8• §7Bureau des Entreprises"
                         )
                         .build()
         );
@@ -106,21 +105,22 @@ public final class BusinessEmployeesGUI {
             List<String> lore =
                     new ArrayList<>();
 
-            lore.add("§7Rôle actuel: " + role.getDisplayName());
-            lore.add("§7UUID: §8" + uuid);
-            lore.add("");
+            lore.add("§7Rôle: " + role.getDisplayName());
 
             if (business.isOwner(uuid)) {
 
-                lore.add("§8• §7Dirigeant officiel de l'entreprise.");
+                lore.add("");
+                lore.add("§8• §7Dirigeant officiel");
 
             } else if (canManage) {
 
-                lore.add("§eClique pour modifier le rôle.");
+                lore.add("");
+                lore.add("§eClique pour modifier");
 
             } else {
 
-                lore.add("§8• §7Consultation uniquement.");
+                lore.add("");
+                lore.add("§8• §7Lecture seule");
             }
 
             SafeGUI.set(
@@ -129,8 +129,10 @@ public final class BusinessEmployeesGUI {
                     new ItemBuilder(icon)
                             .name(
                                     "§6✦ §f"
-                                            + business.getMemberName(uuid)
-                                            + " §6✦"
+                                            + shortText(
+                                            business.getMemberName(uuid),
+                                            18
+                                    )
                             )
                             .lore(
                                     lore.toArray(new String[0])
@@ -153,14 +155,20 @@ public final class BusinessEmployeesGUI {
                 new ItemBuilder(Material.EMERALD)
                         .name("§6✦ §fRecruter §6✦")
                         .lore(
-                                "§7Ajouter un joueur dans l'entreprise.",
+                                "§7Ajouter un membre.",
                                 "",
-                                "§eCommande:",
-                                "§f/entreprise recruter <joueur> [role]",
+                                "§8• §7Pseudo dans le chat",
+                                "§8• §7Rôle dans le chat",
                                 "",
-                                "§8• §7Par défaut: §eStagiaire"
+                                canManage
+                                        ? "§a✔ Cliquer pour saisir"
+                                        : "§cAccès refusé"
                         )
-                        .action("employee_recruit_help")
+                        .action(
+                                canManage
+                                        ? "employee_recruit_chat"
+                                        : "coming_soon"
+                        )
                         .target(business.getId())
                         .build()
         );
@@ -171,12 +179,33 @@ public final class BusinessEmployeesGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au menu entreprise."
+                                "§7Gestion entreprise"
                         )
-                        .action("back_main")
+                        .action("open_business_dashboard")
+                        .target(business.getId())
                         .build()
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 }
