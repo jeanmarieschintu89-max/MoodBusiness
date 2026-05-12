@@ -2,6 +2,7 @@ package fr.moodcraft.business.listener;
 
 import fr.moodcraft.business.Main;
 
+import fr.moodcraft.business.manager.BusinessBankManager;
 import fr.moodcraft.business.manager.BusinessManager;
 import fr.moodcraft.business.manager.PayrollManager;
 
@@ -40,7 +41,7 @@ public class PayrollChatListener
             return;
         }
 
-        if (!PayrollManager.canConfigurePayroll(
+        if (!BusinessBankManager.canConfigurePayroll(
                 p,
                 business
         )) {
@@ -168,6 +169,17 @@ public class PayrollChatListener
             return;
         }
 
+        if (amount < 0) {
+
+            BusinessMessages.deny(
+                    p,
+                    "Paie Entreprise",
+                    "Le salaire ne peut pas être négatif."
+            );
+
+            return;
+        }
+
         Business business =
                 BusinessManager.getById(
                         draft.businessId
@@ -188,9 +200,26 @@ public class PayrollChatListener
             return;
         }
 
+        if (!BusinessBankManager.canConfigurePayroll(
+                p,
+                business
+        )) {
+
+            DRAFTS.remove(
+                    p.getUniqueId()
+            );
+
+            BusinessMessages.deny(
+                    p,
+                    "Paie Entreprise",
+                    "Seul le dirigeant peut configurer les salaires."
+            );
+
+            return;
+        }
+
         PayrollManager.PayrollResult result =
                 PayrollManager.setSalary(
-                        p,
                         business,
                         draft.role,
                         amount
@@ -240,8 +269,11 @@ public class PayrollChatListener
                 BusinessRole role
         ) {
 
-            this.businessId = businessId;
-            this.role = role;
+            this.businessId =
+                    businessId;
+
+            this.role =
+                    role;
         }
     }
 }
