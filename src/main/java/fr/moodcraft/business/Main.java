@@ -6,6 +6,8 @@ import fr.moodcraft.business.command.RequestsCommand;
 
 import fr.moodcraft.business.listener.ApplicationChatListener;
 import fr.moodcraft.business.listener.BusinessGUIListener;
+import fr.moodcraft.business.listener.ContractChatListener;
+import fr.moodcraft.business.listener.ContractGUIListener;
 import fr.moodcraft.business.listener.RequestChatListener;
 import fr.moodcraft.business.listener.RequestGUIListener;
 
@@ -13,6 +15,7 @@ import fr.moodcraft.business.manager.BusinessManager;
 
 import fr.moodcraft.business.storage.ApplicationStorage;
 import fr.moodcraft.business.storage.BusinessStorage;
+import fr.moodcraft.business.storage.ContractStorage;
 import fr.moodcraft.business.storage.OfferStorage;
 import fr.moodcraft.business.storage.RequestStorage;
 
@@ -41,6 +44,7 @@ public class Main extends JavaPlugin {
         ApplicationStorage.init();
         RequestStorage.init();
         OfferStorage.init();
+        ContractStorage.init();
 
         BusinessManager.init();
 
@@ -67,6 +71,7 @@ public class Main extends JavaPlugin {
         ApplicationStorage.save();
         RequestStorage.save();
         OfferStorage.save();
+        ContractStorage.save();
 
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage(
@@ -130,6 +135,16 @@ public class Main extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(
                 new RequestChatListener(),
+                this
+        );
+
+        Bukkit.getPluginManager().registerEvents(
+                new ContractGUIListener(),
+                this
+        );
+
+        Bukkit.getPluginManager().registerEvents(
+                new ContractChatListener(),
                 this
         );
     }
