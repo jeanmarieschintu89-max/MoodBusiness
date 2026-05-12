@@ -2,9 +2,11 @@ package fr.moodcraft.business.manager;
 
 import fr.moodcraft.business.Main;
 
+import fr.moodcraft.business.model.AlertType;
 import fr.moodcraft.business.model.Application;
 import fr.moodcraft.business.model.ApplicationStatus;
 import fr.moodcraft.business.model.ApplicationType;
+import fr.moodcraft.business.model.AuditLogType;
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRole;
 
@@ -12,6 +14,9 @@ import fr.moodcraft.business.storage.ApplicationStorage;
 import fr.moodcraft.business.storage.BusinessStorage;
 
 import fr.moodcraft.business.util.TimeUtil;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import org.bukkit.entity.Player;
 
@@ -119,6 +124,26 @@ public final class ApplicationManager {
                 );
 
         ApplicationStorage.add(application);
+
+        AuditLogManager.log(
+                AuditLogType.APPLICATION_CREATED,
+                player,
+                business.getName(),
+                business,
+                "Candidature envoyée: "
+                        + type.getDisplayName()
+        );
+
+        AlertManager.add(
+                business.getOwnerUuid(),
+                business.getOwnerName(),
+                AlertType.APPLICATION,
+                "Nouvelle candidature",
+                player.getName()
+                        + " a envoyé une candidature pour "
+                        + business.getName()
+                        + "."
+        );
 
         return ApplicationResult.success(
                 application,
@@ -269,6 +294,11 @@ public final class ApplicationManager {
             );
         }
 
+        Business business =
+                BusinessManager.getById(
+                        application.getBusinessId()
+                );
+
         application.setStatus(
                 ApplicationStatus.ENTRETIEN
         );
@@ -282,6 +312,28 @@ public final class ApplicationManager {
         );
 
         ApplicationStorage.save();
+
+        AuditLogManager.log(
+                AuditLogType.APPLICATION_UPDATED,
+                actor,
+                application.getApplicantName(),
+                business,
+                "Entretien demandé pour une candidature."
+        );
+
+        OfflinePlayer applicant =
+                Bukkit.getOfflinePlayer(
+                        application.getApplicantUuid()
+                );
+
+        AlertManager.add(
+                applicant,
+                AlertType.APPLICATION,
+                "Entretien demandé",
+                business != null
+                        ? "L'entreprise " + business.getName() + " souhaite un entretien."
+                        : "Une entreprise souhaite un entretien."
+        );
 
         return ApplicationResult.success(
                 application,
@@ -312,6 +364,11 @@ public final class ApplicationManager {
             );
         }
 
+        Business business =
+                BusinessManager.getById(
+                        application.getBusinessId()
+                );
+
         application.setStatus(
                 ApplicationStatus.REFUSEE
         );
@@ -327,6 +384,29 @@ public final class ApplicationManager {
         );
 
         ApplicationStorage.save();
+
+        AuditLogManager.log(
+                AuditLogType.APPLICATION_UPDATED,
+                actor,
+                application.getApplicantName(),
+                business,
+                "Candidature refusée. Raison: "
+                        + application.getDecisionReason()
+        );
+
+        OfflinePlayer applicant =
+                Bukkit.getOfflinePlayer(
+                        application.getApplicantUuid()
+                );
+
+        AlertManager.add(
+                applicant,
+                AlertType.APPLICATION,
+                "Candidature refusée",
+                business != null
+                        ? "Votre candidature chez " + business.getName() + " a été refusée."
+                        : "Votre candidature a été refusée."
+        );
 
         return ApplicationResult.success(
                 application,
@@ -358,7 +438,7 @@ public final class ApplicationManager {
         }
 
         Business business =
-                BusinessManager.getByName(
+                BusinessManager.getById(
                         application.getBusinessId()
                 );
 
@@ -416,6 +496,40 @@ public final class ApplicationManager {
         BusinessStorage.save();
         ApplicationStorage.save();
 
+        AuditLogManager.log(
+                AuditLogType.APPLICATION_UPDATED,
+                actor,
+                application.getApplicantName(),
+                business,
+                "Candidature acceptée avec rôle: "
+                        + role.getDisplayName()
+        );
+
+        AuditLogManager.log(
+                AuditLogType.MEMBER_ADDED,
+                actor,
+                application.getApplicantName(),
+                business,
+                "Membre ajouté depuis une candidature avec rôle: "
+                        + role.getDisplayName()
+        );
+
+        OfflinePlayer applicant =
+                Bukkit.getOfflinePlayer(
+                        application.getApplicantUuid()
+                );
+
+        AlertManager.add(
+                applicant,
+                AlertType.APPLICATION,
+                "Candidature acceptée",
+                "Vous avez rejoint "
+                        + business.getName()
+                        + " avec le rôle "
+                        + role.getDisplayName()
+                        + "."
+        );
+
         return ApplicationResult.success(
                 application,
                 "Candidature acceptée."
@@ -432,7 +546,7 @@ public final class ApplicationManager {
         }
 
         Business business =
-                BusinessManager.getByName(
+                BusinessManager.getById(
                         application.getBusinessId()
                 );
 
