@@ -21,10 +21,10 @@ import java.util.List;
 public final class RequestListGUI {
 
     public static final String TITLE_PUBLIC =
-            "§8✦ §6Demandes Publiques §8✦";
+            "§8✦ §6Demandes §8✦";
 
     public static final String TITLE_MY =
-            "§8✦ §6Mes Demandes §8✦";
+            "§8✦ §6Mes demandes §8✦";
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -80,9 +80,10 @@ public final class RequestListGUI {
                 new ItemBuilder(Material.BOOK)
                         .name("§6✦ §fDemandes §6✦")
                         .lore(
-                                "§7Dossiers affichés: §e" + list.size(),
+                                "§7Total: §e" + list.size(),
+                                "§7Service: §aMood§6Craft",
                                 "",
-                                "§8• §7Service officiel de §aMood§6Craft§7."
+                                "§eSélectionnez un dossier"
                         )
                         .build()
         );
@@ -99,16 +100,16 @@ public final class RequestListGUI {
                     inv,
                     SLOTS[index],
                     new ItemBuilder(Material.PAPER)
-                            .name("§6✦ §f" + request.getTitle() + " §6✦")
+                            .name(shortName(request.getTitle()))
                             .lore(
-                                    "§7Demandeur: §e" + request.getCreatorName(),
-                                    "§7Catégorie: " + request.getCategory().getDisplayName(),
+                                    "§7Auteur: §e" + shortText(request.getCreatorName(), 14),
+                                    "§7Type: " + request.getCategory().getDisplayName(),
                                     "§7Budget: §e" + VaultHook.format(request.getBudget()),
-                                    "§7Délai souhaité: §b" + request.getDueDays() + " jours",
+                                    "§7Délai: §b" + request.getDueDays() + "j",
                                     "§7Statut: " + request.getStatus().getDisplayName(),
-                                    "§7Expire le: §f" + TimeUtil.formatDate(request.getExpiresAt()),
+                                    "§7Fin: §f" + shortDate(request.getExpiresAt()),
                                     "",
-                                    "§eClique pour consulter"
+                                    "§eClique pour ouvrir"
                             )
                             .action("request_detail")
                             .target(request.getId())
@@ -124,12 +125,57 @@ public final class RequestListGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au menu demandes."
+                                "§7Menu demandes"
                         )
                         .action("open_requests")
                         .build()
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortName(
+            String text
+    ) {
+
+        return "§6✦ §f" + shortText(text, 22);
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Sans nom";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
+    }
+
+    private static String shortDate(
+            long time
+    ) {
+
+        String date =
+                TimeUtil.formatDate(time);
+
+        if (date == null || date.equalsIgnoreCase("Jamais")) {
+            return "Aucune";
+        }
+
+        if (date.length() <= 10) {
+            return date;
+        }
+
+        return date.substring(0, 10);
     }
 }
