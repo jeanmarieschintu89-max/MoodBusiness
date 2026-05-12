@@ -1,5 +1,7 @@
 package fr.moodcraft.business.gui;
 
+import fr.moodcraft.business.Main;
+
 import fr.moodcraft.business.manager.BusinessBankManager;
 import fr.moodcraft.business.manager.PayrollManager;
 
@@ -81,12 +83,12 @@ public final class BusinessBankGUI {
                                 "§7Transférer de l'argent personnel",
                                 "§7vers la banque entreprise.",
                                 "",
-                                "§eCommande:",
-                                "§f/entreprise depot <montant>",
+                                "§8• §7Saisie dans le chat",
+                                "§8• §7Historique sauvegardé",
                                 "",
-                                "§a✔ Tous les membres peuvent déposer"
+                                "§a✔ Cliquer pour saisir"
                         )
-                        .action("bank_deposit_help")
+                        .action("bank_deposit_chat")
                         .target(business.getId())
                         .build()
         );
@@ -104,14 +106,18 @@ public final class BusinessBankGUI {
                                 "§7Retirer depuis la banque entreprise",
                                 "§7vers votre compte personnel.",
                                 "",
-                                "§eCommande:",
-                                "§f/entreprise retrait <montant>",
+                                "§8• §7Saisie dans le chat",
+                                "§8• §7Accès: dirigeant, gérant, trésorier",
                                 "",
                                 canManage
-                                        ? "§a✔ Autorisé"
-                                        : "§cAccès trésorier minimum"
+                                        ? "§a✔ Cliquer pour saisir"
+                                        : "§cAccès refusé"
                         )
-                        .action("bank_withdraw_help")
+                        .action(
+                                canManage
+                                        ? "bank_withdraw_chat"
+                                        : "coming_soon"
+                        )
                         .target(business.getId())
                         .build()
         );
@@ -129,14 +135,18 @@ public final class BusinessBankGUI {
                                 "§7Récompenser un employé,",
                                 "§7un apprenti ou un stagiaire.",
                                 "",
-                                "§eCommande:",
-                                "§f/entreprise prime <joueur> <montant>",
+                                "§8• §7Pseudo puis montant dans le chat",
+                                "§8• §7Confirmation si prime élevée",
                                 "",
                                 canManage
-                                        ? "§a✔ Autorisé"
-                                        : "§cAccès trésorier minimum"
+                                        ? "§a✔ Cliquer pour saisir"
+                                        : "§cAccès refusé"
                         )
-                        .action("bank_prime_help")
+                        .action(
+                                canManage
+                                        ? "bank_prime_chat"
+                                        : "coming_soon"
+                        )
                         .target(business.getId())
                         .build()
         );
@@ -151,7 +161,7 @@ public final class BusinessBankGUI {
                                 "§7et lancer une paie manuelle.",
                                 "",
                                 "§eJour de paie: §f"
-                                        + fr.moodcraft.business.Main.getInstance()
+                                        + Main.getInstance()
                                         .getConfig()
                                         .getInt(
                                                 "payroll.default-payday",
@@ -171,9 +181,9 @@ public final class BusinessBankGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au registre principal."
+                                "§7Revenir au Bureau des Entreprises."
                         )
-                        .action("back_main")
+                        .action("back_business_main")
                         .build()
         );
 
