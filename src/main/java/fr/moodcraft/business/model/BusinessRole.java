@@ -1,5 +1,7 @@
 package fr.moodcraft.business.model;
 
+import java.util.Locale;
+
 public enum BusinessRole {
 
     DIRIGEANT(
@@ -84,5 +86,55 @@ public enum BusinessRole {
         return this == DIRIGEANT
                 || this == GERANT
                 || this == RESPONSABLE_CONTRATS;
+    }
+
+    public boolean isTrainingRole() {
+
+        return this == APPRENTI
+                || this == STAGIAIRE;
+    }
+
+    public static BusinessRole fromText(
+            String text
+    ) {
+
+        if (text == null) {
+            return null;
+        }
+
+        String clean =
+                text.toLowerCase(Locale.ROOT)
+                        .replace("é", "e")
+                        .replace("è", "e")
+                        .replace("ê", "e")
+                        .replace(" ", "_")
+                        .replace("-", "_");
+
+        return switch (clean) {
+
+            case "dirigeant", "owner", "chef" ->
+                    DIRIGEANT;
+
+            case "gerant", "gérant", "manager" ->
+                    GERANT;
+
+            case "responsable", "responsable_contrats", "contrats" ->
+                    RESPONSABLE_CONTRATS;
+
+            case "tresorier", "trésorier", "banque" ->
+                    TRESORIER;
+
+            case "employe", "employé", "employee" ->
+                    EMPLOYE;
+
+            case "apprenti", "apprentissage" ->
+                    APPRENTI;
+
+            case "stagiaire", "stage" ->
+                    STAGIAIRE;
+
+            default ->
+                    null;
+        };
     }
 }
