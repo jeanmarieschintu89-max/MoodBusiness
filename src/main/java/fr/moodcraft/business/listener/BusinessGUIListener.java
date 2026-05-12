@@ -1,13 +1,22 @@
 package fr.moodcraft.business.listener;
 
+import fr.moodcraft.business.gui.ApplicationBusinessSelectGUI;
+import fr.moodcraft.business.gui.ApplicationListGUI;
+import fr.moodcraft.business.gui.ApplicationMainGUI;
+import fr.moodcraft.business.gui.ApplicationReviewGUI;
+import fr.moodcraft.business.gui.ApplicationTypeGUI;
+
 import fr.moodcraft.business.gui.BusinessEmployeesGUI;
 import fr.moodcraft.business.gui.BusinessListGUI;
 import fr.moodcraft.business.gui.BusinessMainGUI;
 import fr.moodcraft.business.gui.BusinessRoleAssignGUI;
 import fr.moodcraft.business.gui.BusinessStaffGUI;
 
+import fr.moodcraft.business.manager.ApplicationManager;
 import fr.moodcraft.business.manager.BusinessManager;
 
+import fr.moodcraft.business.model.Application;
+import fr.moodcraft.business.model.ApplicationType;
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRole;
 
@@ -211,6 +220,275 @@ public class BusinessGUIListener implements Listener {
                 BusinessMessages.footer(p);
             }
 
+            case "open_applications" ->
+                    ApplicationMainGUI.open(p);
+
+            case "application_choose_business" ->
+                    ApplicationBusinessSelectGUI.open(p);
+
+            case "application_my_list" ->
+                    ApplicationListGUI.openMy(p);
+
+            case "application_received_list" -> {
+
+                if (target == null || target.isBlank()) {
+
+                    Business own =
+                            BusinessManager.getMemberBusiness(
+                                    p.getUniqueId()
+                            );
+
+                    if (own == null) {
+                        return;
+                    }
+
+                    ApplicationListGUI.openReceived(
+                            p,
+                            own.getId()
+                    );
+
+                    return;
+                }
+
+                ApplicationListGUI.openReceived(
+                        p,
+                        target
+                );
+            }
+
+            case "application_select_business" -> {
+
+                Business business =
+                        BusinessManager.getByName(target);
+
+                if (business == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Candidature " + BusinessMessages.brand(),
+                            "Entreprise introuvable."
+                    );
+
+                    return;
+                }
+
+                ApplicationTypeGUI.open(
+                        p,
+                        business
+                );
+            }
+
+            case "application_start" -> {
+
+                if (target == null || !target.contains(":")) {
+                    return;
+                }
+
+                String[] split =
+                        target.split(":");
+
+                if (split.length < 2) {
+                    return;
+                }
+
+                Business business =
+                        BusinessManager.getByName(split[0]);
+
+                if (business == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Candidature " + BusinessMessages.brand(),
+                            "Entreprise introuvable."
+                    );
+
+                    return;
+                }
+
+                ApplicationType type;
+
+                try {
+
+                    type =
+                            ApplicationType.valueOf(split[1]);
+
+                } catch (Exception ex) {
+
+                    return;
+                }
+
+                ApplicationChatListener.start(
+                        p,
+                        business,
+                        type
+                );
+            }
+
+            case "application_review" -> {
+
+                Application application =
+                        ApplicationManager.get(target);
+
+                if (application == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Candidature " + BusinessMessages.brand(),
+                            "Candidature introuvable."
+                    );
+
+                    return;
+                }
+
+                ApplicationReviewGUI.open(
+                        p,
+                        application
+                );
+            }
+
+            case "application_interview" -> {
+
+                Application application =
+                        ApplicationManager.get(target);
+
+                if (application == null) {
+                    return;
+                }
+
+                ApplicationManager.ApplicationResult result =
+                        ApplicationManager.requestInterview(
+                                p,
+                                application
+                        );
+
+                p.closeInventory();
+
+                if (!result.success()) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Candidature " + BusinessMessages.brand(),
+                            result.message()
+                    );
+
+                    return;
+                }
+
+                BusinessMessages.success(
+                        p,
+                        "Candidature " + BusinessMessages.brand(),
+                        "Entretien demandé pour §e" + application.getApplicantName()
+                );
+            }
+
+            case "application_refuse" -> {
+
+                Application application =
+                        ApplicationManager.get(target);
+
+                if (application == null) {
+                    return;
+                }
+
+                ApplicationManager.ApplicationResult result =
+                        ApplicationManager.refuse(
+                                p,
+                                application,
+                                "Refusée par l'entreprise"
+                        );
+
+                p.closeInventory();
+
+                if (!result.success()) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Candidature " + BusinessMessages.brand(),
+                            result.message()
+                    );
+
+                    return;
+                }
+
+                BusinessMessages.success(
+                        p,
+                        "Candidature " + BusinessMessages.brand(),
+                        "Candidature refusée."
+                );
+            }
+
+            case "application_accept_stage" -> {
+
+                Application application =
+                        ApplicationManager.get(target);
+
+                if (application == null) {
+                    return;
+                }
+
+                ApplicationManager.ApplicationResult result =
+                        ApplicationManager.accept(
+                                p,
+                                application,
+                                BusinessRole.STAGIAIRE
+                        );
+
+                p.closeInventory();
+
+                if (!result.success()) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Candidature " + BusinessMessages.brand(),
+                            result.message()
+                    );
+
+                    return;
+                }
+
+                BusinessMessages.success(
+                        p,
+                        "Candidature " + BusinessMessages.brand(),
+                        "Joueur accepté comme stagiaire."
+                );
+            }
+
+            case "application_accept_apprentice" -> {
+
+                Application application =
+                        ApplicationManager.get(target);
+
+                if (application == null) {
+                    return;
+                }
+
+                ApplicationManager.ApplicationResult result =
+                        ApplicationManager.accept(
+                                p,
+                                application,
+                                BusinessRole.APPRENTI
+                        );
+
+                p.closeInventory();
+
+                if (!result.success()) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Candidature " + BusinessMessages.brand(),
+                            result.message()
+                    );
+
+                    return;
+                }
+
+                BusinessMessages.success(
+                        p,
+                        "Candidature " + BusinessMessages.brand(),
+                        "Joueur accepté comme apprenti."
+                );
+            }
+
             case "list_prev", "list_next" ->
                     openListTarget(
                             p,
@@ -257,7 +535,13 @@ public class BusinessGUIListener implements Listener {
                 || title.equals(BusinessListGUI.TITLE_RECENT)
                 || title.equals(BusinessListGUI.TITLE_SUSPENDED)
                 || title.equals(BusinessEmployeesGUI.TITLE)
-                || title.equals(BusinessRoleAssignGUI.TITLE);
+                || title.equals(BusinessRoleAssignGUI.TITLE)
+                || title.equals(ApplicationMainGUI.TITLE)
+                || title.equals(ApplicationBusinessSelectGUI.TITLE)
+                || title.equals(ApplicationTypeGUI.TITLE)
+                || title.equals(ApplicationListGUI.TITLE_MY)
+                || title.equals(ApplicationListGUI.TITLE_RECEIVED)
+                || title.equals(ApplicationReviewGUI.TITLE);
     }
 
     private void openRoleManager(
