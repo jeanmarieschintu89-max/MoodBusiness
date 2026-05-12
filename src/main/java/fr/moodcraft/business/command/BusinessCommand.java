@@ -1,15 +1,19 @@
 package fr.moodcraft.business.command;
 
+import fr.moodcraft.business.gui.BusinessEmployeesGUI;
 import fr.moodcraft.business.gui.BusinessMainGUI;
 import fr.moodcraft.business.gui.BusinessStaffGUI;
 
 import fr.moodcraft.business.manager.BusinessManager;
 
 import fr.moodcraft.business.model.Business;
+import fr.moodcraft.business.model.BusinessRole;
 import fr.moodcraft.business.model.BusinessStatus;
 
 import fr.moodcraft.business.util.BusinessMessages;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 
 import org.bukkit.command.Command;
@@ -19,6 +23,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 public class BusinessCommand implements CommandExecutor {
 
@@ -192,6 +197,276 @@ public class BusinessCommand implements CommandExecutor {
             BusinessMessages.businessInfo(
                     p,
                     business
+            );
+
+            return true;
+        }
+
+        if (sub.equals("employes")
+                || sub.equals("employés")
+                || sub.equals("employees")) {
+
+            Business business =
+                    BusinessManager.getMemberBusiness(
+                            p.getUniqueId()
+                    );
+
+            if (business == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Vous n'appartenez à aucune entreprise active."
+                );
+
+                return true;
+            }
+
+            BusinessEmployeesGUI.open(
+                    p,
+                    business
+            );
+
+            return true;
+        }
+
+        if (sub.equals("recruter")
+                || sub.equals("inviter")
+                || sub.equals("hire")) {
+
+            Business business =
+                    BusinessManager.getMemberBusiness(
+                            p.getUniqueId()
+                    );
+
+            if (business == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Vous n'appartenez à aucune entreprise active."
+                );
+
+                return true;
+            }
+
+            if (args.length < 2) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Utilisation: /entreprise recruter <joueur> [role]"
+                );
+
+                return true;
+            }
+
+            OfflinePlayer target =
+                    Bukkit.getOfflinePlayer(args[1]);
+
+            BusinessRole role =
+                    args.length >= 3
+                            ? BusinessRole.fromText(args[2])
+                            : BusinessRole.STAGIAIRE;
+
+            if (role == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Rôle inconnu. Exemple: stagiaire, apprenti, employe, tresorier."
+                );
+
+                return true;
+            }
+
+            BusinessManager.ActionResult result =
+                    BusinessManager.addMember(
+                            p,
+                            business,
+                            target,
+                            role
+                    );
+
+            if (!result.success()) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        result.message()
+                );
+
+                return true;
+            }
+
+            BusinessMessages.success(
+                    p,
+                    "Employés Entreprise",
+                    result.message()
+            );
+
+            return true;
+        }
+
+        if (sub.equals("role")
+                || sub.equals("rang")) {
+
+            Business business =
+                    BusinessManager.getMemberBusiness(
+                            p.getUniqueId()
+                    );
+
+            if (business == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Rôles Entreprise",
+                        "Vous n'appartenez à aucune entreprise active."
+                );
+
+                return true;
+            }
+
+            if (args.length < 3) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Rôles Entreprise",
+                        "Utilisation: /entreprise role <joueur> <role>"
+                );
+
+                return true;
+            }
+
+            UUID targetUuid =
+                    BusinessManager.getMemberUuidByName(
+                            business,
+                            args[1]
+                    );
+
+            if (targetUuid == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Rôles Entreprise",
+                        "Ce joueur n'est pas dans votre entreprise."
+                );
+
+                return true;
+            }
+
+            BusinessRole role =
+                    BusinessRole.fromText(args[2]);
+
+            if (role == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Rôles Entreprise",
+                        "Rôle inconnu."
+                );
+
+                return true;
+            }
+
+            BusinessManager.ActionResult result =
+                    BusinessManager.assignRole(
+                            p,
+                            business,
+                            targetUuid,
+                            role
+                    );
+
+            if (!result.success()) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Rôles Entreprise",
+                        result.message()
+                );
+
+                return true;
+            }
+
+            BusinessMessages.success(
+                    p,
+                    "Rôles Entreprise",
+                    result.message()
+            );
+
+            return true;
+        }
+
+        if (sub.equals("renvoyer")
+                || sub.equals("kick")
+                || sub.equals("retirer")) {
+
+            Business business =
+                    BusinessManager.getMemberBusiness(
+                            p.getUniqueId()
+                    );
+
+            if (business == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Vous n'appartenez à aucune entreprise active."
+                );
+
+                return true;
+            }
+
+            if (args.length < 2) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Utilisation: /entreprise renvoyer <joueur>"
+                );
+
+                return true;
+            }
+
+            UUID targetUuid =
+                    BusinessManager.getMemberUuidByName(
+                            business,
+                            args[1]
+                    );
+
+            if (targetUuid == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Ce joueur n'est pas dans votre entreprise."
+                );
+
+                return true;
+            }
+
+            BusinessManager.ActionResult result =
+                    BusinessManager.removeMember(
+                            p,
+                            business,
+                            targetUuid
+                    );
+
+            if (!result.success()) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        result.message()
+                );
+
+                return true;
+            }
+
+            BusinessMessages.success(
+                    p,
+                    "Employés Entreprise",
+                    result.message()
             );
 
             return true;
