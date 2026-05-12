@@ -102,12 +102,15 @@ public final class BusinessMainGUI {
                     new ItemBuilder(Material.PLAYER_HEAD)
                             .name("§6✦ §fEmployés §6✦")
                             .lore(
-                                    "§7Gestion des employés, rôles,",
+                                    "§7Voir les employés, rôles,",
                                     "§7stages et apprentissages.",
                                     "",
-                                    "§8• §7Module prévu au Pack 3."
+                                    role != null && role.canManageRoles()
+                                            ? "§a✔ Gestion autorisée"
+                                            : "§7Consultation limitée"
                             )
-                            .action("coming_soon")
+                            .action("open_employees")
+                            .target(business.getId())
                             .build()
             );
 
