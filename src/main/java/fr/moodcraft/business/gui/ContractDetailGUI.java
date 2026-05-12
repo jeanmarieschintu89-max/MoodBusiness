@@ -17,12 +17,13 @@ import org.bukkit.entity.Player;
 
 import org.bukkit.inventory.Inventory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class ContractDetailGUI {
 
     public static final String TITLE =
-            "§8✦ §6Dossier Contrat §8✦";
+            "§8✦ §6Contrat §8✦";
 
     private ContractDetailGUI() {}
 
@@ -44,22 +45,22 @@ public final class ContractDetailGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §f" + contract.getTitle() + " §6✦")
+                        .name("§6✦ §f" + shortText(contract.getTitle(), 22))
                         .lore(
-                                "§7Client: §e" + contract.getClientName(),
-                                "§7Entreprise: §b" + contract.getBusinessName(),
+                                "§7Client: §e" + shortText(contract.getClientName(), 14),
+                                "§7Entreprise: §b" + shortText(contract.getBusinessName(), 14),
                                 "§7Statut: " + contract.getStatus().getDisplayName(),
                                 "",
-                                "§7Montant brut: §e" + VaultHook.format(contract.getGrossAmount()),
-                                "§7Taxe économique: §c" + VaultHook.format(contract.getTaxAmount())
-                                        + " §8(" + contract.getTaxRate() + "%)",
-                                "§7Versement entreprise: §a" + VaultHook.format(contract.getNetAmount()),
-                                "§7Fonds bloqués: §e" + VaultHook.format(contract.getEscrowAmount()),
+                                "§7Brut: §e" + VaultHook.format(contract.getGrossAmount()),
+                                "§7Taxe: §c" + VaultHook.format(contract.getTaxAmount())
+                                        + " §8(" + shortPercent(contract.getTaxRate()) + "%)",
+                                "§7Net: §a" + VaultHook.format(contract.getNetAmount()),
+                                "§7Bloqué: §e" + VaultHook.format(contract.getEscrowAmount()),
                                 "",
-                                "§7Échéance: §f" + TimeUtil.formatDate(contract.getDueAt()),
-                                "§7Validation avant: §f" + TimeUtil.formatDate(contract.getValidateBefore()),
+                                "§7Fin: §f" + shortDate(contract.getDueAt()),
+                                "§7Validation: §f" + shortDate(contract.getValidateBefore()),
                                 "",
-                                "§8• §7ID: §8" + contract.getId()
+                                "§8ID: §7" + shortText(contract.getId(), 24)
                         )
                         .build()
         );
@@ -73,13 +74,13 @@ public final class ContractDetailGUI {
                     inv,
                     20,
                     new ItemBuilder(Material.LIME_DYE)
-                            .name("§6✦ §fMarquer terminé §6✦")
+                            .name("§6✦ §fTerminer §6✦")
                             .lore(
-                                    "§7Indiquer que le travail est terminé.",
-                                    "§7Un commentaire sera demandé",
-                                    "§7dans le chat.",
+                                    "§7Marquer le travail",
+                                    "§7comme terminé.",
                                     "",
-                                    "§a✔ Finalisation entreprise"
+                                    "§8• §7Commentaire chat",
+                                    "§a✔ Entreprise"
                             )
                             .action("contract_complete_chat")
                             .target(contract.getId())
@@ -96,13 +97,12 @@ public final class ContractDetailGUI {
                     inv,
                     22,
                     new ItemBuilder(Material.GOLD_INGOT)
-                            .name("§6✦ §fValider le contrat §6✦")
+                            .name("§6✦ §fValider §6✦")
                             .lore(
-                                    "§7Confirme que le travail est conforme.",
-                                    "§7Les fonds seront versés à l’entreprise.",
+                                    "§7Confirmer le travail.",
                                     "",
                                     "§7Taxe: §c" + VaultHook.format(contract.getTaxAmount()),
-                                    "§7Net entreprise: §a" + VaultHook.format(contract.getNetAmount()),
+                                    "§7Net: §a" + VaultHook.format(contract.getNetAmount()),
                                     "",
                                     "§a✔ Paiement final"
                             )
@@ -118,13 +118,14 @@ public final class ContractDetailGUI {
                     inv,
                     24,
                     new ItemBuilder(Material.ANVIL)
-                            .name("§6✦ §fOuvrir un litige §6✦")
+                            .name("§6✦ §fLitige §6✦")
                             .lore(
-                                    "§7Signaler un problème sur ce contrat.",
-                                    "§7Les fonds resteront bloqués",
-                                    "§7jusqu’à décision administrative.",
+                                    "§7Signaler un problème.",
                                     "",
-                                    "§c⚖ Procédure sensible"
+                                    "§8• §7Fonds bloqués",
+                                    "§8• §7Décision staff",
+                                    "",
+                                    "§c⚖ Procédure"
                             )
                             .action("contract_litige_chat")
                             .target(contract.getId())
@@ -141,13 +142,12 @@ public final class ContractDetailGUI {
                     new ItemBuilder(Material.NETHER_STAR)
                             .name("§6✦ §fDécision staff §6✦")
                             .lore(
-                                    "§7Résoudre officiellement le litige.",
+                                    "§7Résoudre le litige.",
                                     "",
-                                    "§8• §7Payer l’entreprise",
-                                    "§8• §7Rembourser le client",
-                                    "§8• §7Clôturer le dossier",
+                                    "§8• §7Payer entreprise",
+                                    "§8• §7Rembourser client",
                                     "",
-                                    "§cAccès administratif"
+                                    "§cAccès admin"
                             )
                             .action("contract_admin_resolve")
                             .target(contract.getId())
@@ -172,7 +172,7 @@ public final class ContractDetailGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au menu contrats."
+                                "§7Menu contrats"
                         )
                         .action("open_contracts")
                         .build()
@@ -198,22 +198,74 @@ public final class ContractDetailGUI {
         int start =
                 Math.max(
                         0,
-                        history.size() - 8
+                        history.size() - 6
                 );
 
-        String[] lore =
-                new String[history.size() - start];
-
-        int index = 0;
+        List<String> lore =
+                new ArrayList<>();
 
         for (int i = start; i < history.size(); i++) {
 
-            lore[index] =
-                    history.get(i);
-
-            index++;
+            lore.add(
+                    "§7" + shortText(
+                            history.get(i),
+                            34
+                    )
+            );
         }
 
-        return lore;
+        return lore.toArray(
+                new String[0]
+        );
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Aucun";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
+    }
+
+    private static String shortDate(
+            long time
+    ) {
+
+        String date =
+                TimeUtil.formatDate(time);
+
+        if (date == null || date.equalsIgnoreCase("Jamais")) {
+            return "Aucune";
+        }
+
+        if (date.length() <= 10) {
+            return date;
+        }
+
+        return date.substring(0, 10);
+    }
+
+    private static String shortPercent(
+            double value
+    ) {
+
+        if (value == Math.rint(value)) {
+            return String.valueOf((int) value);
+        }
+
+        return String.format("%.1f", value)
+                .replace(",", ".");
     }
 }
