@@ -25,6 +25,9 @@ public class Business {
     private final Map<UUID, BusinessRole> members =
             new LinkedHashMap<>();
 
+    private final Map<UUID, String> memberNames =
+            new LinkedHashMap<>();
+
     public Business(
             String id,
             String name,
@@ -48,8 +51,9 @@ public class Business {
         this.createdAt = createdAt;
         this.updatedAt = createdAt;
 
-        this.members.put(
+        addMember(
                 ownerUuid,
+                ownerName,
                 BusinessRole.DIRIGEANT
         );
     }
@@ -79,6 +83,12 @@ public class Business {
     ) {
 
         this.ownerName = ownerName;
+
+        setMemberName(
+                ownerUuid,
+                ownerName
+        );
+
         touch();
     }
 
@@ -145,11 +155,62 @@ public class Business {
         return members;
     }
 
+    public Map<UUID, String> getMemberNames() {
+
+        return memberNames;
+    }
+
     public BusinessRole getRole(
             UUID uuid
     ) {
 
         return members.get(uuid);
+    }
+
+    public String getMemberName(
+            UUID uuid
+    ) {
+
+        return memberNames.getOrDefault(
+                uuid,
+                "Inconnu"
+        );
+    }
+
+    public void setMemberName(
+            UUID uuid,
+            String name
+    ) {
+
+        memberNames.put(
+                uuid,
+                name != null
+                        ? name
+                        : "Inconnu"
+        );
+
+        touch();
+    }
+
+    public void addMember(
+            UUID uuid,
+            String name,
+            BusinessRole role
+    ) {
+
+        members.put(
+                uuid,
+                role
+        );
+
+        memberNames.put(
+                uuid,
+                name != null
+                        ? name
+                        : "Inconnu"
+        );
+
+        touch();
     }
 
     public void setRole(
@@ -174,6 +235,7 @@ public class Business {
         }
 
         members.remove(uuid);
+        memberNames.remove(uuid);
 
         touch();
     }
