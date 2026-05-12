@@ -2,6 +2,7 @@ package fr.moodcraft.business.manager;
 
 import fr.moodcraft.business.Main;
 
+import fr.moodcraft.business.model.AuditLogType;
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRole;
 import fr.moodcraft.business.model.TransactionType;
@@ -133,6 +134,15 @@ public final class PayrollManager {
                             + VaultHook.format(total)
             );
 
+            AuditLogManager.log(
+                    AuditLogType.PAYROLL_BLOCKED,
+                    actorName,
+                    business.getName(),
+                    business,
+                    "Paie mensuelle bloquée: fonds insuffisants. Total requis: "
+                            + VaultHook.format(total)
+            );
+
             return PayrollResult.fail(
                     "Fonds insuffisants. Total requis: §e"
                             + VaultHook.format(total)
@@ -192,6 +202,18 @@ public final class PayrollManager {
                         + " membre(s)"
         );
 
+        AuditLogManager.log(
+                AuditLogType.PAYROLL_PAID,
+                actorName,
+                business.getName(),
+                business,
+                "Paie mensuelle versée: "
+                        + VaultHook.format(total)
+                        + " à "
+                        + paid
+                        + " membre(s)."
+        );
+
         return PayrollResult.success(
                 "Paie mensuelle versée: §e"
                         + VaultHook.format(total)
@@ -248,6 +270,17 @@ public final class PayrollManager {
                 business.getId(),
                 role,
                 amount
+        );
+
+        AuditLogManager.log(
+                AuditLogType.PAYROLL_PAID,
+                "Système",
+                role.name(),
+                business,
+                "Salaire mensuel configuré pour "
+                        + role.getDisplayName()
+                        + "§7: "
+                        + VaultHook.format(amount)
         );
 
         return PayrollResult.success(
