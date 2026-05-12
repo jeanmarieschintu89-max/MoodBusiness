@@ -125,10 +125,13 @@ public final class BusinessMainGUI {
                                             business.getBalance()
                                     ),
                                     "",
-                                    "§8• §7Salaires mensuels",
-                                    "§8• §7et primes arrivent au Pack 7."
+                                    "§7Dépôts, retraits, primes",
+                                    "§7et paie mensuelle.",
+                                    "",
+                                    "§a✔ Ouvrir"
                             )
-                            .action("coming_soon")
+                            .action("open_bank")
+                            .target(business.getId())
                             .build()
             );
 
