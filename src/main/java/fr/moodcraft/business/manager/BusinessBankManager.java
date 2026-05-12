@@ -2,6 +2,7 @@ package fr.moodcraft.business.manager;
 
 import fr.moodcraft.business.Main;
 
+import fr.moodcraft.business.model.AuditLogType;
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRole;
 import fr.moodcraft.business.model.TransactionType;
@@ -131,6 +132,15 @@ public final class BusinessBankManager {
                 "Dépôt manuel dans la banque entreprise"
         );
 
+        AuditLogManager.log(
+                AuditLogType.BANK_DEPOSIT,
+                player,
+                business.getName(),
+                business,
+                "Dépôt banque entreprise: "
+                        + VaultHook.format(amount)
+        );
+
         return BankResult.success(
                 "Dépôt effectué: §e"
                         + VaultHook.format(amount)
@@ -196,6 +206,15 @@ public final class BusinessBankManager {
                 player.getName(),
                 player.getName(),
                 "Retrait depuis la banque entreprise"
+        );
+
+        AuditLogManager.log(
+                AuditLogType.BANK_WITHDRAW,
+                player,
+                player.getName(),
+                business,
+                "Retrait banque entreprise: "
+                        + VaultHook.format(amount)
         );
 
         return BankResult.success(
@@ -296,6 +315,15 @@ public final class BusinessBankManager {
                 actor.getName(),
                 business.getMemberName(targetUuid),
                 "Prime manuelle"
+        );
+
+        AuditLogManager.log(
+                AuditLogType.BONUS_PAID,
+                actor,
+                business.getMemberName(targetUuid),
+                business,
+                "Prime versée: "
+                        + VaultHook.format(amount)
         );
 
         return BankResult.success(
