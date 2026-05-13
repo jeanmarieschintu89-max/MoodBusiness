@@ -13,7 +13,7 @@ import org.bukkit.inventory.Inventory;
 public final class BusinessStaffGUI {
 
     public static final String TITLE =
-            "§8✦ §6Gestion Entreprises §8✦";
+            "§6✦ §8Gestion Entreprises §6✦";
 
     private BusinessStaffGUI() {}
 

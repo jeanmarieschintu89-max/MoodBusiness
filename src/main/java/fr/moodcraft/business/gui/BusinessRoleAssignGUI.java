@@ -20,7 +20,7 @@ import java.util.UUID;
 public final class BusinessRoleAssignGUI {
 
     public static final String TITLE =
-            "§8✦ §6Attribuer un Rôle §8✦";
+            "§6✦ §8Attribuer un Rôle §6✦";
 
     private BusinessRoleAssignGUI() {}
 
@@ -49,15 +49,15 @@ public final class BusinessRoleAssignGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.NAME_TAG)
-                        .name("§6✦ §f" + targetName + " §6✦")
+                        .name("§6✦ §f" + shortText(targetName, 18) + " §6✦")
                         .lore(
                                 "§7Rôle actuel: "
                                         + (current != null
                                         ? current.getDisplayName()
                                         : "§7Aucun"),
                                 "",
-                                "§7Sélectionnez un nouveau rôle.",
-                                "§8• §7Le rôle dirigeant est séparé."
+                                "§7Choisissez un rôle.",
+                                "§8• §7Dirigeant séparé"
                         )
                         .build()
         );
@@ -70,7 +70,7 @@ public final class BusinessRoleAssignGUI {
                 BusinessRole.GERANT,
                 20,
                 Material.GOLDEN_HELMET,
-                "§7Gestion avancée de l'entreprise."
+                "§7Gestion avancée."
         );
 
         addRole(
@@ -81,7 +81,7 @@ public final class BusinessRoleAssignGUI {
                 BusinessRole.RESPONSABLE_CONTRATS,
                 21,
                 Material.WRITABLE_BOOK,
-                "§7Gère les offres et contrats."
+                "§7Offres et contrats."
         );
 
         addRole(
@@ -92,7 +92,7 @@ public final class BusinessRoleAssignGUI {
                 BusinessRole.TRESORIER,
                 22,
                 Material.GOLD_INGOT,
-                "§7Gère la banque selon autorisation."
+                "§7Banque entreprise."
         );
 
         addRole(
@@ -103,7 +103,7 @@ public final class BusinessRoleAssignGUI {
                 BusinessRole.EMPLOYE,
                 23,
                 Material.IRON_PICKAXE,
-                "§7Membre officiel de l'entreprise."
+                "§7Membre officiel."
         );
 
         addRole(
@@ -114,7 +114,7 @@ public final class BusinessRoleAssignGUI {
                 BusinessRole.APPRENTI,
                 24,
                 Material.COPPER_INGOT,
-                "§7Formation active encadrée."
+                "§7Formation active."
         );
 
         addRole(
@@ -125,7 +125,7 @@ public final class BusinessRoleAssignGUI {
                 BusinessRole.STAGIAIRE,
                 31,
                 Material.PAPER,
-                "§7Découverte sans accès sensible."
+                "§7Découverte."
         );
 
         SafeGUI.set(
@@ -134,7 +134,7 @@ public final class BusinessRoleAssignGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir à la liste des employés."
+                                "§7Liste des employés"
                         )
                         .action("open_employees")
                         .target(business.getId())
@@ -180,8 +180,8 @@ public final class BusinessRoleAssignGUI {
                                 description,
                                 "",
                                 allowed
-                                        ? "§a✔ Attribuer ce rôle"
-                                        : "§cAction non autorisée"
+                                        ? "§a✔ Attribuer"
+                                        : "§cNon autorisé"
                         )
                         .action(
                                 allowed
@@ -197,5 +197,20 @@ public final class BusinessRoleAssignGUI {
                         )
                         .build()
         );
+    }
+
+    private static String shortText(String text, int max) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean = text.replaceAll("§.", "").trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 }

@@ -22,13 +22,13 @@ import java.util.List;
 public final class BusinessListGUI {
 
     public static final String TITLE_ACTIVE =
-            "§8✦ §6Entreprises Actives §8✦";
+            "§6✦ §8Entreprises Actives §6✦";
 
     public static final String TITLE_RECENT =
-            "§8✦ §6Entreprises Récentes §8✦";
+            "§6✦ §8Entreprises Récentes §6✦";
 
     public static final String TITLE_SUSPENDED =
-            "§8✦ §6Entreprises Suspendues §8✦";
+            "§6✦ §8Entreprises Suspendues §6✦";
 
     private static final int PAGE_SIZE = 28;
 
@@ -151,32 +151,16 @@ public final class BusinessListGUI {
                     inv,
                     SLOTS[slotIndex],
                     new ItemBuilder(material)
-                            .name("§6✦ §f" + business.getName() + " §6✦")
+                            .name("§6✦ §f" + shortText(business.getName(), 18) + " §6✦")
                             .lore(
-                                    "§7Dirigeant: §e"
-                                            + business.getOwnerName(),
-                                    "§7Statut: "
-                                            + business.getStatus()
-                                            .getDisplayName(),
-                                    "§7Solde entreprise: §e"
-                                            + VaultHook.format(
-                                            business.getBalance()
-                                    ),
-                                    "§7Frais création: §e"
-                                            + VaultHook.format(
-                                            business.getCreationFee()
-                                    ),
-                                    "§7Créée le: §f"
-                                            + TimeUtil.formatDate(
-                                            business.getCreatedAt()
-                                    ),
+                                    "§7Dirigeant: §e" + shortText(business.getOwnerName(), 16),
+                                    "§7État: " + business.getStatus().getDisplayName(),
+                                    "§7Banque: §e" + VaultHook.format(business.getBalance()),
+                                    "§7Créée: §f" + shortDate(business.getCreatedAt()),
                                     "",
                                     staff
                                             ? "§cClique pour administrer"
-                                            : "§eClique pour consulter",
-                                    "",
-                                    "§8• §7ID: §8"
-                                            + business.getId()
+                                            : "§eClique pour consulter"
                             )
                             .action(
                                     staff
@@ -194,9 +178,9 @@ public final class BusinessListGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §fPage " + page + " / " + maxPage + " §6✦")
+                        .name("§6✦ §fPage " + page + "/" + maxPage + " §6✦")
                         .lore(
-                                "§7Entrées: §e" + list.size()
+                                "§7Entreprises: §e" + list.size()
                         )
                         .build()
         );
@@ -209,8 +193,7 @@ public final class BusinessListGUI {
                     new ItemBuilder(Material.ARROW)
                             .name("§ePage précédente")
                             .lore(
-                                    "§7Revenir à la page "
-                                            + (page - 1)
+                                    "§7Page " + (page - 1)
                             )
                             .action("list_prev")
                             .target(type + ":" + (page - 1))
@@ -226,8 +209,7 @@ public final class BusinessListGUI {
                     new ItemBuilder(Material.ARROW)
                             .name("§ePage suivante")
                             .lore(
-                                    "§7Aller à la page "
-                                            + (page + 1)
+                                    "§7Page " + (page + 1)
                             )
                             .action("list_next")
                             .target(type + ":" + (page + 1))
@@ -241,12 +223,42 @@ public final class BusinessListGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au registre principal."
+                                "§7Bureau des Entreprises"
                         )
                         .action("back_main")
                         .build()
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortText(String text, int max) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean = text.replaceAll("§.", "").trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
+    }
+
+    private static String shortDate(long time) {
+
+        String date = TimeUtil.formatDate(time);
+
+        if (date == null || date.equalsIgnoreCase("Jamais")) {
+            return "Aucune";
+        }
+
+        if (date.length() <= 10) {
+            return date;
+        }
+
+        return date.substring(0, 10);
     }
 }
