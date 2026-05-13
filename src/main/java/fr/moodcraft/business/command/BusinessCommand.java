@@ -2,8 +2,6 @@ package fr.moodcraft.business.command;
 
 import fr.moodcraft.business.gui.ApplicationMainGUI;
 import fr.moodcraft.business.gui.BusinessBankGUI;
-import fr.moodcraft.business.manager.AuditLogManager;
-import fr.moodcraft.business.model.AuditLogType;
 import fr.moodcraft.business.gui.BusinessDissolveConfirmGUI;
 import fr.moodcraft.business.gui.BusinessEmployeesGUI;
 import fr.moodcraft.business.gui.BusinessMainGUI;
