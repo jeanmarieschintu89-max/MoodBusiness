@@ -18,7 +18,7 @@ import org.bukkit.inventory.Inventory;
 public final class ApplicationMainGUI {
 
     public static final String TITLE =
-            "§8✦ §6Candidatures §8✦";
+            "§6✦ §8Candidatures §6✦";
 
     private ApplicationMainGUI() {}
 
@@ -52,7 +52,7 @@ public final class ApplicationMainGUI {
                                 "§8• §7Stage",
                                 "§8• §7Apprentissage",
                                 "",
-                                "§7Candidatures actives: §e" + active,
+                                "§7Actives: §e" + active,
                                 "",
                                 "§eClique pour commencer"
                         )
@@ -67,7 +67,7 @@ public final class ApplicationMainGUI {
                         .name("§6✦ §fMes candidatures §6✦")
                         .lore(
                                 "§7Voir vos candidatures",
-                                "§7envoyées aux entreprises.",
+                                "§7envoyées.",
                                 "",
                                 "§8• §7En attente",
                                 "§8• §7Entretien",
@@ -96,14 +96,14 @@ public final class ApplicationMainGUI {
                     new ItemBuilder(Material.CHEST)
                             .name("§6✦ §fCandidatures reçues §6✦")
                             .lore(
-                                    "§7Voir les joueurs qui",
-                                    "§7veulent rejoindre l'entreprise.",
+                                    "§7Voir les joueurs",
+                                    "§7qui veulent rejoindre.",
                                     "",
                                     "§7Entreprise: §e" + shortText(business.getName(), 18),
                                     "",
                                     "§8• §7Accepter",
                                     "§8• §7Refuser",
-                                    "§8• §7Demander entretien",
+                                    "§8• §7Entretien",
                                     "",
                                     "§a✔ Gestion autorisée"
                             )

@@ -15,7 +15,7 @@ import org.bukkit.inventory.Inventory;
 public final class ApplicationTypeGUI {
 
     public static final String TITLE =
-            "§8✦ §6Type de Candidature §8✦";
+            "§6✦ §8Type de Candidature §6✦";
 
     private ApplicationTypeGUI() {}
 
@@ -37,10 +37,13 @@ public final class ApplicationTypeGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §f" + business.getName() + " §6✦")
+                        .name("§6✦ §f" + shortText(business.getName(), 20) + " §6✦")
                         .lore(
-                                "§7Choisissez le type de candidature.",
-                                "§8• §7Service officiel de §aMood§6Craft§7."
+                                "§7Choisis comment",
+                                "§7tu veux rejoindre.",
+                                "",
+                                "§8• §7Stage",
+                                "§8• §7Apprentissage"
                         )
                         .build()
         );
@@ -51,10 +54,12 @@ public final class ApplicationTypeGUI {
                 new ItemBuilder(Material.PAPER)
                         .name("§6✦ §fStage §6✦")
                         .lore(
-                                "§7Découvrir l'entreprise",
-                                "§7sans accès sensible.",
+                                "§7Découvrir l'entreprise.",
                                 "",
-                                "§b✔ Formation légère"
+                                "§8• §7Rôle très limité",
+                                "§8• §7Idéal pour débuter",
+                                "",
+                                "§eClique pour continuer"
                         )
                         .action("application_start")
                         .target(business.getId() + ":STAGE")
@@ -67,10 +72,12 @@ public final class ApplicationTypeGUI {
                 new ItemBuilder(Material.COPPER_INGOT)
                         .name("§6✦ §fApprentissage §6✦")
                         .lore(
-                                "§7Participer à l'activité",
-                                "§7sous supervision.",
+                                "§7Participer davantage.",
                                 "",
-                                "§e✔ Parcours encadré"
+                                "§8• §7Formation active",
+                                "§8• §7Avec supervision",
+                                "",
+                                "§eClique pour continuer"
                         )
                         .action("application_start")
                         .target(business.getId() + ":APPRENTISSAGE")
@@ -83,12 +90,35 @@ public final class ApplicationTypeGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Choisir une autre entreprise."
+                                "§7Choisir une entreprise"
                         )
                         .action("application_choose_business")
                         .build()
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
     }
 }

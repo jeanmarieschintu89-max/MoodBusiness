@@ -20,7 +20,7 @@ import java.util.List;
 public final class ApplicationBusinessSelectGUI {
 
     public static final String TITLE =
-            "§8✦ §6Choisir Entreprise §8✦";
+            "§6✦ §8Choisir Entreprise §6✦";
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -49,6 +49,21 @@ public final class ApplicationBusinessSelectGUI {
                         BusinessStatus.ACTIVE
                 );
 
+        SafeGUI.set(
+                inv,
+                4,
+                new ItemBuilder(Material.BOOK)
+                        .name("§6✦ §fChoisir une entreprise §6✦")
+                        .lore(
+                                "§7Clique une entreprise",
+                                "§7pour envoyer une candidature.",
+                                "",
+                                "§8• §7Stage",
+                                "§8• §7Apprentissage"
+                        )
+                        .build()
+        );
+
         int index = 0;
 
         for (Business business : businesses) {
@@ -68,12 +83,15 @@ public final class ApplicationBusinessSelectGUI {
                     inv,
                     SLOTS[index],
                     new ItemBuilder(Material.LIME_BANNER)
-                            .name("§6✦ §f" + business.getName() + " §6✦")
+                            .name("§6✦ §f" + shortText(business.getName(), 18) + " §6✦")
                             .lore(
-                                    "§7Dirigeant: §e" + business.getOwnerName(),
-                                    "§7Statut: " + business.getStatus().getDisplayName(),
+                                    "§7Dirigeant: §e" + shortText(business.getOwnerName(), 16),
+                                    "§7État: " + business.getStatus().getDisplayName(),
                                     "",
-                                    "§eClique pour postuler"
+                                    "§8• §7Postuler ici",
+                                    "§8• §7Choix du type après",
+                                    "",
+                                    "§eClique pour choisir"
                             )
                             .action("application_select_business")
                             .target(business.getId())
@@ -89,12 +107,35 @@ public final class ApplicationBusinessSelectGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir aux candidatures."
+                                "§7Menu candidatures"
                         )
                         .action("open_applications")
                         .build()
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
     }
 }
