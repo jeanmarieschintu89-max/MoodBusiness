@@ -47,6 +47,11 @@ public final class BusinessBankGUI {
                         business
                 );
 
+        int historySize =
+                FinanceStorage.getByBusiness(
+                        business.getId()
+                ).size();
+
         SafeGUI.set(
                 inv,
                 4,
@@ -65,10 +70,7 @@ public final class BusinessBankGUI {
                                                 business
                                         )
                                 ),
-                                "§7Mouvements: §e"
-                                        + FinanceStorage.getByBusiness(
-                                        business.getId()
-                                ).size(),
+                                "§7Historique: §e" + historySize,
                                 "",
                                 "§8• §7Banque séparée",
                                 "§8• §7de la banque joueur"
@@ -178,6 +180,30 @@ public final class BusinessBankGUI {
                                 "§eClique pour ouvrir"
                         )
                         .action("open_payroll")
+                        .target(business.getId())
+                        .build()
+        );
+
+        SafeGUI.set(
+                inv,
+                33,
+                new ItemBuilder(Material.BOOK)
+                        .name("§6✦ §fHistorique §6✦")
+                        .lore(
+                                "§7Voir les mouvements",
+                                "§7de la banque entreprise.",
+                                "",
+                                "§7Lignes: §e" + historySize,
+                                "",
+                                "§8• §7Dépôts",
+                                "§8• §7Retraits",
+                                "§8• §7Primes",
+                                "§8• §7Paie",
+                                "§8• §7Contrats",
+                                "",
+                                "§eClique pour ouvrir"
+                        )
+                        .action("open_finance_history")
                         .target(business.getId())
                         .build()
         );
