@@ -16,7 +16,7 @@ import org.bukkit.inventory.Inventory;
 public final class BusinessDissolveConfirmGUI {
 
     public static final String TITLE =
-            "§8✦ §cFermer Entreprise §8✦";
+            "§6✦ §8Fermer Entreprise §6✦";
 
     private BusinessDissolveConfirmGUI() {}
 
