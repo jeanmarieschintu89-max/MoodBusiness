@@ -51,6 +51,20 @@ public final class BusinessMessages {
     }
 
     //
+    // • LIGNE SIMPLE
+    //
+
+    public static void line(
+            CommandSender sender,
+            String message
+    ) {
+
+        sender.sendMessage(
+                "§8• §7" + message
+        );
+    }
+
+    //
     // ❌ REFUS
     //
 
@@ -129,13 +143,16 @@ public final class BusinessMessages {
         sender.sendMessage("§6✦ §f" + business.getName());
         sender.sendMessage("");
         sender.sendMessage("§7Dirigeant: §e" + business.getOwnerName());
-        sender.sendMessage("§7Statut: " + business.getStatus().getDisplayName());
+        sender.sendMessage("§7État: " + business.getStatus().getDisplayName());
         sender.sendMessage("§7Solde: §e" + money(business.getBalance()));
         sender.sendMessage("§7Création n°: §e" + business.getCreationIndex());
         sender.sendMessage("§7Frais: §e" + money(business.getCreationFee()));
         sender.sendMessage("§7Créée: §f" + TimeUtil.formatDate(business.getCreatedAt()));
         sender.sendMessage("");
-        sender.sendMessage("§8• §7Service officiel de " + brand() + "§7.");
+        line(
+                sender,
+                "Service officiel de " + brand()
+        );
 
         footer(sender);
     }
@@ -164,10 +181,12 @@ public final class BusinessMessages {
         }
 
         return title
-                .replace("§6✦", "")
                 .replace("§f", "")
-                .replace("§a", "")
                 .replace("§6", "")
+                .replace("§a", "")
+                .replace("§c", "")
+                .replace("§7", "")
+                .replace("§8", "")
                 .replace("✦", "")
                 .trim();
     }
