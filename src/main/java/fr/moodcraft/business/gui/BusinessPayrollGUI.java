@@ -52,22 +52,24 @@ public final class BusinessPayrollGUI {
                 new ItemBuilder(Material.CLOCK)
                         .name("§6✦ §fPaie mensuelle §6✦")
                         .lore(
-                                "§7Entreprise: §e" + business.getName(),
+                                "§7Salaires de l'entreprise.",
+                                "",
+                                "§7Entreprise: §e" + shortText(business.getName(), 18),
                                 "§7Solde: §e" + VaultHook.format(business.getBalance()),
-                                "§7Total mensuel estimé: §e"
+                                "§7Total/mois: §e"
                                         + VaultHook.format(
                                         PayrollManager.calculateTotalPayroll(
                                                 business
                                         )
                                 ),
                                 "",
-                                "§7Configuration: "
+                                "§7Mode: "
                                         + (canConfig
                                         ? "§aDirigeant"
                                         : "§cLecture seule"),
                                 "",
-                                "§8• §7Les salaires sont versés",
-                                "§8• §7une fois par mois."
+                                "§8• §7Versée chaque mois",
+                                "§8• §7Pas de dette automatique"
                         )
                         .build()
         );
@@ -100,15 +102,14 @@ public final class BusinessPayrollGUI {
                     new ItemBuilder(icon)
                             .name("§6✦ " + role.getDisplayName() + " §6✦")
                             .lore(
-                                    "§7Salaire mensuel: §e"
+                                    "§7Salaire/mois: §e"
                                             + VaultHook.format(salary),
                                     "",
                                     canConfig
                                             ? "§a✔ Clique pour modifier"
                                             : "§cRéservé au dirigeant",
                                     "",
-                                    "§8• §7Le montant sera saisi",
-                                    "§8• §7directement dans le chat."
+                                    "§8• §7Montant dans le chat"
                             )
                             .action(
                                     canConfig
@@ -140,16 +141,15 @@ public final class BusinessPayrollGUI {
                 new ItemBuilder(Material.EMERALD)
                         .name("§6✦ §fLancer la paie §6✦")
                         .lore(
-                                "§7Verse manuellement la paie mensuelle.",
-                                "§7Utile pour tester ou rattraper",
-                                "§7une paie bloquée.",
+                                "§7Verse les salaires",
+                                "§7maintenant.",
+                                "",
+                                "§8• §7Utile pour tester",
+                                "§8• §7ou rattraper une paie",
                                 "",
                                 canConfig
-                                        ? "§a✔ Lancer maintenant"
-                                        : "§cRéservé au dirigeant",
-                                "",
-                                "§8• §7Commande alternative:",
-                                "§f/entreprise paie"
+                                        ? "§a✔ Lancer"
+                                        : "§cRéservé au dirigeant"
                         )
                         .action(
                                 canConfig
@@ -166,7 +166,7 @@ public final class BusinessPayrollGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir à la banque entreprise."
+                                "§7Banque entreprise"
                         )
                         .action("open_bank")
                         .target(business.getId())
@@ -174,5 +174,28 @@ public final class BusinessPayrollGUI {
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
     }
 }
