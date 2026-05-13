@@ -115,12 +115,6 @@ public final class BusinessManager {
             return CreationResult.fail(error);
         }
 
-        //
-        // 🔒 NOM DÉJÀ UTILISÉ
-        // Une entreprise ACTIVE ou SUSPENDUE bloque le nom.
-        // Une entreprise ARCHIVÉE garde son historique, mais le nom peut être réutilisé.
-        //
-
         Business activeSameName =
                 getActiveByName(name);
 
@@ -294,12 +288,6 @@ public final class BusinessManager {
         return null;
     }
 
-    //
-    // 🔎 RECHERCHE PUBLIQUE / ADMIN
-    // Priorité à une entreprise non archivée.
-    // Si seule une archive existe, on peut quand même la retrouver pour consultation admin.
-    //
-
     public static Business getByName(
             String name
     ) {
@@ -344,11 +332,6 @@ public final class BusinessManager {
 
         return null;
     }
-
-    //
-    // 🔎 RECHERCHE NOM ACTIF
-    // Utilisé pour bloquer uniquement les noms encore actifs/suspendus.
-    //
 
     public static Business getActiveByName(
             String name
@@ -801,10 +784,6 @@ public final class BusinessManager {
         return null;
     }
 
-    //
-    // 🔁 ID DISPONIBLE
-    //
-
     private static String getAvailableBusinessId(
             String baseId,
             UUID ownerUuid
@@ -827,4 +806,66 @@ public final class BusinessManager {
 
             tries++;
 
-    
+            id =
+                    baseId + "-" + created + "-" + tries;
+        }
+
+        return id;
+    }
+
+    public record CreationResult(
+            boolean success,
+            Business business,
+            String message
+    ) {
+
+        public static CreationResult success(
+                Business business,
+                String message
+        ) {
+
+            return new CreationResult(
+                    true,
+                    business,
+                    message
+            );
+        }
+
+        public static CreationResult fail(
+                String message
+        ) {
+
+            return new CreationResult(
+                    false,
+                    null,
+                    message
+            );
+        }
+    }
+
+    public record ActionResult(
+            boolean success,
+            String message
+    ) {
+
+        public static ActionResult success(
+                String message
+        ) {
+
+            return new ActionResult(
+                    true,
+                    message
+            );
+        }
+
+        public static ActionResult fail(
+                String message
+        ) {
+
+            return new ActionResult(
+                    false,
+                    message
+            );
+        }
+    }
+}
