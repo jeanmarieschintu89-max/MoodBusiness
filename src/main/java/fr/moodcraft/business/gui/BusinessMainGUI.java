@@ -57,11 +57,12 @@ public final class BusinessMainGUI {
                                     "§7Lance ton activité",
                                     "§7sur §aMood§6Craft§7.",
                                     "",
-                                    "§7Prix: §e" + VaultHook.format(nextPrice),
+                                    "§7Frais d'enregistrement:",
+                                    "§e" + VaultHook.format(nextPrice),
                                     "",
                                     "§8• §7Nom dans le chat",
                                     "§8• §7Création directe",
-                                    "§8• §7Prix +15 000€ ensuite",
+                                    "§8• §7+15 000€ ensuite",
                                     "",
                                     "§a✔ Clique pour commencer"
                             )
