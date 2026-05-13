@@ -12,7 +12,6 @@ import fr.moodcraft.business.model.BusinessRole;
 import fr.moodcraft.business.util.BusinessMessages;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 
 import org.bukkit.entity.Player;
@@ -69,11 +68,13 @@ public class RecruitmentChatListener
                 "Employés Entreprise"
         );
 
-        p.sendMessage("§fÉcris le pseudo du joueur à recruter.");
+        p.sendMessage("§fÉcris le pseudo du joueur connecté.");
+        p.sendMessage("");
         p.sendMessage("§7Entreprise: §e" + business.getName());
         p.sendMessage("");
         p.sendMessage("§8• §7Exemple: §eSteven2621");
-        p.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
+        p.sendMessage("§8• §7Le joueur doit être connecté");
+        p.sendMessage("§8• §7Tape §cannuler §7pour quitter");
 
         BusinessMessages.footer(p);
 
@@ -186,17 +187,17 @@ public class RecruitmentChatListener
 
         if (draft.step == 0) {
 
-            OfflinePlayer target =
-                    Bukkit.getOfflinePlayer(
+            Player target =
+                    Bukkit.getPlayerExact(
                             message.trim()
                     );
 
-            if (target.getName() == null) {
+            if (target == null || !target.isOnline()) {
 
                 BusinessMessages.deny(
                         p,
                         "Employés Entreprise",
-                        "Joueur introuvable. Vérifie le pseudo."
+                        "Ce joueur doit être connecté."
                 );
 
                 return;
@@ -229,7 +230,8 @@ public class RecruitmentChatListener
                     "Employés Entreprise"
             );
 
-            p.sendMessage("§fÉcris le rôle à attribuer.");
+            p.sendMessage("§fÉcris le rôle à donner.");
+            p.sendMessage("");
             p.sendMessage("§7Joueur: §e" + draft.targetName);
             p.sendMessage("");
             p.sendMessage("§8• §eStagiaire");
@@ -258,7 +260,7 @@ public class RecruitmentChatListener
                 BusinessMessages.deny(
                         p,
                         "Employés Entreprise",
-                        "Rôle inconnu. Exemple: §eapprenti§7, §eemploye§7, §etresorier§7."
+                        "Rôle inconnu. Exemple: §eemploye§7."
                 );
 
                 return;
@@ -292,10 +294,21 @@ public class RecruitmentChatListener
                 return;
             }
 
-            OfflinePlayer target =
-                    Bukkit.getOfflinePlayer(
+            Player target =
+                    Bukkit.getPlayer(
                             draft.targetUuid
                     );
+
+            if (target == null || !target.isOnline()) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Le joueur n'est plus connecté."
+                );
+
+                return;
+            }
 
             BusinessManager.ActionResult result =
                     BusinessManager.addMember(
@@ -324,6 +337,30 @@ public class RecruitmentChatListener
                     p,
                     "Employés Entreprise",
                     result.message()
+            );
+
+            BusinessMessages.header(
+                    target,
+                    "Employés Entreprise"
+            );
+
+            target.sendMessage("§a✔ §fVous avez rejoint une entreprise.");
+            target.sendMessage("");
+            target.sendMessage("§7Entreprise: §e" + business.getName());
+            target.sendMessage("§7Rôle: " + role.getDisplayName());
+            target.sendMessage("");
+            BusinessMessages.line(
+                    target,
+                    "Ouvrez /entreprise pour voir votre espace"
+            );
+
+            BusinessMessages.footer(target);
+
+            target.playSound(
+                    target.getLocation(),
+                    Sound.UI_TOAST_CHALLENGE_COMPLETE,
+                    0.8f,
+                    1.1f
             );
 
             p.playSound(
