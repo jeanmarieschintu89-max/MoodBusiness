@@ -70,7 +70,7 @@ public class BusinessAdminGUIListener
             BusinessMessages.deny(
                     p,
                     "Gestion Entreprises",
-                    "Accès réservé à l'administration économique."
+                    "Accès réservé au staff."
             );
 
             return;
@@ -99,6 +99,10 @@ public class BusinessAdminGUIListener
 
         switch (action) {
 
+            //
+            // 📄 OUVRIR DOSSIER ADMIN
+            //
+
             case "admin_manage_business" -> {
 
                 BusinessAdminManageGUI.open(
@@ -106,6 +110,10 @@ public class BusinessAdminGUIListener
                         business
                 );
             }
+
+            //
+            // ℹ INFOS CHAT
+            //
 
             case "admin_info_business" -> {
 
@@ -116,6 +124,10 @@ public class BusinessAdminGUIListener
                         business
                 );
             }
+
+            //
+            // ⛔ SUSPENDRE
+            //
 
             case "admin_suspend_business" -> {
 
@@ -154,6 +166,10 @@ public class BusinessAdminGUIListener
                 );
             }
 
+            //
+            // ✅ RÉACTIVER
+            //
+
             case "admin_reactivate_business" -> {
 
                 if (!p.hasPermission("moodbusiness.staff.suspend")) {
@@ -191,13 +207,17 @@ public class BusinessAdminGUIListener
                 );
             }
 
+            //
+            // 🧨 FERMER / ARCHIVER
+            //
+
             case "admin_dissolve_business" -> {
 
                 if (!p.hasPermission("moodbusiness.staff.suspend")) {
 
                     BusinessMessages.deny(
                             p,
-                            "Gestion Entreprises",
+                            "Fermer Entreprise",
                             "Vous ne pouvez pas archiver une entreprise."
                     );
 
@@ -216,7 +236,7 @@ public class BusinessAdminGUIListener
 
                     BusinessMessages.deny(
                             p,
-                            "Dissolution Entreprise",
+                            "Fermer Entreprise",
                             result.message()
                     );
 
@@ -232,7 +252,7 @@ public class BusinessAdminGUIListener
 
                 BusinessMessages.success(
                         p,
-                        "Dissolution Entreprise",
+                        "Fermer Entreprise",
                         result.message()
                 );
 
