@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,9 +31,22 @@ public class BusinessCreationChatListener
     private static final Set<UUID> WAITING_NAME =
             new HashSet<>();
 
+    private static final long TIMEOUT_TICKS =
+            20L * 60L;
+
     public static void start(
             Player p
     ) {
+
+        if (p == null) {
+            return;
+        }
+
+        //
+        // 🔒 Nettoie les autres saisies chat
+        //
+
+        RecruitmentChatListener.cancel(p);
 
         WAITING_NAME.add(
                 p.getUniqueId()
@@ -45,14 +59,14 @@ public class BusinessCreationChatListener
                 "Bureau des Entreprises"
         );
 
-        p.sendMessage("§fÉcris le nom de ton entreprise dans le chat.");
-        p.sendMessage("§7Exemple: §eNordBuild");
+        p.sendMessage("§fÉcris le nom de ton entreprise.");
         p.sendMessage("");
+        p.sendMessage("§8• §7Exemple: §eNordBuild");
         p.sendMessage("§8• §7Création directe");
-        p.sendMessage("§8• §7Frais progressifs: §e15 000€§7, puis §e30 000€§7...");
-        p.sendMessage("§8• §7Nom vérifié automatiquement");
+        p.sendMessage("§8• §7Frais d'enregistrement vérifiés");
         p.sendMessage("");
         p.sendMessage("§7Tape §cannuler §7pour quitter.");
+        p.sendMessage("§8• §7Annulation auto dans §e60 secondes");
 
         BusinessMessages.footer(p);
 
@@ -61,6 +75,73 @@ public class BusinessCreationChatListener
                 Sound.UI_BUTTON_CLICK,
                 0.8f,
                 1.2f
+        );
+
+        Bukkit.getScheduler().runTaskLater(
+                Main.getInstance(),
+                () -> {
+
+                    if (!WAITING_NAME.contains(
+                            p.getUniqueId()
+                    )) {
+                        return;
+                    }
+
+                    WAITING_NAME.remove(
+                            p.getUniqueId()
+                    );
+
+                    if (!p.isOnline()) {
+                        return;
+                    }
+
+                    BusinessMessages.info(
+                            p,
+                            "Bureau des Entreprises",
+                            "Création d'entreprise annulée : temps écoulé."
+                    );
+
+                    p.playSound(
+                            p.getLocation(),
+                            Sound.BLOCK_NOTE_BLOCK_BASS,
+                            0.8f,
+                            0.8f
+                    );
+                },
+                TIMEOUT_TICKS
+        );
+    }
+
+    public static void cancel(
+            Player p
+    ) {
+
+        if (p == null) {
+            return;
+        }
+
+        WAITING_NAME.remove(
+                p.getUniqueId()
+        );
+    }
+
+    public static boolean isWaiting(
+            Player p
+    ) {
+
+        return p != null
+                && WAITING_NAME.contains(
+                p.getUniqueId()
+        );
+    }
+
+    @EventHandler
+    public void onQuit(
+            PlayerQuitEvent e
+    ) {
+
+        WAITING_NAME.remove(
+                e.getPlayer().getUniqueId()
         );
     }
 
@@ -156,12 +237,16 @@ public class BusinessCreationChatListener
                 "Bureau des Entreprises"
         );
 
-        p.sendMessage("§fEntreprise créée avec succès.");
-        p.sendMessage("§7Nom: §e" + business.getName());
-        p.sendMessage("§7Frais d'enregistrement: §e" + BusinessMessages.money(business.getCreationFee()));
-        p.sendMessage("§7Statut: " + business.getStatus().getDisplayName());
+        p.sendMessage("§a✔ §fEntreprise créée.");
         p.sendMessage("");
-        p.sendMessage("§a✔ Dossier inscrit au Bureau des Entreprises §aMood§6Craft§a.");
+        p.sendMessage("§7Nom: §e" + business.getName());
+        p.sendMessage("§7Frais: §e" + BusinessMessages.money(business.getCreationFee()));
+        p.sendMessage("§7État: " + business.getStatus().getDisplayName());
+        p.sendMessage("");
+        BusinessMessages.line(
+                p,
+                "Dossier inscrit au Bureau des Entreprises"
+        );
 
         BusinessMessages.footer(p);
 
