@@ -16,7 +16,7 @@ import org.bukkit.inventory.Inventory;
 public final class ApplicationReviewGUI {
 
     public static final String TITLE =
-            "§8✦ §6Dossier Candidature §8✦";
+            "§6✦ §8Dossier Candidature §6✦";
 
     private ApplicationReviewGUI() {}
 
@@ -38,18 +38,18 @@ public final class ApplicationReviewGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §f" + application.getApplicantName() + " §6✦")
+                        .name("§6✦ §f" + shortText(application.getApplicantName(), 18) + " §6✦")
                         .lore(
-                                "§7Entreprise: §e" + application.getBusinessName(),
+                                "§7Entreprise: §e" + shortText(application.getBusinessName(), 18),
                                 "§7Type: " + application.getType().getDisplayName(),
-                                "§7Statut: " + application.getStatus().getDisplayName(),
-                                "§7Créée le: §f" + TimeUtil.formatDate(application.getCreatedAt()),
+                                "§7État: " + application.getStatus().getDisplayName(),
+                                "§7Créée: §f" + shortDate(application.getCreatedAt()),
                                 "",
                                 "§6✦ §fPrésentation",
-                                "§7" + crop(application.getPresentation()),
+                                "§7" + shortText(application.getPresentation(), 32),
                                 "",
                                 "§6✦ §fDisponibilités",
-                                "§7" + crop(application.getAvailability())
+                                "§7" + shortText(application.getAvailability(), 32)
                         )
                         .build()
         );
@@ -58,12 +58,15 @@ public final class ApplicationReviewGUI {
                 inv,
                 20,
                 new ItemBuilder(Material.PAPER)
-                        .name("§6✦ §fAccepter comme stagiaire §6✦")
+                        .name("§6✦ §fAccepter stage §6✦")
                         .lore(
-                                "§7Le joueur rejoindra l'entreprise",
-                                "§7avec un rôle très limité.",
+                                "§7Le joueur rejoint",
+                                "§7comme stagiaire.",
                                 "",
-                                "§b✔ Stage"
+                                "§8• §7Accès limité",
+                                "§8• §7Découverte",
+                                "",
+                                "§bClique pour accepter"
                         )
                         .action("application_accept_stage")
                         .target(application.getId())
@@ -74,12 +77,15 @@ public final class ApplicationReviewGUI {
                 inv,
                 22,
                 new ItemBuilder(Material.COPPER_INGOT)
-                        .name("§6✦ §fAccepter comme apprenti §6✦")
+                        .name("§6✦ §fAccepter apprentissage §6✦")
                         .lore(
-                                "§7Le joueur rejoindra l'entreprise",
-                                "§7pour une formation active.",
+                                "§7Le joueur rejoint",
+                                "§7comme apprenti.",
                                 "",
-                                "§e✔ Apprentissage"
+                                "§8• §7Formation",
+                                "§8• §7Participation",
+                                "",
+                                "§eClique pour accepter"
                         )
                         .action("application_accept_apprentice")
                         .target(application.getId())
@@ -90,12 +96,14 @@ public final class ApplicationReviewGUI {
                 inv,
                 24,
                 new ItemBuilder(Material.NAME_TAG)
-                        .name("§6✦ §fDemander un entretien §6✦")
+                        .name("§6✦ §fDemander entretien §6✦")
                         .lore(
-                                "§7Marquer la candidature comme",
-                                "§7en attente d'entretien.",
+                                "§7Marque le dossier",
+                                "§7comme entretien.",
                                 "",
-                                "§b✔ Contact conseillé"
+                                "§8• §7À discuter avec le joueur",
+                                "",
+                                "§bClique pour demander"
                         )
                         .action("application_interview")
                         .target(application.getId())
@@ -108,10 +116,11 @@ public final class ApplicationReviewGUI {
                 new ItemBuilder(Material.RED_DYE)
                         .name("§cRefuser")
                         .lore(
-                                "§7Refuser la candidature.",
-                                "§7Une raison simple sera enregistrée.",
+                                "§7Refuse cette candidature.",
                                 "",
-                                "§cAction administrative"
+                                "§8• §7Le joueur sera prévenu",
+                                "",
+                                "§cClique pour refuser"
                         )
                         .action("application_refuse")
                         .target(application.getId())
@@ -124,7 +133,7 @@ public final class ApplicationReviewGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir aux candidatures reçues."
+                                "§7Candidatures reçues"
                         )
                         .action("application_received_list")
                         .target(application.getBusinessId())
@@ -134,18 +143,44 @@ public final class ApplicationReviewGUI {
         p.openInventory(inv);
     }
 
-    private static String crop(
-            String text
+    private static String shortText(
+            String text,
+            int max
     ) {
 
         if (text == null || text.isBlank()) {
-            return "Non renseigné.";
+            return "Non renseigné";
         }
 
-        if (text.length() <= 45) {
-            return text;
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
         }
 
-        return text.substring(0, 45) + "...";
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
+    }
+
+    private static String shortDate(
+            long time
+    ) {
+
+        String date =
+                TimeUtil.formatDate(time);
+
+        if (date == null || date.equalsIgnoreCase("Jamais")) {
+            return "Aucune";
+        }
+
+        if (date.length() <= 10) {
+            return date;
+        }
+
+        return date.substring(0, 10);
     }
 }
