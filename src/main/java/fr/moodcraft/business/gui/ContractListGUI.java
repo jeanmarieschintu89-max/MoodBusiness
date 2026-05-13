@@ -23,13 +23,13 @@ import java.util.List;
 public final class ContractListGUI {
 
     public static final String TITLE_MY =
-            "§8✦ §6Mes Contrats §8✦";
+            "§6✦ §8Mes Contrats §6✦";
 
     public static final String TITLE_BUSINESS =
-            "§8✦ §6Contrats Entreprise §8✦";
+            "§6✦ §8Contrats Entreprise §6✦";
 
     public static final String TITLE_LITIGE =
-            "§8✦ §6Litiges Économiques §8✦";
+            "§6✦ §8Litiges §6✦";
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -100,7 +100,9 @@ public final class ContractListGUI {
                         .lore(
                                 "§7Dossiers affichés: §e" + list.size(),
                                 "",
-                                "§8• §7Service officiel de §aMood§6Craft§7."
+                                "§8• §7Argent bloqué",
+                                "§8• §7Validation",
+                                "§8• §7Litige possible"
                         )
                         .build()
         );
@@ -128,17 +130,18 @@ public final class ContractListGUI {
                     inv,
                     SLOTS[index],
                     new ItemBuilder(icon)
-                            .name("§6✦ §f" + contract.getTitle() + " §6✦")
+                            .name("§6✦ §f" + shortText(contract.getTitle(), 22) + " §6✦")
                             .lore(
-                                    "§7Client: §e" + contract.getClientName(),
-                                    "§7Entreprise: §b" + contract.getBusinessName(),
-                                    "§7Statut: " + contract.getStatus().getDisplayName(),
-                                    "§7Montant bloqué: §e" + VaultHook.format(contract.getEscrowAmount()),
-                                    "§7Brut: §e" + VaultHook.format(contract.getGrossAmount()),
-                                    "§7Net entreprise: §a" + VaultHook.format(contract.getNetAmount()),
-                                    "§7Échéance: §f" + TimeUtil.formatDate(contract.getDueAt()),
+                                    "§7Client: §e" + shortText(contract.getClientName(), 14),
+                                    "§7Entreprise: §b" + shortText(contract.getBusinessName(), 14),
+                                    "§7État: " + contract.getStatus().getDisplayName(),
                                     "",
-                                    "§eClique pour consulter"
+                                    "§7Bloqué: §e" + VaultHook.format(contract.getEscrowAmount()),
+                                    "§7Brut: §e" + VaultHook.format(contract.getGrossAmount()),
+                                    "§7Net: §a" + VaultHook.format(contract.getNetAmount()),
+                                    "§7Délai: §f" + shortDate(contract.getDueAt()),
+                                    "",
+                                    "§eClique pour ouvrir"
                             )
                             .action("contract_detail")
                             .target(contract.getId())
@@ -154,12 +157,53 @@ public final class ContractListGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au menu contrats."
+                                "§7Menu contrats"
                         )
                         .action("open_contracts")
                         .build()
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
+    }
+
+    private static String shortDate(
+            long time
+    ) {
+
+        String date =
+                TimeUtil.formatDate(time);
+
+        if (date == null || date.equalsIgnoreCase("Jamais")) {
+            return "Aucune";
+        }
+
+        if (date.length() <= 10) {
+            return date;
+        }
+
+        return date.substring(0, 10);
     }
 }
