@@ -15,6 +15,7 @@ import fr.moodcraft.business.listener.BusinessEmployeeManageListener;
 import fr.moodcraft.business.listener.BusinessGUIListener;
 import fr.moodcraft.business.listener.ContractChatListener;
 import fr.moodcraft.business.listener.ContractGUIListener;
+import fr.moodcraft.business.listener.ContractMissionGUIListener;
 import fr.moodcraft.business.listener.PayrollChatListener;
 import fr.moodcraft.business.listener.RecruitmentChatListener;
 import fr.moodcraft.business.listener.RequestChatListener;
@@ -28,6 +29,7 @@ import fr.moodcraft.business.storage.AlertStorage;
 import fr.moodcraft.business.storage.ApplicationStorage;
 import fr.moodcraft.business.storage.AuditLogStorage;
 import fr.moodcraft.business.storage.BusinessStorage;
+import fr.moodcraft.business.storage.ContractAssignmentStorage;
 import fr.moodcraft.business.storage.ContractStorage;
 import fr.moodcraft.business.storage.FinanceStorage;
 import fr.moodcraft.business.storage.OfferStorage;
@@ -69,6 +71,7 @@ public class Main extends JavaPlugin {
         RequestStorage.init();
         OfferStorage.init();
         ContractStorage.init();
+        ContractAssignmentStorage.init();
         FinanceStorage.init();
         PayrollStorage.init();
         AuditLogStorage.init();
@@ -130,6 +133,7 @@ public class Main extends JavaPlugin {
         RequestStorage.save();
         OfferStorage.save();
         ContractStorage.save();
+        ContractAssignmentStorage.save();
         FinanceStorage.save();
         PayrollStorage.save();
         AuditLogStorage.save();
@@ -248,6 +252,11 @@ public class Main extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(
                 new ContractChatListener(),
+                this
+        );
+
+        Bukkit.getPluginManager().registerEvents(
+                new ContractMissionGUIListener(),
                 this
         );
 
