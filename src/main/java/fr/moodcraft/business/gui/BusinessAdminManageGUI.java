@@ -16,7 +16,7 @@ import org.bukkit.inventory.Inventory;
 public final class BusinessAdminManageGUI {
 
     public static final String TITLE =
-            "§8✦ §6Admin Entreprise §8✦";
+            "§6✦ §8Admin Entreprise §6✦";
 
     private BusinessAdminManageGUI() {}
 
@@ -38,16 +38,18 @@ public final class BusinessAdminManageGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.NETHER_STAR)
-                        .name("§6✦ §f" + business.getName() + " §6✦")
+                        .name("§6✦ §f" + shortText(business.getName(), 22) + " §6✦")
                         .lore(
-                                "§7Dossier administratif.",
+                                "§7Gestion staff.",
                                 "",
-                                "§7Dirigeant: §e" + business.getOwnerName(),
-                                "§7Statut: " + business.getStatus().getDisplayName(),
-                                "§7Solde entreprise: §e" + VaultHook.format(business.getBalance()),
+                                "§7Dirigeant: §e" + shortText(business.getOwnerName(), 18),
+                                "§7État: " + business.getStatus().getDisplayName(),
+                                "§7Banque: §e" + VaultHook.format(business.getBalance()),
                                 "",
-                                "§8• §7ID: §8" + business.getId(),
-                                "§8• §7Service officiel de §aMood§6Craft§7."
+                                "§8• §7Voir",
+                                "§8• §7Suspendre",
+                                "§8• §7Réactiver",
+                                "§8• §7Fermer"
                         )
                         .build()
         );
@@ -56,12 +58,15 @@ public final class BusinessAdminManageGUI {
                 inv,
                 20,
                 new ItemBuilder(Material.LIME_BANNER)
-                        .name("§a✦ Réactiver")
+                        .name("§6✦ §aRéactiver §6✦")
                         .lore(
-                                "§7Réactive cette entreprise",
+                                "§7Rouvre cette entreprise",
                                 "§7si elle est suspendue.",
                                 "",
-                                "§a▶ Réactiver"
+                                "§8• §7Elle pourra reprendre",
+                                "§8• §7son activité",
+                                "",
+                                "§aClique pour réactiver"
                         )
                         .action("admin_reactivate_business")
                         .target(business.getId())
@@ -72,12 +77,15 @@ public final class BusinessAdminManageGUI {
                 inv,
                 22,
                 new ItemBuilder(Material.RED_BANNER)
-                        .name("§c✦ Suspendre")
+                        .name("§6✦ §cSuspendre §6✦")
                         .lore(
-                                "§7Bloque temporairement",
-                                "§7cette entreprise.",
+                                "§7Bloque cette entreprise",
+                                "§7temporairement.",
                                 "",
-                                "§c▶ Suspendre"
+                                "§8• §7Plus de nouveaux contrats",
+                                "§8• §7Gestion limitée",
+                                "",
+                                "§cClique pour suspendre"
                         )
                         .action("admin_suspend_business")
                         .target(business.getId())
@@ -88,14 +96,14 @@ public final class BusinessAdminManageGUI {
                 inv,
                 24,
                 new ItemBuilder(Material.LAVA_BUCKET)
-                        .name("§c✦ Dissoudre / Archiver")
+                        .name("§6✦ §cFermer / Archiver §6✦")
                         .lore(
                                 "§7Archive cette entreprise.",
                                 "§7Elle ne sera plus active.",
                                 "",
                                 "§8• §7Banque vide requise",
-                                "§8• §7Contrats ouverts interdits",
-                                "§8• §7Historique conservé",
+                                "§8• §7Aucun contrat ouvert",
+                                "§8• §7Historique gardé",
                                 "",
                                 "§cAction sensible"
                         )
@@ -108,12 +116,16 @@ public final class BusinessAdminManageGUI {
                 inv,
                 31,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §fVoir le dossier §6✦")
+                        .name("§6✦ §fVoir la fiche §6✦")
                         .lore(
-                                "§7Afficher les informations",
+                                "§7Affiche les infos",
                                 "§7dans le chat.",
                                 "",
-                                "§e▶ Consulter"
+                                "§8• §7Dirigeant",
+                                "§8• §7État",
+                                "§8• §7Banque",
+                                "",
+                                "§eClique pour voir"
                         )
                         .action("admin_info_business")
                         .target(business.getId())
@@ -126,12 +138,35 @@ public final class BusinessAdminManageGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Retour à la gestion staff."
+                                "§7Gestion staff"
                         )
                         .action("open_staff")
                         .build()
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
     }
 }
