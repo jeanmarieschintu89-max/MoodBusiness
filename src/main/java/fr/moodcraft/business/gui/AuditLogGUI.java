@@ -20,7 +20,7 @@ import java.util.List;
 public final class AuditLogGUI {
 
     public static final String TITLE =
-            "§8✦ §6Historique Administratif §8✦";
+            "§6✦ §8Logs §6✦";
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -51,12 +51,17 @@ public final class AuditLogGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §fJournal du Registre §6✦")
+                        .name("§6✦ §fLogs du Bureau §6✦")
                         .lore(
-                                "§7Dernières actions économiques.",
-                                "§7Entrées affichées: §e" + logs.size(),
+                                "§7Dernières actions",
+                                "§7du Bureau des Entreprises.",
                                 "",
-                                "§8• §7Service officiel de §aMood§6Craft§7."
+                                "§7Affichées: §e" + logs.size(),
+                                "",
+                                "§8• §7Entreprises",
+                                "§8• §7Contrats",
+                                "§8• §7Banque",
+                                "§8• §7Staff"
                         )
                         .build()
         );
@@ -75,16 +80,12 @@ public final class AuditLogGUI {
                     new ItemBuilder(icon(entry))
                             .name("§6✦ " + entry.getType().getDisplayName() + " §6✦")
                             .lore(
-                                    "§7Acteur: §e" + entry.getActorName(),
-                                    entry.getTargetName() == null || entry.getTargetName().isBlank()
-                                            ? "§7Cible: §8Aucune"
-                                            : "§7Cible: §f" + entry.getTargetName(),
-                                    entry.getBusinessName() == null || entry.getBusinessName().isBlank()
-                                            ? "§7Entreprise: §8Aucune"
-                                            : "§7Entreprise: §b" + entry.getBusinessName(),
-                                    "§7Date: §f" + TimeUtil.formatDate(entry.getCreatedAt()),
+                                    "§7Acteur: §e" + shortText(entry.getActorName(), 16),
+                                    targetLine(entry),
+                                    businessLine(entry),
+                                    "§7Date: §f" + shortDate(entry.getCreatedAt()),
                                     "",
-                                    "§8• §7" + crop(entry.getMessage())
+                                    "§8• §7" + shortText(entry.getMessage(), 34)
                             )
                             .build()
             );
@@ -98,7 +99,7 @@ public final class AuditLogGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir à la gestion staff."
+                                "§7Gestion staff"
                         )
                         .action("open_staff")
                         .build()
@@ -134,18 +135,70 @@ public final class AuditLogGUI {
         };
     }
 
-    private static String crop(
-            String text
+    private static String targetLine(
+            AuditLogEntry entry
+    ) {
+
+        if (entry.getTargetName() == null
+                || entry.getTargetName().isBlank()) {
+
+            return "§7Cible: §8Aucune";
+        }
+
+        return "§7Cible: §f" + shortText(entry.getTargetName(), 16);
+    }
+
+    private static String businessLine(
+            AuditLogEntry entry
+    ) {
+
+        if (entry.getBusinessName() == null
+                || entry.getBusinessName().isBlank()) {
+
+            return "§7Entreprise: §8Aucune";
+        }
+
+        return "§7Entreprise: §b" + shortText(entry.getBusinessName(), 16);
+    }
+
+    private static String shortText(
+            String text,
+            int max
     ) {
 
         if (text == null || text.isBlank()) {
-            return "Aucun détail.";
+            return "Aucun";
         }
 
-        if (text.length() <= 60) {
-            return text;
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
         }
 
-        return text.substring(0, 60) + "...";
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
+    }
+
+    private static String shortDate(
+            long time
+    ) {
+
+        String date =
+                TimeUtil.formatDate(time);
+
+        if (date == null || date.equalsIgnoreCase("Jamais")) {
+            return "Aucune";
+        }
+
+        if (date.length() <= 10) {
+            return date;
+        }
+
+        return date.substring(0, 10);
     }
 }
