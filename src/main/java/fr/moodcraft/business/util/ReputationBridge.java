@@ -1,4 +1,3 @@
-
 package fr.moodcraft.business.util;
 
 import org.bukkit.Bukkit;
@@ -7,6 +6,10 @@ import org.bukkit.OfflinePlayer;
 public final class ReputationBridge {
 
     private ReputationBridge() {}
+
+    //
+    // ⭐ AJOUT RÉPUTATION
+    //
 
     public static void add(
             OfflinePlayer player,
@@ -42,6 +45,10 @@ public final class ReputationBridge {
                         + points
         );
     }
+
+    //
+    // ⭐ RETRAIT RÉPUTATION
+    //
 
     public static void remove(
             OfflinePlayer player,
