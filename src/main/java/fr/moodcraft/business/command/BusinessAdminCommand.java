@@ -307,6 +307,132 @@ public class BusinessAdminCommand
             }
 
             //
+            // 🗑 RESET ARCHIVES
+            //
+
+            case "archivereset", "resetarchive", "cleararchive" -> {
+
+                if (!sender.hasPermission("moodbusiness.staff.suspend")) {
+
+                    error(
+                            sender,
+                            "Vous ne pouvez pas supprimer les archives."
+                    );
+
+                    return true;
+                }
+
+                if (args.length < 2) {
+
+                    usage(
+                            sender,
+                            "/entrepriseadmin archivereset <entreprise|all>"
+                    );
+
+                    return true;
+                }
+
+                if (args[1].equalsIgnoreCase("all")) {
+
+                    int removed = 0;
+
+                    java.util.List<Business> copy =
+                            new java.util.ArrayList<>(
+                                    BusinessManager.getAll()
+                            );
+
+                    for (Business business : copy) {
+
+                        if (business.getStatus() != BusinessStatus.ARCHIVEE) {
+                            continue;
+                        }
+
+                        if (BusinessStorage.removeBusiness(
+                                business.getId()
+                        )) {
+
+                            removed++;
+
+                            AuditLogManager.log(
+                                    AuditLogType.STAFF_ACTION,
+                                    sender,
+                                    business.getName(),
+                                    business,
+                                    "Archive entreprise supprimée définitivement."
+                            );
+                        }
+                    }
+
+                    success(
+                            sender,
+                            "Archives supprimées: §e" + removed
+                    );
+
+                    return true;
+                }
+
+                String name =
+                        joinArgs(
+                                args,
+                                1,
+                                args.length
+                        );
+
+                Business business =
+                        BusinessManager.getByName(name);
+
+                if (business == null) {
+
+                    error(
+                            sender,
+                            "Entreprise introuvable."
+                    );
+
+                    return true;
+                }
+
+                if (business.getStatus() != BusinessStatus.ARCHIVEE) {
+
+                    error(
+                            sender,
+                            "Cette entreprise n'est pas archivée."
+                    );
+
+                    return true;
+                }
+
+                String businessName =
+                        business.getName();
+
+                if (!BusinessStorage.removeBusiness(
+                        business.getId()
+                )) {
+
+                    error(
+                            sender,
+                            "Impossible de supprimer cette archive."
+                    );
+
+                    return true;
+                }
+
+                AuditLogManager.log(
+                        AuditLogType.STAFF_ACTION,
+                        sender,
+                        businessName,
+                        business,
+                        "Archive entreprise supprimée définitivement."
+                );
+
+                success(
+                        sender,
+                        "Archive supprimée: §e" + businessName
+                );
+
+                return true;
+            }
+
+            //
             // ⏳ RESET DÉLAI CRÉATION
             //
 
@@ -834,6 +960,8 @@ public class BusinessAdminCommand
         sender.sendMessage("§8• §e/entrepriseadmin suspendre <entreprise>");
         sender.sendMessage("§8• §e/entrepriseadmin reactiver <entreprise>");
         sender.sendMessage("§8• §e/entrepriseadmin archiver <entreprise>");
+        sender.sendMessage("§8• §e/entrepriseadmin archivereset <entreprise>");
+        sender.sendMessage("§8• §e/entrepriseadmin archivereset all");
         sender.sendMessage("");
         sender.sendMessage("§8• §e/entrepriseadmin delaireset <joueur>");
         sender.sendMessage("§8• §e/entrepriseadmin compteur <joueur> <nombre>");
