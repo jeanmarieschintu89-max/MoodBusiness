@@ -1,5 +1,6 @@
 package fr.moodcraft.business.gui;
 
+import fr.moodcraft.business.manager.ContractAssignmentManager;
 import fr.moodcraft.business.manager.ContractManager;
 
 import fr.moodcraft.business.model.Contract;
@@ -23,7 +24,7 @@ import java.util.List;
 public final class ContractDetailGUI {
 
     public static final String TITLE =
-            "§8✦ §6Contrat §8✦";
+            "§6✦ §8Contrat §6✦";
 
     private ContractDetailGUI() {}
 
@@ -41,15 +42,20 @@ public final class ContractDetailGUI {
 
         SafeGUI.fill(inv);
 
+        int assigned =
+                ContractAssignmentManager.getByContract(
+                        contract.getId()
+                ).size();
+
         SafeGUI.set(
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §f" + shortText(contract.getTitle(), 22))
+                        .name("§6✦ §f" + shortText(contract.getTitle(), 22) + " §6✦")
                         .lore(
                                 "§7Client: §e" + shortText(contract.getClientName(), 14),
                                 "§7Entreprise: §b" + shortText(contract.getBusinessName(), 14),
-                                "§7Statut: " + contract.getStatus().getDisplayName(),
+                                "§7État: " + contract.getStatus().getDisplayName(),
                                 "",
                                 "§7Brut: §e" + VaultHook.format(contract.getGrossAmount()),
                                 "§7Taxe: §c" + VaultHook.format(contract.getTaxAmount())
@@ -57,8 +63,9 @@ public final class ContractDetailGUI {
                                 "§7Net: §a" + VaultHook.format(contract.getNetAmount()),
                                 "§7Bloqué: §e" + VaultHook.format(contract.getEscrowAmount()),
                                 "",
-                                "§7Fin: §f" + shortDate(contract.getDueAt()),
+                                "§7Délai: §f" + shortDate(contract.getDueAt()),
                                 "§7Validation: §f" + shortDate(contract.getValidateBefore()),
+                                "§7Assignés: §e" + assigned,
                                 "",
                                 "§8ID: §7" + shortText(contract.getId(), 24)
                         )
@@ -72,7 +79,7 @@ public final class ContractDetailGUI {
 
             SafeGUI.set(
                     inv,
-                    20,
+                    19,
                     new ItemBuilder(Material.LIME_DYE)
                             .name("§6✦ §fTerminer §6✦")
                             .lore(
@@ -86,6 +93,28 @@ public final class ContractDetailGUI {
                             .target(contract.getId())
                             .build()
             );
+
+            SafeGUI.set(
+                    inv,
+                    21,
+                    new ItemBuilder(Material.PLAYER_HEAD)
+                            .name("§6✦ §fAssigner un membre §6✦")
+                            .lore(
+                                    "§7Donner une mission",
+                                    "§7sur ce contrat.",
+                                    "",
+                                    "§7Assignés: §e" + assigned,
+                                    "",
+                                    "§8• §7Employé",
+                                    "§8• §7Apprenti",
+                                    "§8• §7Stagiaire",
+                                    "",
+                                    "§eClique pour choisir"
+                            )
+                            .action("contract_assign_open")
+                            .target(contract.getId())
+                            .build()
+            );
         }
 
         if (ContractManager.canClientValidate(
@@ -95,7 +124,7 @@ public final class ContractDetailGUI {
 
             SafeGUI.set(
                     inv,
-                    22,
+                    23,
                     new ItemBuilder(Material.GOLD_INGOT)
                             .name("§6✦ §fValider §6✦")
                             .lore(
@@ -116,13 +145,13 @@ public final class ContractDetailGUI {
 
             SafeGUI.set(
                     inv,
-                    24,
+                    25,
                     new ItemBuilder(Material.ANVIL)
                             .name("§6✦ §fLitige §6✦")
                             .lore(
                                     "§7Signaler un problème.",
                                     "",
-                                    "§8• §7Fonds bloqués",
+                                    "§8• §7Argent bloqué",
                                     "§8• §7Décision staff",
                                     "",
                                     "§c⚖ Procédure"
@@ -147,7 +176,7 @@ public final class ContractDetailGUI {
                                     "§8• §7Payer entreprise",
                                     "§8• §7Rembourser client",
                                     "",
-                                    "§cAccès admin"
+                                    "§cAccès staff"
                             )
                             .action("contract_admin_resolve")
                             .target(contract.getId())
