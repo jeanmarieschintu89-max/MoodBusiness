@@ -20,10 +20,10 @@ import java.util.List;
 public final class ApplicationListGUI {
 
     public static final String TITLE_MY =
-            "§8✦ §6Mes Candidatures §8✦";
+            "§6✦ §8Mes Candidatures §6✦";
 
     public static final String TITLE_RECEIVED =
-            "§8✦ §6Candidatures Reçues §8✦";
+            "§6✦ §8Candidatures Reçues §6✦";
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -85,11 +85,15 @@ public final class ApplicationListGUI {
                 new ItemBuilder(Material.BOOK)
                         .name("§6✦ §fCandidatures §6✦")
                         .lore(
-                                "§7Dossiers affichés: §e" + list.size(),
+                                "§7Dossiers: §e" + list.size(),
                                 "",
                                 manage
                                         ? "§aGestion autorisée"
-                                        : "§7Consultation personnelle"
+                                        : "§7Lecture personnelle",
+                                "",
+                                "§8• §7Stage",
+                                "§8• §7Apprentissage",
+                                "§8• §7Entretien"
                         )
                         .build()
         );
@@ -118,18 +122,20 @@ public final class ApplicationListGUI {
                     new ItemBuilder(icon)
                             .name(
                                     "§6✦ §f"
-                                            + (manage
-                                            ? application.getApplicantName()
-                                            : application.getBusinessName())
+                                            + shortText(
+                                            manage
+                                                    ? application.getApplicantName()
+                                                    : application.getBusinessName(),
+                                            18
+                                    )
                                             + " §6✦"
                             )
                             .lore(
-                                    "§7Entreprise: §e" + application.getBusinessName(),
-                                    "§7Joueur: §e" + application.getApplicantName(),
+                                    "§7Entreprise: §e" + shortText(application.getBusinessName(), 16),
+                                    "§7Joueur: §e" + shortText(application.getApplicantName(), 16),
                                     "§7Type: " + application.getType().getDisplayName(),
-                                    "§7Statut: " + application.getStatus().getDisplayName(),
-                                    "§7Créée le: §f" + TimeUtil.formatDate(application.getCreatedAt()),
-                                    "§7Expire le: §f" + TimeUtil.formatDate(application.getExpiresAt()),
+                                    "§7État: " + application.getStatus().getDisplayName(),
+                                    "§7Créée: §f" + shortDate(application.getCreatedAt()),
                                     "",
                                     manage
                                             ? "§eClique pour examiner"
@@ -153,12 +159,53 @@ public final class ApplicationListGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au menu candidatures."
+                                "§7Menu candidatures"
                         )
                         .action("open_applications")
                         .build()
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
+    }
+
+    private static String shortDate(
+            long time
+    ) {
+
+        String date =
+                TimeUtil.formatDate(time);
+
+        if (date == null || date.equalsIgnoreCase("Jamais")) {
+            return "Aucune";
+        }
+
+        if (date.length() <= 10) {
+            return date;
+        }
+
+        return date.substring(0, 10);
     }
 }
