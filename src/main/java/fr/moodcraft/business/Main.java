@@ -1,5 +1,6 @@
 package fr.moodcraft.business;
 
+import fr.moodcraft.business.command.BusinessAdminCommand;
 import fr.moodcraft.business.command.BusinessCommand;
 import fr.moodcraft.business.command.ContractCommand;
 import fr.moodcraft.business.command.RequestsCommand;
@@ -158,6 +159,16 @@ public class Main extends JavaPlugin {
 
             entreprise.setExecutor(
                     new BusinessCommand()
+            );
+        }
+
+        PluginCommand entrepriseAdmin =
+                getCommand("entrepriseadmin");
+
+        if (entrepriseAdmin != null) {
+
+            entrepriseAdmin.setExecutor(
+                    new BusinessAdminCommand()
             );
         }
 
