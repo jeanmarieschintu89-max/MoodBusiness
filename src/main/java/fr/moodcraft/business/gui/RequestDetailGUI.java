@@ -21,7 +21,7 @@ import org.bukkit.inventory.Inventory;
 public final class RequestDetailGUI {
 
     public static final String TITLE =
-            "§8✦ §6Demande §8✦";
+            "§6✦ §8Demande §6✦";
 
     private RequestDetailGUI() {}
 
@@ -49,7 +49,7 @@ public final class RequestDetailGUI {
                                 "§7Type: " + request.getCategory().getDisplayName(),
                                 "§7Budget: §e" + VaultHook.format(request.getBudget()),
                                 "§7Délai: §b" + request.getDueDays() + "j",
-                                "§7Statut: " + request.getStatus().getDisplayName(),
+                                "§7État: " + request.getStatus().getDisplayName(),
                                 "§7Créée: §f" + shortDate(request.getCreatedAt()),
                                 "",
                                 "§6✦ §fDescription",

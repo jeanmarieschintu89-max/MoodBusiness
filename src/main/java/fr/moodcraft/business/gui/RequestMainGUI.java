@@ -18,7 +18,7 @@ import org.bukkit.inventory.Inventory;
 public final class RequestMainGUI {
 
     public static final String TITLE =
-            "§8✦ §6Demandes §8✦";
+            "§6✦ §8Demandes §6✦";
 
     private RequestMainGUI() {}
 

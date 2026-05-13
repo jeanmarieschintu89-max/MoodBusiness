@@ -22,7 +22,7 @@ import java.util.List;
 public final class OfferListGUI {
 
     public static final String TITLE =
-            "§8✦ §6Offres §8✦";
+            "§6✦ §8Offres §6✦";
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -62,7 +62,7 @@ public final class OfferListGUI {
                                 "§7Budget: §e" + VaultHook.format(request.getBudget()),
                                 "",
                                 "§8• §7Accepter une offre",
-                                "§8• §7créera un contrat."
+                                "§8• §7créera un contrat"
                         )
                         .build()
         );
@@ -89,14 +89,14 @@ public final class OfferListGUI {
                                     "§7Auteur: §e" + shortText(offer.getSenderName(), 14),
                                     "§7Montant: §e" + VaultHook.format(offer.getAmount()),
                                     "§7Délai: §b" + offer.getDueDays() + "j",
-                                    "§7Statut: " + offer.getStatus().getDisplayName(),
+                                    "§7État: " + offer.getStatus().getDisplayName(),
                                     "§7Date: §f" + shortDate(offer.getCreatedAt()),
                                     "",
                                     "§7Note: §f" + shortText(offer.getComment(), 26),
                                     "",
                                     offer.getStatus().isActive()
                                             ? "§a✔ Clique pour accepter"
-                                            : "§8• §7Offre clôturée"
+                                            : "§8• §7Offre fermée"
                             )
                             .action(
                                     offer.getStatus().isActive()

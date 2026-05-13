@@ -21,10 +21,10 @@ import java.util.List;
 public final class RequestListGUI {
 
     public static final String TITLE_PUBLIC =
-            "§8✦ §6Demandes §8✦";
+            "§6✦ §8Demandes §6✦";
 
     public static final String TITLE_MY =
-            "§8✦ §6Mes demandes §8✦";
+            "§6✦ §8Mes demandes §6✦";
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -106,7 +106,7 @@ public final class RequestListGUI {
                                     "§7Type: " + request.getCategory().getDisplayName(),
                                     "§7Budget: §e" + VaultHook.format(request.getBudget()),
                                     "§7Délai: §b" + request.getDueDays() + "j",
-                                    "§7Statut: " + request.getStatus().getDisplayName(),
+                                    "§7État: " + request.getStatus().getDisplayName(),
                                     "§7Fin: §f" + shortDate(request.getExpiresAt()),
                                     "",
                                     "§eClique pour ouvrir"
