@@ -15,7 +15,7 @@ softdepend:
 
 commands:
   entreprise:
-    description: Ouvre le registre économique des entreprises MoodCraft.
+    description: Ouvre le Bureau des Entreprises MoodCraft.
     aliases:
       - business
       - company
@@ -23,8 +23,15 @@ commands:
       - société
     usage: /entreprise
 
+  entrepriseadmin:
+    description: Gestion admin des entreprises MoodCraft.
+    aliases:
+      - ebadmin
+      - businessadmin
+    usage: /entrepriseadmin
+
   demandes:
-    description: Ouvre les demandes économiques MoodCraft.
+    description: Ouvre les demandes du Bureau des Entreprises.
     aliases:
       - demande
       - requests
@@ -32,7 +39,7 @@ commands:
     usage: /demandes
 
   contrat:
-    description: Ouvre les contrats officiels MoodCraft.
+    description: Ouvre les contrats du Bureau des Entreprises.
     aliases:
       - contrats
       - contract
@@ -45,19 +52,19 @@ permissions:
     default: true
 
   moodbusiness.staff:
-    description: Accès au menu staff MoodBusiness.
+    description: Accès à la gestion staff du Bureau des Entreprises.
     default: op
 
   moodbusiness.staff.suspend:
-    description: Permet de suspendre ou réactiver une entreprise.
+    description: Permet de suspendre, réactiver ou archiver une entreprise.
     default: op
 
   moodbusiness.staff.litige:
-    description: Permet de gérer les litiges économiques.
+    description: Permet de gérer les litiges des contrats.
     default: op
 
   moodbusiness.staff.tax:
-    description: Permet de consulter l'historique fiscal.
+    description: Permet de consulter l'historique des taxes.
     default: op
 
   moodbusiness.bypass:
