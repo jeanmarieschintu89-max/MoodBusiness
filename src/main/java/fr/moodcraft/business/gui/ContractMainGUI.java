@@ -1,6 +1,7 @@
 package fr.moodcraft.business.gui;
 
 import fr.moodcraft.business.manager.BusinessManager;
+import fr.moodcraft.business.manager.ContractAssignmentManager;
 import fr.moodcraft.business.manager.ContractManager;
 
 import fr.moodcraft.business.model.Business;
@@ -18,7 +19,7 @@ import org.bukkit.inventory.Inventory;
 public final class ContractMainGUI {
 
     public static final String TITLE =
-            "§8✦ §6Contrats §8✦";
+            "§6✦ §8Contrats §6✦";
 
     private ContractMainGUI() {}
 
@@ -35,6 +36,14 @@ public final class ContractMainGUI {
 
         SafeGUI.fill(inv);
 
+        int myContracts =
+                ContractManager.getByClient(p).size();
+
+        int myMissions =
+                ContractAssignmentManager.getByMember(
+                        p.getUniqueId()
+                ).size();
+
         SafeGUI.set(
                 inv,
                 13,
@@ -44,12 +53,11 @@ public final class ContractMainGUI {
                                 "§7Voir vos contrats",
                                 "§7personnels.",
                                 "",
+                                "§7Contrats: §e" + myContracts,
+                                "",
                                 "§8• §7En cours",
                                 "§8• §7Terminés",
                                 "§8• §7Litiges",
-                                "",
-                                "§7Total: §e"
-                                        + ContractManager.getByClient(p).size(),
                                 "",
                                 "§eClique pour ouvrir"
                         )
@@ -74,7 +82,7 @@ public final class ContractMainGUI {
                                     "§7de votre entreprise.",
                                     "",
                                     "§7Entreprise: §e" + shortText(business.getName(), 18),
-                                    "§7Total: §e"
+                                    "§7Contrats: §e"
                                             + ContractManager.getByBusiness(business).size(),
                                     "",
                                     "§8• §7Travail à faire",
@@ -91,6 +99,27 @@ public final class ContractMainGUI {
         SafeGUI.set(
                 inv,
                 23,
+                new ItemBuilder(Material.IRON_PICKAXE)
+                        .name("§6✦ §fMes missions §6✦")
+                        .lore(
+                                "§7Contrats où vous",
+                                "§7êtes assigné.",
+                                "",
+                                "§7Missions: §e" + myMissions,
+                                "",
+                                "§8• §7Employé",
+                                "§8• §7Apprenti",
+                                "§8• §7Stagiaire",
+                                "",
+                                "§eClique pour ouvrir"
+                        )
+                        .action("contract_my_missions")
+                        .build()
+        );
+
+        SafeGUI.set(
+                inv,
+                25,
                 new ItemBuilder(Material.GOLD_INGOT)
                         .name("§6✦ §fArgent bloqué §6✦")
                         .lore(
