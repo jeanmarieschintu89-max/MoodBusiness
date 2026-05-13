@@ -1,7 +1,7 @@
 package fr.moodcraft.business.gui;
 
-import fr.moodcraft.business.manager.BusinessManager;
 import fr.moodcraft.business.manager.ApplicationManager;
+import fr.moodcraft.business.manager.BusinessManager;
 
 import fr.moodcraft.business.model.Business;
 
@@ -18,7 +18,7 @@ import org.bukkit.inventory.Inventory;
 public final class ApplicationMainGUI {
 
     public static final String TITLE =
-            "§8✦ §6Candidatures §aMood§6Craft §8✦";
+            "§8✦ §6Candidatures §8✦";
 
     private ApplicationMainGUI() {}
 
@@ -44,14 +44,17 @@ public final class ApplicationMainGUI {
                 inv,
                 13,
                 new ItemBuilder(Material.WRITABLE_BOOK)
-                        .name("§6✦ §fEnvoyer une candidature §6✦")
+                        .name("§6✦ §fPostuler §6✦")
                         .lore(
-                                "§7Postuler auprès d'une entreprise",
-                                "§7pour un stage ou un apprentissage.",
+                                "§7Envoyer une candidature",
+                                "§7à une entreprise.",
+                                "",
+                                "§8• §7Stage",
+                                "§8• §7Apprentissage",
                                 "",
                                 "§7Candidatures actives: §e" + active,
                                 "",
-                                "§a✔ Formulaire guidé"
+                                "§eClique pour commencer"
                         )
                         .action("application_choose_business")
                         .build()
@@ -63,10 +66,14 @@ public final class ApplicationMainGUI {
                 new ItemBuilder(Material.BOOK)
                         .name("§6✦ §fMes candidatures §6✦")
                         .lore(
-                                "§7Voir vos demandes de stage",
-                                "§7et d'apprentissage.",
+                                "§7Voir vos candidatures",
+                                "§7envoyées aux entreprises.",
                                 "",
-                                "§eClique pour consulter"
+                                "§8• §7En attente",
+                                "§8• §7Entretien",
+                                "§8• §7Acceptée / refusée",
+                                "",
+                                "§eClique pour ouvrir"
                         )
                         .action("application_my_list")
                         .build()
@@ -89,10 +96,14 @@ public final class ApplicationMainGUI {
                     new ItemBuilder(Material.CHEST)
                             .name("§6✦ §fCandidatures reçues §6✦")
                             .lore(
-                                    "§7Examiner les candidatures",
-                                    "§7reçues par votre entreprise.",
+                                    "§7Voir les joueurs qui",
+                                    "§7veulent rejoindre l'entreprise.",
                                     "",
-                                    "§7Entreprise: §e" + business.getName(),
+                                    "§7Entreprise: §e" + shortText(business.getName(), 18),
+                                    "",
+                                    "§8• §7Accepter",
+                                    "§8• §7Refuser",
+                                    "§8• §7Demander entretien",
                                     "",
                                     "§a✔ Gestion autorisée"
                             )
@@ -108,12 +119,35 @@ public final class ApplicationMainGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au registre principal."
+                                "§7Bureau des Entreprises"
                         )
                         .action("back_main")
                         .build()
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
     }
 }
