@@ -65,6 +65,10 @@ public class BusinessEmployeeManageListener
 
         e.setCancelled(true);
 
+        //
+        // ↩ RETOUR LISTE EMPLOYÉS
+        //
+
         if (action.equals("open_employees")) {
 
             Business business =
@@ -80,6 +84,53 @@ public class BusinessEmployeeManageListener
 
             return;
         }
+
+        //
+        // ➕ RECRUTER PAR CHAT
+        //
+
+        if (action.equals("employee_recruit_chat")
+                || action.equals("employee_recruit_help")) {
+
+            Business business =
+                    BusinessManager.getById(target);
+
+            if (business == null) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Entreprise introuvable."
+                );
+
+                return;
+            }
+
+            if (!BusinessManager.canManageRoles(
+                    p,
+                    business
+            )) {
+
+                BusinessMessages.deny(
+                        p,
+                        "Employés Entreprise",
+                        "Votre rôle ne permet pas de recruter."
+                );
+
+                return;
+            }
+
+            RecruitmentChatListener.start(
+                    p,
+                    business
+            );
+
+            return;
+        }
+
+        //
+        // FICHE EMPLOYÉ
+        //
 
         if (target == null || !target.contains(":")) {
             return;
@@ -134,6 +185,10 @@ public class BusinessEmployeeManageListener
 
         switch (action) {
 
+            //
+            // 📄 OUVRIR FICHE
+            //
+
             case "employee_card" -> {
 
                 BusinessEmployeeManageGUI.open(
@@ -143,6 +198,10 @@ public class BusinessEmployeeManageListener
                 );
             }
 
+            //
+            // 🏷 CHANGER RÔLE
+            //
+
             case "employee_change_role" -> {
 
                 BusinessRoleAssignGUI.open(
@@ -151,6 +210,10 @@ public class BusinessEmployeeManageListener
                         targetUuid
                 );
             }
+
+            //
+            // ❌ LICENCIER
+            //
 
             case "employee_fire" -> {
 
@@ -235,6 +298,8 @@ public class BusinessEmployeeManageListener
         return action.equals("employee_card")
                 || action.equals("employee_change_role")
                 || action.equals("employee_fire")
-                || action.equals("open_employees");
+                || action.equals("open_employees")
+                || action.equals("employee_recruit_chat")
+                || action.equals("employee_recruit_help");
     }
 }
