@@ -18,7 +18,7 @@ import org.bukkit.inventory.Inventory;
 public final class ContractMainGUI {
 
     public static final String TITLE =
-            "§8✦ §6Contrats Officiels §8✦";
+            "§8✦ §6Contrats §8✦";
 
     private ContractMainGUI() {}
 
@@ -41,14 +41,17 @@ public final class ContractMainGUI {
                 new ItemBuilder(Material.BOOK)
                         .name("§6✦ §fMes contrats §6✦")
                         .lore(
-                                "§7Consulter vos contrats personnels.",
-                                "§7Fonds bloqués, validations",
-                                "§7et litiges en cours.",
+                                "§7Voir vos contrats",
+                                "§7personnels.",
+                                "",
+                                "§8• §7En cours",
+                                "§8• §7Terminés",
+                                "§8• §7Litiges",
                                 "",
                                 "§7Total: §e"
                                         + ContractManager.getByClient(p).size(),
                                 "",
-                                "§a✔ Ouvrir"
+                                "§eClique pour ouvrir"
                         )
                         .action("contract_my_list")
                         .build()
@@ -67,13 +70,17 @@ public final class ContractMainGUI {
                     new ItemBuilder(Material.WRITABLE_BOOK)
                             .name("§6✦ §fContrats entreprise §6✦")
                             .lore(
-                                    "§7Contrats liés à votre entreprise.",
-                                    "§7Entreprise: §e" + business.getName(),
+                                    "§7Voir les contrats",
+                                    "§7de votre entreprise.",
                                     "",
+                                    "§7Entreprise: §e" + shortText(business.getName(), 18),
                                     "§7Total: §e"
                                             + ContractManager.getByBusiness(business).size(),
                                     "",
-                                    "§a✔ Ouvrir"
+                                    "§8• §7Travail à faire",
+                                    "§8• §7Paiements à valider",
+                                    "",
+                                    "§eClique pour ouvrir"
                             )
                             .action("contract_business_list")
                             .target(business.getId())
@@ -85,15 +92,16 @@ public final class ContractMainGUI {
                 inv,
                 23,
                 new ItemBuilder(Material.GOLD_INGOT)
-                        .name("§6✦ §fSécurité des fonds §6✦")
+                        .name("§6✦ §fArgent bloqué §6✦")
                         .lore(
                                 "§7Quand une offre est acceptée,",
-                                "§7l'argent est immédiatement bloqué.",
+                                "§7l'argent est gardé de côté.",
                                 "",
-                                "§7L'entreprise reçoit le paiement",
-                                "§7uniquement après validation.",
+                                "§8• §7Le client paie avant",
+                                "§8• §7L'entreprise reçoit après",
+                                "§8• §7Taxe: §c20%",
                                 "",
-                                "§cTaxe économique: §f20%"
+                                "§7Cela protège les deux joueurs."
                         )
                         .build()
         );
@@ -104,11 +112,16 @@ public final class ContractMainGUI {
                     inv,
                     31,
                     new ItemBuilder(Material.ANVIL)
-                            .name("§6✦ §fLitiges économiques §6✦")
+                            .name("§6✦ §fLitiges §6✦")
                             .lore(
-                                    "§7Consulter les contrats en litige.",
+                                    "§7Voir les contrats",
+                                    "§7avec un problème.",
                                     "",
-                                    "§cAccès administratif"
+                                    "§8• §7Analyser le litige",
+                                    "§8• §7Payer l'entreprise",
+                                    "§8• §7Rembourser le client",
+                                    "",
+                                    "§cAccès staff"
                             )
                             .action("contract_litige_list")
                             .build()
@@ -121,12 +134,35 @@ public final class ContractMainGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au registre principal."
+                                "§7Bureau des Entreprises"
                         )
                         .action("back_main")
                         .build()
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
     }
 }
