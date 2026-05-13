@@ -20,6 +20,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +32,13 @@ public class RecruitmentChatListener
     private static final Map<UUID, Draft> DRAFTS =
             new HashMap<>();
 
+    //
+    // ⏳ 60 secondes avant annulation auto
+    //
+
+    private static final long TIMEOUT_TICKS =
+            20L * 60L;
+
     public static void start(
             Player p,
             Business business
@@ -39,6 +47,12 @@ public class RecruitmentChatListener
         if (p == null || business == null) {
             return;
         }
+
+        //
+        // 🔒 Nettoie les autres saisies chat
+        //
+
+        BusinessCreationChatListener.cancel(p);
 
         if (!BusinessManager.canManageRoles(
                 p,
@@ -54,11 +68,14 @@ public class RecruitmentChatListener
             return;
         }
 
-        DRAFTS.put(
-                p.getUniqueId(),
+        Draft draft =
                 new Draft(
                         business.getId()
-                )
+                );
+
+        DRAFTS.put(
+                p.getUniqueId(),
+                draft
         );
 
         p.closeInventory();
@@ -75,6 +92,7 @@ public class RecruitmentChatListener
         p.sendMessage("§8• §7Exemple: §eSteven2621");
         p.sendMessage("§8• §7Le joueur doit être connecté");
         p.sendMessage("§8• §7Tape §cannuler §7pour quitter");
+        p.sendMessage("§8• §7Annulation auto dans §e60 secondes");
 
         BusinessMessages.footer(p);
 
@@ -83,6 +101,84 @@ public class RecruitmentChatListener
                 Sound.UI_BUTTON_CLICK,
                 0.8f,
                 1.2f
+        );
+
+        //
+        // ⏳ Annulation automatique si le joueur ne répond pas
+        //
+
+        Bukkit.getScheduler().runTaskLater(
+                Main.getInstance(),
+                () -> {
+
+                    Draft current =
+                            DRAFTS.get(
+                                    p.getUniqueId()
+                            );
+
+                    if (current == null) {
+                        return;
+                    }
+
+                    if (current != draft) {
+                        return;
+                    }
+
+                    DRAFTS.remove(
+                            p.getUniqueId()
+                    );
+
+                    if (!p.isOnline()) {
+                        return;
+                    }
+
+                    BusinessMessages.info(
+                            p,
+                            "Employés Entreprise",
+                            "Recrutement annulé : temps écoulé."
+                    );
+
+                    p.playSound(
+                            p.getLocation(),
+                            Sound.BLOCK_NOTE_BLOCK_BASS,
+                            0.8f,
+                            0.8f
+                    );
+                },
+                TIMEOUT_TICKS
+        );
+    }
+
+    public static void cancel(
+            Player p
+    ) {
+
+        if (p == null) {
+            return;
+        }
+
+        DRAFTS.remove(
+                p.getUniqueId()
+        );
+    }
+
+    public static boolean isWaiting(
+            Player p
+    ) {
+
+        return p != null
+                && DRAFTS.containsKey(
+                p.getUniqueId()
+        );
+    }
+
+    @EventHandler
+    public void onQuit(
+            PlayerQuitEvent e
+    ) {
+
+        DRAFTS.remove(
+                e.getPlayer().getUniqueId()
         );
     }
 
@@ -93,6 +189,15 @@ public class RecruitmentChatListener
 
         Player p =
                 e.getPlayer();
+
+        //
+        // Si une création d'entreprise est active,
+        // on laisse l'autre listener gérer le message.
+        //
+
+        if (BusinessCreationChatListener.isWaiting(p)) {
+            return;
+        }
 
         Draft draft =
                 DRAFTS.get(
@@ -185,6 +290,10 @@ public class RecruitmentChatListener
             return;
         }
 
+        //
+        // ÉTAPE 1 : PSEUDO
+        //
+
         if (draft.step == 0) {
 
             Player target =
@@ -194,10 +303,25 @@ public class RecruitmentChatListener
 
             if (target == null || !target.isOnline()) {
 
-                BusinessMessages.deny(
+                BusinessMessages.header(
                         p,
-                        "Employés Entreprise",
-                        "Ce joueur doit être connecté."
+                        "Employés Entreprise"
+                );
+
+                p.sendMessage("§c✘ §fJoueur introuvable.");
+                p.sendMessage("");
+                p.sendMessage("§7Ce joueur doit être connecté.");
+                p.sendMessage("");
+                p.sendMessage("§8• §7Écris un autre pseudo");
+                p.sendMessage("§8• §7ou tape §cannuler §7pour quitter");
+
+                BusinessMessages.footer(p);
+
+                p.playSound(
+                        p.getLocation(),
+                        Sound.ENTITY_VILLAGER_NO,
+                        1f,
+                        0.85f
                 );
 
                 return;
@@ -207,11 +331,20 @@ public class RecruitmentChatListener
                     target.getUniqueId()
             )) {
 
-                BusinessMessages.deny(
+                BusinessMessages.header(
                         p,
-                        "Employés Entreprise",
-                        "Ce joueur fait déjà partie de l'entreprise."
+                        "Employés Entreprise"
                 );
+
+                p.sendMessage("§c✘ §fJoueur déjà membre.");
+                p.sendMessage("");
+                p.sendMessage("§7Ce joueur fait déjà");
+                p.sendMessage("§7partie de l'entreprise.");
+                p.sendMessage("");
+                p.sendMessage("§8• §7Écris un autre pseudo");
+                p.sendMessage("§8• §7ou tape §cannuler §7pour quitter");
+
+                BusinessMessages.footer(p);
 
                 return;
             }
@@ -239,7 +372,7 @@ public class RecruitmentChatListener
             p.sendMessage("§8• §eEmploye");
             p.sendMessage("§8• §eTresorier");
             p.sendMessage("§8• §eResponsable");
-            p.sendMessage("§8• §eGerant §7(dirigeant uniquement)");
+            p.sendMessage("§8• §eGerant §7dirigeant uniquement");
             p.sendMessage("");
             p.sendMessage("§7Tape §cannuler §7pour quitter.");
 
@@ -247,6 +380,10 @@ public class RecruitmentChatListener
 
             return;
         }
+
+        //
+        // ÉTAPE 2 : RÔLE
+        //
 
         if (draft.step == 1) {
 
@@ -337,30 +474,6 @@ public class RecruitmentChatListener
                     p,
                     "Employés Entreprise",
                     result.message()
-            );
-
-            BusinessMessages.header(
-                    target,
-                    "Employés Entreprise"
-            );
-
-            target.sendMessage("§a✔ §fVous avez rejoint une entreprise.");
-            target.sendMessage("");
-            target.sendMessage("§7Entreprise: §e" + business.getName());
-            target.sendMessage("§7Rôle: " + role.getDisplayName());
-            target.sendMessage("");
-            BusinessMessages.line(
-                    target,
-                    "Ouvrez /entreprise pour voir votre espace"
-            );
-
-            BusinessMessages.footer(target);
-
-            target.playSound(
-                    target.getLocation(),
-                    Sound.UI_TOAST_CHALLENGE_COMPLETE,
-                    0.8f,
-                    1.1f
             );
 
             p.playSound(
