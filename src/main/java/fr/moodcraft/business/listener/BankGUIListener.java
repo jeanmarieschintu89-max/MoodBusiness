@@ -1,6 +1,7 @@
 package fr.moodcraft.business.listener;
 
 import fr.moodcraft.business.gui.BusinessBankGUI;
+import fr.moodcraft.business.gui.BusinessFinanceHistoryGUI;
 import fr.moodcraft.business.gui.BusinessMainGUI;
 import fr.moodcraft.business.gui.BusinessPayrollGUI;
 
@@ -33,7 +34,8 @@ public class BankGUIListener implements Listener {
 
         if (!title.equals(BusinessMainGUI.TITLE)
                 && !title.equals(BusinessBankGUI.TITLE)
-                && !title.equals(BusinessPayrollGUI.TITLE)) {
+                && !title.equals(BusinessPayrollGUI.TITLE)
+                && !title.equals(BusinessFinanceHistoryGUI.TITLE)) {
 
             return;
         }
@@ -80,6 +82,28 @@ public class BankGUIListener implements Listener {
                 }
 
                 BusinessBankGUI.open(
+                        p,
+                        business
+                );
+            }
+
+            case "open_finance_history" -> {
+
+                Business business =
+                        BusinessManager.getById(target);
+
+                if (business == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Banque Entreprise",
+                            "Entreprise introuvable."
+                    );
+
+                    return;
+                }
+
+                BusinessFinanceHistoryGUI.open(
                         p,
                         business
                 );
@@ -251,6 +275,7 @@ public class BankGUIListener implements Listener {
     ) {
 
         return action.equals("open_bank")
+                || action.equals("open_finance_history")
                 || action.equals("bank_deposit_chat")
                 || action.equals("bank_deposit_help")
                 || action.equals("bank_withdraw_chat")
