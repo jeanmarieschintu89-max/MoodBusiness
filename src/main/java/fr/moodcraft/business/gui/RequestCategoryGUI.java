@@ -15,7 +15,7 @@ import org.bukkit.inventory.Inventory;
 public final class RequestCategoryGUI {
 
     public static final String TITLE =
-            "§8✦ §6Catégorie Demande §8✦";
+            "§6✦ §8Catégorie Demande §6✦";
 
     private RequestCategoryGUI() {}
 
@@ -37,7 +37,7 @@ public final class RequestCategoryGUI {
                 10,
                 RequestCategory.CONSTRUCTION,
                 Material.BRICKS,
-                "§7Construction de maisons, bâtiments, routes."
+                "§7Build, maison, route"
         );
 
         add(
@@ -45,7 +45,7 @@ public final class RequestCategoryGUI {
                 12,
                 RequestCategory.LIVRAISON,
                 Material.MINECART,
-                "§7Transport ou livraison de ressources."
+                "§7Transport de ressources"
         );
 
         add(
@@ -53,7 +53,7 @@ public final class RequestCategoryGUI {
                 14,
                 RequestCategory.AGRICULTURE,
                 Material.WHEAT,
-                "§7Production, récolte ou ferme."
+                "§7Farm, récolte, nourriture"
         );
 
         add(
@@ -61,7 +61,7 @@ public final class RequestCategoryGUI {
                 16,
                 RequestCategory.MINAGE,
                 Material.IRON_PICKAXE,
-                "§7Récolte, minage ou excavation."
+                "§7Minage ou excavation"
         );
 
         add(
@@ -69,7 +69,7 @@ public final class RequestCategoryGUI {
                 20,
                 RequestCategory.COMMERCE,
                 Material.EMERALD,
-                "§7Achat, vente ou fourniture."
+                "§7Achat ou vente"
         );
 
         add(
@@ -77,7 +77,7 @@ public final class RequestCategoryGUI {
                 22,
                 RequestCategory.IMMOBILIER,
                 Material.OAK_DOOR,
-                "§7Logement, terrain ou location."
+                "§7Maison, terrain, location"
         );
 
         add(
@@ -85,7 +85,7 @@ public final class RequestCategoryGUI {
                 24,
                 RequestCategory.EVENEMENT,
                 Material.FIREWORK_ROCKET,
-                "§7Event, animation ou décoration."
+                "§7Event ou animation"
         );
 
         add(
@@ -93,7 +93,7 @@ public final class RequestCategoryGUI {
                 30,
                 RequestCategory.SERVICE,
                 Material.NAME_TAG,
-                "§7Service personnalisé."
+                "§7Aide ou service"
         );
 
         add(
@@ -101,7 +101,7 @@ public final class RequestCategoryGUI {
                 32,
                 RequestCategory.AUTRE,
                 Material.PAPER,
-                "§7Demande spéciale."
+                "§7Demande spéciale"
         );
 
         SafeGUI.set(
@@ -110,7 +110,7 @@ public final class RequestCategoryGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au menu demandes."
+                                "§7Menu demandes"
                         )
                         .action("open_requests")
                         .build()
@@ -135,7 +135,7 @@ public final class RequestCategoryGUI {
                         .lore(
                                 description,
                                 "",
-                                "§a✔ Choisir cette catégorie"
+                                "§eClique pour choisir"
                         )
                         .action("request_start")
                         .target(category.name())
