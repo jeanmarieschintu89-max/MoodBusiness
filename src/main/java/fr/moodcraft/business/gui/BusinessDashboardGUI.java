@@ -121,7 +121,7 @@ public final class BusinessDashboardGUI {
                 inv,
                 21,
                 new ItemBuilder(Material.GOLD_INGOT)
-                        .name("§6✦ §fBanque §6✦")
+                        .name("§6✦ §fBanque entreprise §6✦")
                         .lore(
                                 "§7Gère l'argent",
                                 "§7de l'entreprise.",
