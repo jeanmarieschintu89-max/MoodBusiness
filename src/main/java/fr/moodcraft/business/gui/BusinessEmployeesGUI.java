@@ -23,7 +23,7 @@ import java.util.UUID;
 public final class BusinessEmployeesGUI {
 
     public static final String TITLE =
-            "§8✦ §6Employés §8✦";
+            "§6✦ §8Employés §6✦";
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -54,21 +54,27 @@ public final class BusinessEmployeesGUI {
                         business
                 );
 
+        int employees =
+                Math.max(
+                        0,
+                        business.getMembers().size() - 1
+                );
+
         SafeGUI.set(
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
                         .name("§6✦ §f" + shortText(business.getName(), 20) + " §6✦")
                         .lore(
-                                "§7Membres: §e" + business.getMembers().size(),
+                                "§7Membres total: §e" + business.getMembers().size(),
+                                "§7Employés: §e" + employees,
                                 "§7Gestion: "
                                         + (canManage
                                         ? "§aOui"
                                         : "§cNon"),
                                 "",
-                                "§8• §7Rôles",
-                                "§8• §7Stages",
-                                "§8• §7Apprentis"
+                                "§8• §7Clique un membre",
+                                "§8• §7pour voir sa fiche"
                         )
                         .build()
         );
@@ -117,7 +123,7 @@ public final class BusinessEmployeesGUI {
             } else if (canManage) {
 
                 lore.add("");
-                lore.add("§eClique pour modifier");
+                lore.add("§eClique pour gérer");
 
             } else {
 
@@ -140,7 +146,7 @@ public final class BusinessEmployeesGUI {
                             .lore(
                                     lore.toArray(new String[0])
                             )
-                            .action("employee_manage")
+                            .action("employee_card")
                             .target(
                                     business.getId()
                                             + ":"
