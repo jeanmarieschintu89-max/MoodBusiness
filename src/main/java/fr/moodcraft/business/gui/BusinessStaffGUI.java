@@ -36,10 +36,14 @@ public final class BusinessStaffGUI {
                 new ItemBuilder(Material.LIME_BANNER)
                         .name("§6✦ §fEntreprises actives §6✦")
                         .lore(
-                                "§7Consulter les entreprises",
-                                "§7actuellement actives.",
+                                "§7Voir les entreprises",
+                                "§7ouvertes sur le serveur.",
                                 "",
-                                "§a✔ Registre ouvert"
+                                "§8• §7Infos",
+                                "§8• §7Gestion",
+                                "§8• §7Suspension",
+                                "",
+                                "§eClique pour ouvrir"
                         )
                         .action("staff_active")
                         .build()
@@ -51,10 +55,13 @@ public final class BusinessStaffGUI {
                 new ItemBuilder(Material.CLOCK)
                         .name("§6✦ §fEntreprises récentes §6✦")
                         .lore(
-                                "§7Voir les dernières créations.",
-                                "§7Utile pour surveiller les abus.",
+                                "§7Voir les dernières",
+                                "§7entreprises créées.",
                                 "",
-                                "§eContrôle économique"
+                                "§8• §7Surveiller les abus",
+                                "§8• §7Vérifier les noms",
+                                "",
+                                "§eClique pour ouvrir"
                         )
                         .action("staff_recent")
                         .build()
@@ -66,10 +73,14 @@ public final class BusinessStaffGUI {
                 new ItemBuilder(Material.RED_BANNER)
                         .name("§6✦ §fEntreprises suspendues §6✦")
                         .lore(
-                                "§7Consulter ou réactiver les",
-                                "§7entreprises sanctionnées.",
+                                "§7Voir les entreprises",
+                                "§7bloquées par le staff.",
                                 "",
-                                "§cRegistre disciplinaire"
+                                "§8• §7Consulter",
+                                "§8• §7Réactiver",
+                                "§8• §7Archiver",
+                                "",
+                                "§cAccès staff"
                         )
                         .action("staff_suspended")
                         .build()
@@ -79,11 +90,14 @@ public final class BusinessStaffGUI {
                 inv,
                 25,
                 new ItemBuilder(Material.ANVIL)
-                        .name("§6✦ §fLitiges économiques §6✦")
+                        .name("§6✦ §fLitiges §6✦")
                         .lore(
-                                "§7Consulter les contrats en litige.",
-                                "§7Les fonds restent bloqués",
-                                "§7jusqu'à décision administrative.",
+                                "§7Voir les contrats",
+                                "§7avec un problème.",
+                                "",
+                                "§8• §7Argent bloqué",
+                                "§8• §7Analyse staff",
+                                "§8• §7Décision finale",
                                 "",
                                 "§cAccès staff"
                         )
@@ -95,12 +109,16 @@ public final class BusinessStaffGUI {
                 inv,
                 31,
                 new ItemBuilder(Material.WRITABLE_BOOK)
-                        .name("§6✦ §fHistorique administratif §6✦")
+                        .name("§6✦ §fLogs §6✦")
                         .lore(
-                                "§7Voir les dernières actions",
-                                "§7du Registre Économique.",
+                                "§7Voir les dernières",
+                                "§7actions importantes.",
                                 "",
-                                "§eAudit central"
+                                "§8• §7Entreprises",
+                                "§8• §7Contrats",
+                                "§8• §7Banque",
+                                "",
+                                "§eClique pour ouvrir"
                         )
                         .action("audit_logs")
                         .build()
@@ -112,7 +130,7 @@ public final class BusinessStaffGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au registre principal."
+                                "§7Bureau des Entreprises"
                         )
                         .action("back_main")
                         .build()
