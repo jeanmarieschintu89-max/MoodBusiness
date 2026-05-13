@@ -156,7 +156,7 @@ public final class ContractManager {
         contract.addHistory(
                 "§8• §eCréé §7par §f"
                         + client.getName()
-                        + " §8• §7Fonds bloqués: §e"
+                        + " §8• §7Argent bloqué: §e"
                         + VaultHook.format(gross)
         );
 
@@ -169,7 +169,7 @@ public final class ContractManager {
         );
 
         contract.addHistory(
-                "§8• §6Fiscalité prévue §7Taxe: §c"
+                "§8• §6Taxe prévue §7Taxe: §c"
                         + VaultHook.format(taxAmount)
                         + " §8("
                         + taxRate
@@ -183,7 +183,7 @@ public final class ContractManager {
                 client,
                 business.getName(),
                 business,
-                "Contrat sécurisé créé. Brut: "
+                "Contrat créé. Brut: "
                         + VaultHook.format(gross)
                         + ", taxe prévue: "
                         + VaultHook.format(taxAmount)
@@ -194,8 +194,8 @@ public final class ContractManager {
         AlertManager.add(
                 client,
                 AlertType.CONTRACT,
-                "Contrat sécurisé créé",
-                "Les fonds ont été bloqués pour le contrat: "
+                "Contrat créé",
+                "L'argent a été bloqué pour le contrat: "
                         + request.getTitle()
                         + ". Montant: "
                         + VaultHook.format(gross)
@@ -207,7 +207,7 @@ public final class ContractManager {
                 business.getOwnerName(),
                 AlertType.CONTRACT,
                 "Nouveau contrat",
-                "Un contrat sécurisé a été créé pour "
+                "Un contrat a été créé pour "
                         + business.getName()
                         + ": "
                         + request.getTitle()
@@ -230,7 +230,7 @@ public final class ContractManager {
 
         return ContractResult.success(
                 contract,
-                "Contrat sécurisé créé."
+                "Contrat créé. L'argent est bloqué."
         );
     }
 
@@ -255,6 +255,10 @@ public final class ContractManager {
 
         List<Contract> list =
                 new ArrayList<>();
+
+        if (player == null) {
+            return list;
+        }
 
         for (Contract contract :
                 ContractStorage.getAll()) {
@@ -320,7 +324,9 @@ public final class ContractManager {
         sort(list);
 
         return list;
-    }public static ContractResult complete(
+    }
+
+    public static ContractResult complete(
             Player actor,
             Contract contract,
             String comment
@@ -397,7 +403,7 @@ public final class ContractManager {
                 actor,
                 contract.getClientName(),
                 business,
-                "Contrat marqué comme terminé: "
+                "Contrat terminé: "
                         + contract.getTitle()
                         + ". Commentaire: "
                         + safeComment(comment)
@@ -414,7 +420,7 @@ public final class ContractManager {
                 "Contrat terminé",
                 "Le contrat "
                         + contract.getTitle()
-                        + " est marqué comme terminé. Vous pouvez le valider ou ouvrir un litige."
+                        + " est terminé. Vous pouvez le valider ou ouvrir un litige."
         );
 
         return ContractResult.success(
@@ -481,7 +487,7 @@ public final class ContractManager {
         );
 
         contract.addHistory(
-                "§8• §cTaxe économique §7prélevée: §c"
+                "§8• §cTaxe §7prélevée: §c"
                         + VaultHook.format(contract.getTaxAmount())
                         + " §8("
                         + contract.getTaxRate()
@@ -505,9 +511,9 @@ public final class ContractManager {
                 business,
                 TransactionType.TAXE,
                 contract.getTaxAmount(),
-                "Registre économique",
+                "Bureau des Entreprises",
                 business.getName(),
-                "Taxe économique "
+                "Taxe "
                         + contract.getTaxRate()
                         + "% sur le contrat "
                         + contract.getId()
@@ -632,7 +638,7 @@ public final class ContractManager {
                 actor,
                 contract.getTitle(),
                 business,
-                "Litige ouvert sur contrat. Raison: "
+                "Litige ouvert. Raison: "
                         + safeComment(reason)
         );
 
@@ -665,9 +671,11 @@ public final class ContractManager {
 
         return ContractResult.success(
                 contract,
-                "Litige ouvert. Les fonds restent bloqués."
+                "Litige ouvert. L'argent reste bloqué."
         );
-    }public static boolean canView(
+    }
+
+    public static boolean canView(
             Player player,
             Contract contract
     ) {
