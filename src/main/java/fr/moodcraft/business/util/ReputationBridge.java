@@ -1,7 +1,6 @@
 package fr.moodcraft.business.util;
 
 import org.bukkit.Bukkit;
-
 import org.bukkit.OfflinePlayer;
 
 public final class ReputationBridge {
@@ -18,7 +17,7 @@ public final class ReputationBridge {
             return;
         }
 
-        if (points == 0) {
+        if (points <= 0) {
             return;
         }
 
