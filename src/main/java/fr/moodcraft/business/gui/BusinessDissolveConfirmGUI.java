@@ -16,7 +16,7 @@ import org.bukkit.inventory.Inventory;
 public final class BusinessDissolveConfirmGUI {
 
     public static final String TITLE =
-            "§8✦ §cDissolution Entreprise §8✦";
+            "§8✦ §cFermer Entreprise §8✦";
 
     private BusinessDissolveConfirmGUI() {}
 
@@ -38,21 +38,21 @@ public final class BusinessDissolveConfirmGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.BARRIER)
-                        .name("§c✦ Dissoudre l’entreprise §c✦")
+                        .name("§c✦ Fermer l’entreprise §c✦")
                         .lore(
-                                "§7Entreprise: §e" + business.getName(),
-                                "§7Dirigeant: §e" + business.getOwnerName(),
-                                "§7Solde banque: §e" + VaultHook.format(business.getBalance()),
+                                "§7Entreprise: §e" + shortText(business.getName(), 18),
+                                "§7Dirigeant: §e" + shortText(business.getOwnerName(), 18),
+                                "§7Banque: §e" + VaultHook.format(business.getBalance()),
                                 "",
-                                "§cCette action archive l’entreprise.",
-                                "§7Elle ne sera plus active.",
+                                "§cCette action est sensible.",
+                                "§7L’entreprise sera archivée.",
                                 "",
-                                "§8• §7Les logs seront conservés",
-                                "§8• §7Les contrats doivent être clôturés",
-                                "§8• §7La banque doit être vide",
-                                "§8• §7La prochaine création coûtera plus cher",
+                                "§8• §7Banque vide requise",
+                                "§8• §7Aucun contrat ouvert",
+                                "§8• §7Historique gardé",
+                                "§8• §7Prochaine création plus chère",
                                 "",
-                                "§cAction sensible"
+                                "§cÀ faire seulement si nécessaire"
                         )
                         .build()
         );
@@ -63,10 +63,11 @@ public final class BusinessDissolveConfirmGUI {
                 new ItemBuilder(Material.REDSTONE_BLOCK)
                         .name("§c✘ Annuler")
                         .lore(
-                                "§7Revenir à la gestion",
-                                "§7de l’entreprise.",
+                                "§7Ne rien changer.",
                                 "",
-                                "§c▶ Annuler"
+                                "§8• §7Retour à la gestion",
+                                "",
+                                "§cClique pour annuler"
                         )
                         .action("dissolve_cancel")
                         .target(business.getId())
@@ -77,12 +78,15 @@ public final class BusinessDissolveConfirmGUI {
                 inv,
                 15,
                 new ItemBuilder(Material.LAVA_BUCKET)
-                        .name("§c✔ Confirmer la dissolution")
+                        .name("§c✔ Confirmer")
                         .lore(
-                                "§7Archive définitivement",
-                                "§7l’entreprise active.",
+                                "§7Ferme l’entreprise.",
+                                "§7Elle ne sera plus active.",
                                 "",
-                                "§c▶ Dissoudre"
+                                "§8• §7Action enregistrée",
+                                "§8• §7Logs conservés",
+                                "",
+                                "§cClique pour fermer"
                         )
                         .action("dissolve_confirm")
                         .target(business.getId())
@@ -90,5 +94,28 @@ public final class BusinessDissolveConfirmGUI {
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
     }
 }
