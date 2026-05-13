@@ -7,12 +7,10 @@ import fr.moodcraft.business.gui.BusinessEmployeesGUI;
 import fr.moodcraft.business.gui.BusinessMainGUI;
 import fr.moodcraft.business.gui.BusinessStaffGUI;
 
-import fr.moodcraft.business.manager.AuditLogManager;
 import fr.moodcraft.business.manager.BusinessBankManager;
 import fr.moodcraft.business.manager.BusinessManager;
 import fr.moodcraft.business.manager.PayrollManager;
 
-import fr.moodcraft.business.model.AuditLogType;
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRole;
 import fr.moodcraft.business.model.BusinessStatus;
@@ -85,7 +83,7 @@ public class BusinessCommand implements CommandExecutor {
                 BusinessMessages.deny(
                         p,
                         "Gestion Entreprises",
-                        "Accès réservé à l'administration économique."
+                        "Accès réservé au staff."
                 );
 
                 return true;
@@ -111,8 +109,12 @@ public class BusinessCommand implements CommandExecutor {
                         "Bureau des Entreprises"
                 );
 
-                p.sendMessage("§7Utilisation: §e/entreprise creer <nom>");
-                p.sendMessage("§8Exemple: §e/entreprise creer NordBuild");
+                p.sendMessage("§fCréer une entreprise.");
+                p.sendMessage("");
+                p.sendMessage("§7Utilisation:");
+                p.sendMessage("§e/entreprise creer <nom>");
+                p.sendMessage("");
+                p.sendMessage("§8• §7Exemple: §e/entreprise creer NordBuild");
 
                 BusinessMessages.footer(p);
 
@@ -154,20 +156,15 @@ public class BusinessCommand implements CommandExecutor {
                     "Bureau des Entreprises"
             );
 
-            p.sendMessage("§fEntreprise créée avec succès.");
+            p.sendMessage("§a✔ §fEntreprise créée.");
+            p.sendMessage("");
             p.sendMessage("§7Nom: §e" + business.getName());
-            p.sendMessage(
-                    "§7Frais d'enregistrement: §e"
-                            + BusinessMessages.money(
-                                    business.getCreationFee()
-                            )
-            );
-            p.sendMessage(
-                    "§7Statut: "
-                            + business.getStatus().getDisplayName()
-            );
-            p.sendMessage(
-                    "§a✔ Dossier inscrit au Bureau des Entreprises §aMood§6Craft§a."
+            p.sendMessage("§7Frais: §e" + BusinessMessages.money(business.getCreationFee()));
+            p.sendMessage("§7État: " + business.getStatus().getDisplayName());
+            p.sendMessage("");
+            BusinessMessages.line(
+                    p,
+                    "Dossier inscrit au Bureau des Entreprises"
             );
 
             BusinessMessages.footer(p);
@@ -277,7 +274,9 @@ public class BusinessCommand implements CommandExecutor {
             ApplicationMainGUI.open(p);
 
             return true;
-        }//
+        }
+
+        //
         // 💰 BANQUE
         //
 
@@ -337,7 +336,7 @@ public class BusinessCommand implements CommandExecutor {
                 BusinessMessages.deny(
                         p,
                         "Banque Entreprise",
-                        "Utilisation: /entreprise depot <montant>"
+                        "Montant manquant."
                 );
 
                 return true;
@@ -401,7 +400,7 @@ public class BusinessCommand implements CommandExecutor {
                 BusinessMessages.deny(
                         p,
                         "Banque Entreprise",
-                        "Utilisation: /entreprise retrait <montant>"
+                        "Montant manquant."
                 );
 
                 return true;
@@ -465,7 +464,7 @@ public class BusinessCommand implements CommandExecutor {
                 BusinessMessages.deny(
                         p,
                         "Paie Entreprise",
-                        "Utilisation: /entreprise prime <joueur> <montant> [confirmer]"
+                        "Indiquez le joueur et le montant."
                 );
 
                 return true;
@@ -555,7 +554,7 @@ public class BusinessCommand implements CommandExecutor {
                 BusinessMessages.deny(
                         p,
                         "Paie Entreprise",
-                        "Utilisation: /entreprise salaire <role> <montant>"
+                        "Indiquez le rôle et le montant."
                 );
 
                 return true;
@@ -603,7 +602,9 @@ public class BusinessCommand implements CommandExecutor {
             );
 
             return true;
-        }//
+        }
+
+        //
         // 📆 PAIE MENSUELLE MANUELLE
         //
 
@@ -696,7 +697,7 @@ public class BusinessCommand implements CommandExecutor {
                 BusinessMessages.deny(
                         p,
                         "Employés Entreprise",
-                        "Utilisation: /entreprise recruter <joueur> [role]"
+                        "Indiquez le joueur à recruter."
                 );
 
                 return true;
@@ -715,7 +716,7 @@ public class BusinessCommand implements CommandExecutor {
                 BusinessMessages.deny(
                         p,
                         "Employés Entreprise",
-                        "Rôle inconnu. Exemple: stagiaire, apprenti, employe, tresorier."
+                        "Rôle inconnu."
                 );
 
                 return true;
@@ -777,7 +778,7 @@ public class BusinessCommand implements CommandExecutor {
                 BusinessMessages.deny(
                         p,
                         "Rôles Entreprise",
-                        "Utilisation: /entreprise role <joueur> <role>"
+                        "Indiquez le joueur et le rôle."
                 );
 
                 return true;
@@ -871,7 +872,7 @@ public class BusinessCommand implements CommandExecutor {
                 BusinessMessages.deny(
                         p,
                         "Employés Entreprise",
-                        "Utilisation: /entreprise renvoyer <joueur>"
+                        "Indiquez le joueur à licencier."
                 );
 
                 return true;
@@ -919,14 +920,17 @@ public class BusinessCommand implements CommandExecutor {
             );
 
             return true;
-        }//
-        // 🧨 DISSOLUTION
+        }
+
+        //
+        // 🧨 FERMER ENTREPRISE
         //
 
         if (sub.equals("dissoudre")
                 || sub.equals("dissolution")
                 || sub.equals("supprimer")
-                || sub.equals("delete")) {
+                || sub.equals("delete")
+                || sub.equals("fermer")) {
 
             Business business =
                     BusinessManager.getMemberBusiness(
@@ -937,7 +941,7 @@ public class BusinessCommand implements CommandExecutor {
 
                 BusinessMessages.deny(
                         p,
-                        "Dissolution Entreprise",
+                        "Fermer Entreprise",
                         "Vous n'appartenez à aucune entreprise active."
                 );
 
@@ -950,8 +954,8 @@ public class BusinessCommand implements CommandExecutor {
 
                 BusinessMessages.deny(
                         p,
-                        "Dissolution Entreprise",
-                        "Seul le dirigeant peut dissoudre l'entreprise."
+                        "Fermer Entreprise",
+                        "Seul le dirigeant peut fermer l'entreprise."
                 );
 
                 return true;
@@ -987,7 +991,7 @@ public class BusinessCommand implements CommandExecutor {
                 BusinessMessages.deny(
                         p,
                         "Gestion Entreprises",
-                        "Utilisation: /entreprise suspendre <nom>"
+                        "Indiquez l'entreprise à suspendre."
                 );
 
                 return true;
@@ -1062,7 +1066,7 @@ public class BusinessCommand implements CommandExecutor {
                 BusinessMessages.deny(
                         p,
                         "Gestion Entreprises",
-                        "Utilisation: /entreprise reactiver <nom>"
+                        "Indiquez l'entreprise à réactiver."
                 );
 
                 return true;

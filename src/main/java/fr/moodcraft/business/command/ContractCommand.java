@@ -55,7 +55,7 @@ public class ContractCommand implements CommandExecutor {
 
                 BusinessMessages.deny(
                         p,
-                        "Contrat Officiel",
+                        "Contrat",
                         "Contrat introuvable."
                 );
 
@@ -64,17 +64,18 @@ public class ContractCommand implements CommandExecutor {
 
             BusinessMessages.header(
                     p,
-                    "Contrat Officiel"
+                    "Contrat"
             );
 
             p.sendMessage("§7Titre: §e" + contract.getTitle());
             p.sendMessage("§7Client: §e" + contract.getClientName());
             p.sendMessage("§7Entreprise: §b" + contract.getBusinessName());
-            p.sendMessage("§7Statut: " + contract.getStatus().getDisplayName());
-            p.sendMessage("§7Montant brut: §e" + BusinessMessages.money(contract.getGrossAmount()));
+            p.sendMessage("§7État: " + contract.getStatus().getDisplayName());
+            p.sendMessage("");
+            p.sendMessage("§7Brut: §e" + BusinessMessages.money(contract.getGrossAmount()));
             p.sendMessage("§7Taxe: §c" + BusinessMessages.money(contract.getTaxAmount()));
             p.sendMessage("§7Net entreprise: §a" + BusinessMessages.money(contract.getNetAmount()));
-            p.sendMessage("§7Fonds bloqués: §e" + BusinessMessages.money(contract.getEscrowAmount()));
+            p.sendMessage("§7Argent bloqué: §e" + BusinessMessages.money(contract.getEscrowAmount()));
 
             BusinessMessages.footer(p);
 
@@ -110,7 +111,7 @@ public class ContractCommand implements CommandExecutor {
 
                 BusinessMessages.deny(
                         p,
-                        "Contrat Officiel",
+                        "Contrat",
                         result.message()
                 );
 
@@ -119,7 +120,7 @@ public class ContractCommand implements CommandExecutor {
 
             BusinessMessages.success(
                     p,
-                    "Contrat Officiel",
+                    "Contrat",
                     result.message()
             );
 
@@ -142,7 +143,7 @@ public class ContractCommand implements CommandExecutor {
 
                 BusinessMessages.deny(
                         p,
-                        "Contrat Officiel",
+                        "Contrat",
                         result.message()
                 );
 
@@ -151,7 +152,7 @@ public class ContractCommand implements CommandExecutor {
 
             BusinessMessages.success(
                     p,
-                    "Contrat Officiel",
+                    "Contrat",
                     result.message()
             );
 
@@ -187,7 +188,7 @@ public class ContractCommand implements CommandExecutor {
 
                 BusinessMessages.deny(
                         p,
-                        "Litige Économique",
+                        "Litige",
                         result.message()
                 );
 
@@ -196,7 +197,7 @@ public class ContractCommand implements CommandExecutor {
 
             BusinessMessages.success(
                     p,
-                    "Litige Économique",
+                    "Litige",
                     result.message()
             );
 

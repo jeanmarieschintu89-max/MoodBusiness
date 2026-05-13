@@ -25,7 +25,7 @@ public class RequestsCommand implements CommandExecutor {
         if (!(sender instanceof Player p)) {
 
             sender.sendMessage(
-                    "Commande joueur uniquement."
+                    "§cCommande joueur uniquement."
             );
 
             return true;
@@ -69,14 +69,15 @@ public class RequestsCommand implements CommandExecutor {
 
         BusinessMessages.header(
                 p,
-                "Demandes " + BusinessMessages.brand()
+                "Demandes"
         );
 
-        p.sendMessage("§7Utilisation:");
-        p.sendMessage("§8• §e/demandes");
-        p.sendMessage("§8• §e/demandes creer");
-        p.sendMessage("§8• §e/demandes mes");
-        p.sendMessage("§8• §e/demandes publiques");
+        p.sendMessage("§fMenu des demandes.");
+        p.sendMessage("");
+        p.sendMessage("§8• §e/demandes §7ouvrir le menu");
+        p.sendMessage("§8• §e/demandes creer §7créer une demande");
+        p.sendMessage("§8• §e/demandes mes §7voir vos demandes");
+        p.sendMessage("§8• §e/demandes publiques §7voir les besoins");
 
         BusinessMessages.footer(p);
 
