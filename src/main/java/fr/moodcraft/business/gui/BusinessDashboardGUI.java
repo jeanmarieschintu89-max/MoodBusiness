@@ -1,7 +1,9 @@
 package fr.moodcraft.business.gui;
 
+import fr.moodcraft.business.manager.ApplicationManager;
 import fr.moodcraft.business.manager.ContractManager;
 import fr.moodcraft.business.manager.PayrollManager;
+import fr.moodcraft.business.manager.RequestManager;
 
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRole;
@@ -23,7 +25,7 @@ import org.bukkit.inventory.Inventory;
 public final class BusinessDashboardGUI {
 
     public static final String TITLE =
-            "§8✦ §6Gestion Entreprise §8✦";
+            "§6✦ §8Gestion Entreprise §6✦";
 
     private BusinessDashboardGUI() {}
 
@@ -62,6 +64,31 @@ public final class BusinessDashboardGUI {
                 business.isOwner(p.getUniqueId())
                         || role == BusinessRole.GERANT;
 
+        int employees =
+                Math.max(
+                        0,
+                        business.getMembers().size() - 1
+                );
+
+        int applications =
+                ApplicationManager.getPendingByBusiness(
+                        business.getId()
+                ).size();
+
+        int businessContracts =
+                ContractManager.getByBusiness(
+                        business
+                ).size();
+
+        int publicRequests =
+                RequestManager.getPublicOpen()
+                        .size();
+
+        int transactions =
+                FinanceStorage.getByBusiness(
+                        business.getId()
+                ).size();
+
         SafeGUI.set(
                 inv,
                 4,
@@ -85,10 +112,7 @@ public final class BusinessDashboardGUI {
                                                 business
                                         )
                                 ),
-                                "§7Mouvements: §e"
-                                        + FinanceStorage.getByBusiness(
-                                        business.getId()
-                                ).size(),
+                                "§7Mouvements: §e" + transactions,
                                 "",
                                 "§8• §7Bureau des Entreprises"
                         )
@@ -104,9 +128,12 @@ public final class BusinessDashboardGUI {
                                 "§7Gère les membres",
                                 "§7de l'entreprise.",
                                 "",
+                                "§7Employés: §e" + employees,
+                                "",
                                 "§8• §7Rôles",
                                 "§8• §7Stagiaires",
                                 "§8• §7Apprentis",
+                                "§8• §7Licenciement",
                                 "",
                                 canManageRoles
                                         ? "§a✔ Gestion autorisée"
@@ -151,10 +178,7 @@ public final class BusinessDashboardGUI {
                                 "§7Suis les contrats",
                                 "§7de l'entreprise.",
                                 "",
-                                "§7Contrats: §e"
-                                        + ContractManager.getByBusiness(
-                                        business
-                                ).size(),
+                                "§7Contrats: §e" + businessContracts,
                                 "",
                                 "§8• §7Argent bloqué",
                                 "§8• §7Taxe 20%",
@@ -178,6 +202,8 @@ public final class BusinessDashboardGUI {
                                 "§7Voir les demandes",
                                 "§7pour rejoindre l'entreprise.",
                                 "",
+                                "§7En attente: §e" + applications,
+                                "",
                                 "§8• §7Stage",
                                 "§8• §7Apprentissage",
                                 "§8• §7Entretien",
@@ -199,6 +225,8 @@ public final class BusinessDashboardGUI {
                         .lore(
                                 "§7Voir les besoins",
                                 "§7des joueurs.",
+                                "",
+                                "§7Demandes publiques: §e" + publicRequests,
                                 "",
                                 "§8• §7Construction",
                                 "§8• §7Livraison",
