@@ -1,3 +1,4 @@
+
 package fr.moodcraft.business.util;
 
 import org.bukkit.Bukkit;
@@ -36,6 +37,41 @@ public final class ReputationBridge {
         Bukkit.dispatchCommand(
                 Bukkit.getConsoleSender(),
                 "reputation admin ajouter "
+                        + name
+                        + " "
+                        + points
+        );
+    }
+
+    public static void remove(
+            OfflinePlayer player,
+            int points,
+            String reason
+    ) {
+
+        if (player == null) {
+            return;
+        }
+
+        if (points <= 0) {
+            return;
+        }
+
+        String name =
+                player.getName();
+
+        if (name == null || name.isBlank()) {
+            return;
+        }
+
+        if (!Bukkit.getPluginManager()
+                .isPluginEnabled("MoodCraftBridge")) {
+            return;
+        }
+
+        Bukkit.dispatchCommand(
+                Bukkit.getConsoleSender(),
+                "reputation admin retirer "
                         + name
                         + " "
                         + points
