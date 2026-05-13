@@ -65,7 +65,7 @@ public final class BusinessManager {
                 && !player.hasPermission("moodbusiness.bypass")) {
 
             return CreationResult.fail(
-                    "Vous êtes suspendu du registre économique."
+                    "Vous êtes suspendu du Bureau des Entreprises."
             );
         }
 
@@ -115,15 +115,30 @@ public final class BusinessManager {
             return CreationResult.fail(error);
         }
 
-        String id =
-                NameFilter.toId(name);
+        //
+        // 🔒 NOM DÉJÀ UTILISÉ
+        // Une entreprise ACTIVE ou SUSPENDUE bloque le nom.
+        // Une entreprise ARCHIVÉE garde son historique, mais le nom peut être réutilisé.
+        //
 
-        if (BusinessStorage.exists(id)) {
+        Business activeSameName =
+                getActiveByName(name);
+
+        if (activeSameName != null) {
 
             return CreationResult.fail(
                     "Ce nom d'entreprise est déjà utilisé."
             );
         }
+
+        String baseId =
+                NameFilter.toId(name);
+
+        String id =
+                getAvailableBusinessId(
+                        baseId,
+                        uuid
+                );
 
         double price =
                 getCreationPrice(uuid);
@@ -187,6 +202,11 @@ public final class BusinessManager {
                 business,
                 "Entreprise créée avec frais d'enregistrement: "
                         + VaultHook.format(price)
+        );
+
+        BusinessNotifyManager.businessCreated(
+                player,
+                business
         );
 
         return CreationResult.success(
@@ -274,13 +294,92 @@ public final class BusinessManager {
         return null;
     }
 
+    //
+    // 🔎 RECHERCHE PUBLIQUE / ADMIN
+    // Priorité à une entreprise non archivée.
+    // Si seule une archive existe, on peut quand même la retrouver pour consultation admin.
+    //
+
     public static Business getByName(
             String name
     ) {
 
-        return BusinessStorage.getBusiness(
-                NameFilter.toId(name)
-        );
+        String clean =
+                NameFilter.clean(name);
+
+        String id =
+                NameFilter.toId(clean);
+
+        Business direct =
+                BusinessStorage.getBusiness(id);
+
+        if (direct != null
+                && direct.getStatus() != BusinessStatus.ARCHIVEE) {
+
+            return direct;
+        }
+
+        for (Business business :
+                BusinessStorage.getBusinesses()) {
+
+            if (business.getName().equalsIgnoreCase(clean)
+                    && business.getStatus() != BusinessStatus.ARCHIVEE) {
+
+                return business;
+            }
+        }
+
+        if (direct != null) {
+            return direct;
+        }
+
+        for (Business business :
+                BusinessStorage.getBusinesses()) {
+
+            if (business.getName().equalsIgnoreCase(clean)) {
+
+                return business;
+            }
+        }
+
+        return null;
+    }
+
+    //
+    // 🔎 RECHERCHE NOM ACTIF
+    // Utilisé pour bloquer uniquement les noms encore actifs/suspendus.
+    //
+
+    public static Business getActiveByName(
+            String name
+    ) {
+
+        String clean =
+                NameFilter.clean(name);
+
+        String id =
+                NameFilter.toId(clean);
+
+        Business direct =
+                BusinessStorage.getBusiness(id);
+
+        if (direct != null
+                && direct.getStatus() != BusinessStatus.ARCHIVEE) {
+
+            return direct;
+        }
+
+        for (Business business :
+                BusinessStorage.getBusinesses()) {
+
+            if (business.getName().equalsIgnoreCase(clean)
+                    && business.getStatus() != BusinessStatus.ARCHIVEE) {
+
+                return business;
+            }
+        }
+
+        return null;
     }
 
     public static Business getById(
@@ -530,6 +629,12 @@ public final class BusinessManager {
                         + role.getDisplayName()
         );
 
+        BusinessNotifyManager.memberJoined(
+                target,
+                business,
+                role
+        );
+
         return ActionResult.success(
                 "Joueur recruté: §e"
                         + name
@@ -582,6 +687,12 @@ public final class BusinessManager {
                 business,
                 "Nouveau rôle: "
                         + role.getDisplayName()
+        );
+
+        BusinessNotifyManager.roleChanged(
+                offline,
+                business,
+                role
         );
 
         return ActionResult.success(
@@ -644,6 +755,9 @@ public final class BusinessManager {
         String name =
                 business.getMemberName(targetUuid);
 
+        OfflinePlayer offline =
+                Bukkit.getOfflinePlayer(targetUuid);
+
         business.removeMember(targetUuid);
 
         BusinessStorage.save();
@@ -654,6 +768,11 @@ public final class BusinessManager {
                 name,
                 business,
                 "Membre retiré de l'entreprise."
+        );
+
+        BusinessNotifyManager.memberRemoved(
+                offline,
+                business
         );
 
         return ActionResult.success(
@@ -682,59 +801,30 @@ public final class BusinessManager {
         return null;
     }
 
-    public record CreationResult(
-            boolean success,
-            Business business,
-            String message
+    //
+    // 🔁 ID DISPONIBLE
+    //
+
+    private static String getAvailableBusinessId(
+            String baseId,
+            UUID ownerUuid
     ) {
 
-        public static CreationResult success(
-                Business business,
-                String message
-        ) {
-
-            return new CreationResult(
-                    true,
-                    business,
-                    message
-            );
+        if (!BusinessStorage.exists(baseId)) {
+            return baseId;
         }
 
-        public static CreationResult fail(
-                String message
-        ) {
+        int created =
+                BusinessStorage.getCreatedCount(ownerUuid) + 1;
 
-            return new CreationResult(
-                    false,
-                    null,
-                    message
-            );
-        }
-    }
+        String id =
+                baseId + "-" + created;
 
-    public record ActionResult(
-            boolean success,
-            String message
-    ) {
+        int tries =
+                1;
 
-        public static ActionResult success(
-                String message
-        ) {
+        while (BusinessStorage.exists(id)) {
 
-            return new ActionResult(
-                    true,
-                    message
-            );
-        }
+            tries++;
 
-        public static ActionResult fail(
-                String message
-        ) {
-
-            return new ActionResult(
-                    false,
-                    message
-            );
-        }
-    }
-}
+    
