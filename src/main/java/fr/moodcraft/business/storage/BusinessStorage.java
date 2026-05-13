@@ -446,6 +446,26 @@ public final class BusinessStorage {
         save();
     }
 
+    public static boolean removeBusiness(
+            String id
+    ) {
+
+        if (id == null) {
+            return false;
+        }
+
+        Business removed =
+                businesses.remove(id);
+
+        if (removed == null) {
+            return false;
+        }
+
+        save();
+
+        return true;
+    }
+
     public static Business getBusiness(
             String id
     ) {
