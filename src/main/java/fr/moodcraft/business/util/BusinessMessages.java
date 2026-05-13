@@ -144,7 +144,7 @@ public final class BusinessMessages {
         sender.sendMessage("");
         sender.sendMessage("§7Dirigeant: §e" + business.getOwnerName());
         sender.sendMessage("§7État: " + business.getStatus().getDisplayName());
-        sender.sendMessage("§7Solde: §e" + money(business.getBalance()));
+        sender.sendMessage("§7Banque: §e" + money(business.getBalance()));
         sender.sendMessage("§7Création n°: §e" + business.getCreationIndex());
         sender.sendMessage("§7Frais: §e" + money(business.getCreationFee()));
         sender.sendMessage("§7Créée: §f" + TimeUtil.formatDate(business.getCreatedAt()));
