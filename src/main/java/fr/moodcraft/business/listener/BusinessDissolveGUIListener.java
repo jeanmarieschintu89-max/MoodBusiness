@@ -39,8 +39,6 @@ public class BusinessDissolveGUIListener
             return;
         }
 
-        e.setCancelled(true);
-
         if (!(e.getWhoClicked() instanceof Player p)) {
             return;
         }
@@ -64,6 +62,8 @@ public class BusinessDissolveGUIListener
             return;
         }
 
+        e.setCancelled(true);
+
         Business business =
                 BusinessManager.getById(target);
 
@@ -71,7 +71,7 @@ public class BusinessDissolveGUIListener
 
             BusinessMessages.deny(
                     p,
-                    "Dissolution Entreprise",
+                    "Fermer Entreprise",
                     "Entreprise introuvable."
             );
 
@@ -93,12 +93,15 @@ public class BusinessDissolveGUIListener
 
             if (!business.isOwner(
                     p.getUniqueId()
-            )) {
+            )
+                    && business.getRole(p.getUniqueId())
+                    != fr.moodcraft.business.model.BusinessRole.GERANT
+                    && !p.hasPermission("moodbusiness.staff.suspend")) {
 
                 BusinessMessages.deny(
                         p,
-                        "Dissolution Entreprise",
-                        "Seul le dirigeant peut dissoudre l’entreprise."
+                        "Fermer Entreprise",
+                        "Seul le dirigeant, le gérant ou le staff peut fermer l'entreprise."
                 );
 
                 p.playSound(
@@ -151,48 +154,45 @@ public class BusinessDissolveGUIListener
         // ✅ CONFIRMER
         //
 
-        if (action.equals("dissolve_confirm")) {
-
-            BusinessDissolveManager.DissolveResult result =
-                    BusinessDissolveManager.dissolve(
-                            p,
-                            business
-                    );
-
-            p.closeInventory();
-
-            if (!result.success()) {
-
-                BusinessMessages.deny(
+        BusinessDissolveManager.DissolveResult result =
+                BusinessDissolveManager.dissolve(
                         p,
-                        "Dissolution Entreprise",
-                        result.message()
+                        business
                 );
 
-                p.playSound(
-                        p.getLocation(),
-                        Sound.ENTITY_VILLAGER_NO,
-                        1f,
-                        0.85f
-                );
+        p.closeInventory();
 
-                return;
-            }
+        if (!result.success()) {
 
-            BusinessMessages.success(
+            BusinessMessages.deny(
                     p,
-                    "Dissolution Entreprise",
+                    "Fermer Entreprise",
                     result.message()
             );
 
             p.playSound(
                     p.getLocation(),
-                    Sound.BLOCK_BEACON_DEACTIVATE,
-                    0.8f,
-                    0.8f
+                    Sound.ENTITY_VILLAGER_NO,
+                    1f,
+                    0.85f
             );
 
-            BusinessMainGUI.open(p);
+            return;
         }
+
+        BusinessMessages.success(
+                p,
+                "Fermer Entreprise",
+                result.message()
+        );
+
+        p.playSound(
+                p.getLocation(),
+                Sound.BLOCK_BEACON_DEACTIVATE,
+                0.8f,
+                0.8f
+        );
+
+        BusinessMainGUI.open(p);
     }
 }
