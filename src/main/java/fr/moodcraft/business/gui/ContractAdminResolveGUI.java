@@ -16,7 +16,7 @@ import org.bukkit.inventory.Inventory;
 public final class ContractAdminResolveGUI {
 
     public static final String TITLE =
-            "§8✦ §6Décision Litige §8✦";
+            "§6✦ §8Décision Litige §6✦";
 
     private ContractAdminResolveGUI() {}
 
@@ -38,18 +38,18 @@ public final class ContractAdminResolveGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.ANVIL)
-                        .name("§6✦ §fLitige économique §6✦")
+                        .name("§6✦ §fLitige §6✦")
                         .lore(
-                                "§7Contrat: §e" + contract.getTitle(),
-                                "§7Client: §e" + contract.getClientName(),
-                                "§7Entreprise: §b" + contract.getBusinessName(),
+                                "§7Contrat: §e" + shortText(contract.getTitle(), 18),
+                                "§7Client: §e" + shortText(contract.getClientName(), 14),
+                                "§7Entreprise: §b" + shortText(contract.getBusinessName(), 14),
                                 "",
-                                "§7Fonds bloqués: §e" + VaultHook.format(contract.getEscrowAmount()),
-                                "§7Montant brut: §e" + VaultHook.format(contract.getGrossAmount()),
-                                "§7Taxe prévue: §c" + VaultHook.format(contract.getTaxAmount()),
+                                "§7Argent bloqué: §e" + VaultHook.format(contract.getEscrowAmount()),
+                                "§7Brut: §e" + VaultHook.format(contract.getGrossAmount()),
+                                "§7Taxe: §c" + VaultHook.format(contract.getTaxAmount()),
                                 "§7Net entreprise: §a" + VaultHook.format(contract.getNetAmount()),
                                 "",
-                                "§cDécision administrative requise."
+                                "§cUn staff doit choisir."
                         )
                         .build()
         );
@@ -60,13 +60,16 @@ public final class ContractAdminResolveGUI {
                 new ItemBuilder(Material.EMERALD_BLOCK)
                         .name("§a✔ Payer l’entreprise")
                         .lore(
-                                "§7Verse le montant net",
-                                "§7à la banque de l’entreprise.",
+                                "§7Donne l'argent net",
+                                "§7à l'entreprise.",
                                 "",
                                 "§7Versement: §a" + VaultHook.format(contract.getNetAmount()),
                                 "§7Taxe: §c" + VaultHook.format(contract.getTaxAmount()),
                                 "",
-                                "§a▶ Résoudre en faveur de l’entreprise"
+                                "§8• §7Le contrat sera validé",
+                                "§8• §7Le litige sera fermé",
+                                "",
+                                "§aClique pour choisir"
                         )
                         .action("contract_admin_pay_business")
                         .target(contract.getId())
@@ -79,12 +82,15 @@ public final class ContractAdminResolveGUI {
                 new ItemBuilder(Material.GOLD_INGOT)
                         .name("§e✔ Rembourser le client")
                         .lore(
-                                "§7Rend les fonds bloqués",
-                                "§7au client du contrat.",
+                                "§7Rend l'argent bloqué",
+                                "§7au client.",
                                 "",
                                 "§7Remboursement: §e" + VaultHook.format(contract.getEscrowAmount()),
                                 "",
-                                "§e▶ Résoudre en faveur du client"
+                                "§8• §7Le contrat sera annulé",
+                                "§8• §7Le litige sera fermé",
+                                "",
+                                "§eClique pour choisir"
                         )
                         .action("contract_admin_refund_client")
                         .target(contract.getId())
@@ -97,7 +103,7 @@ public final class ContractAdminResolveGUI {
                 new ItemBuilder(Material.BARRIER)
                         .name("§cRetour")
                         .lore(
-                                "§7Revenir au dossier du contrat."
+                                "§7Dossier du contrat"
                         )
                         .action("contract_detail")
                         .target(contract.getId())
@@ -105,5 +111,28 @@ public final class ContractAdminResolveGUI {
         );
 
         p.openInventory(inv);
+    }
+
+    private static String shortText(
+            String text,
+            int max
+    ) {
+
+        if (text == null || text.isBlank()) {
+            return "Inconnu";
+        }
+
+        String clean =
+                text.replaceAll("§.", "")
+                        .trim();
+
+        if (clean.length() <= max) {
+            return clean;
+        }
+
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
     }
 }
