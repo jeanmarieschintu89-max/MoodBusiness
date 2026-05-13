@@ -14,6 +14,7 @@ import fr.moodcraft.business.listener.BusinessCreationChatListener;
 import fr.moodcraft.business.listener.BusinessDissolveGUIListener;
 import fr.moodcraft.business.listener.BusinessEmployeeManageListener;
 import fr.moodcraft.business.listener.BusinessGUIListener;
+import fr.moodcraft.business.listener.BusinessInventoryGuardListener;
 import fr.moodcraft.business.listener.ContractChatListener;
 import fr.moodcraft.business.listener.ContractGUIListener;
 import fr.moodcraft.business.listener.ContractMissionGUIListener;
@@ -194,6 +195,15 @@ public class Main extends JavaPlugin {
     }
 
     private void registerListeners() {
+
+        //
+        // 🔒 PROTECTION GLOBALE DES GUI
+        //
+
+        Bukkit.getPluginManager().registerEvents(
+                new BusinessInventoryGuardListener(),
+                this
+        );
 
         //
         // 🏢 ENTREPRISES
