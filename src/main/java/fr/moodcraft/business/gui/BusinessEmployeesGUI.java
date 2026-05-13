@@ -58,7 +58,7 @@ public final class BusinessEmployeesGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §f" + shortText(business.getName(), 20))
+                        .name("§6✦ §f" + shortText(business.getName(), 20) + " §6✦")
                         .lore(
                                 "§7Membres: §e" + business.getMembers().size(),
                                 "§7Gestion: "
@@ -66,7 +66,9 @@ public final class BusinessEmployeesGUI {
                                         ? "§aOui"
                                         : "§cNon"),
                                 "",
-                                "§8• §7Bureau des Entreprises"
+                                "§8• §7Rôles",
+                                "§8• §7Stages",
+                                "§8• §7Apprentis"
                         )
                         .build()
         );
@@ -133,6 +135,7 @@ public final class BusinessEmployeesGUI {
                                             business.getMemberName(uuid),
                                             18
                                     )
+                                            + " §6✦"
                             )
                             .lore(
                                     lore.toArray(new String[0])
@@ -155,7 +158,8 @@ public final class BusinessEmployeesGUI {
                 new ItemBuilder(Material.EMERALD)
                         .name("§6✦ §fRecruter §6✦")
                         .lore(
-                                "§7Ajouter un membre.",
+                                "§7Ajouter un joueur",
+                                "§7dans l'entreprise.",
                                 "",
                                 "§8• §7Pseudo dans le chat",
                                 "§8• §7Rôle dans le chat",
@@ -206,6 +210,9 @@ public final class BusinessEmployeesGUI {
             return clean;
         }
 
-        return clean.substring(0, Math.max(1, max - 3)) + "...";
+        return clean.substring(
+                0,
+                Math.max(1, max - 3)
+        ) + "...";
     }
 }
