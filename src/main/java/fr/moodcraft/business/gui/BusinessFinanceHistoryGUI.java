@@ -22,7 +22,7 @@ import java.util.List;
 public final class BusinessFinanceHistoryGUI {
 
     public static final String TITLE =
-            "§6✦ §8Historique Entreprise §6✦";
+            "§6✦ §8Logs financiers §6✦";
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -40,7 +40,7 @@ public final class BusinessFinanceHistoryGUI {
         Inventory inv =
                 Bukkit.createInventory(
                         null,
-                        54,
+                        45,
                         TITLE
                 );
 
@@ -55,27 +55,21 @@ public final class BusinessFinanceHistoryGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §fHistorique entreprise §6✦")
+                        .name("§6✦ §fLogs financiers §6✦")
                         .lore(
-                                "§7Mouvements d'argent",
-                                "§7de l'entreprise.",
+                                "§8• §7Entreprise : §e" + shortText(business.getName(), 18),
+                                "§8• §7Lignes : §e" + transactions.size(),
+                                "§8• §7Dépôts, retraits, primes",
+                                "§8• §7Paie, contrats et taxes",
                                 "",
-                                "§7Entreprise: §e" + shortText(business.getName(), 18),
-                                "§7Lignes: §e" + transactions.size(),
-                                "",
-                                "§8• §7Dépôts",
-                                "§8• §7Retraits",
-                                "§8• §7Primes",
-                                "§8• §7Paies",
-                                "§8• §7Contrats"
+                                "§e➜ §fDerniers mouvements"
                         )
                         .build()
         );
 
         int index = 0;
 
-        for (FinanceTransaction transaction :
-                transactions) {
+        for (FinanceTransaction transaction : transactions) {
 
             if (index >= SLOTS.length) {
                 break;
@@ -99,10 +93,10 @@ public final class BusinessFinanceHistoryGUI {
                     new ItemBuilder(icon)
                             .name("§6✦ " + transaction.getType().getDisplayName() + " §6✦")
                             .lore(
-                                    "§7Montant: §e" + VaultHook.format(transaction.getAmount()),
-                                    "§7Acteur: §f" + shortText(transaction.getActorName(), 16),
+                                    "§8• §7Montant : §e" + VaultHook.format(transaction.getAmount()),
+                                    "§8• §7Acteur : §f" + shortText(transaction.getActorName(), 16),
                                     targetLine(transaction),
-                                    "§7Date: §f" + shortDate(transaction.getCreatedAt()),
+                                    "§8• §7Date : §f" + shortDate(transaction.getCreatedAt()),
                                     "",
                                     "§8• §7" + shortText(transaction.getNote(), 32)
                             )
@@ -120,10 +114,10 @@ public final class BusinessFinanceHistoryGUI {
                     new ItemBuilder(Material.PAPER)
                             .name("§6✦ §fAucun mouvement §6✦")
                             .lore(
-                                    "§7Aucun dépôt, retrait",
-                                    "§7ou paiement enregistré.",
+                                    "§8• §7Aucun dépôt ou retrait",
+                                    "§8• §7Aucun paiement enregistré",
                                     "",
-                                    "§8• §7L'historique apparaîtra ici"
+                                    "§e➜ §fLes logs apparaîtront ici"
                             )
                             .build()
             );
@@ -131,11 +125,11 @@ public final class BusinessFinanceHistoryGUI {
 
         SafeGUI.set(
                 inv,
-                49,
-                new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
+                40,
+                new ItemBuilder(Material.ARROW)
+                        .name("§6✦ §fRetour §6✦")
                         .lore(
-                                "§7Banque entreprise"
+                                "§8• §7Argent entreprise"
                         )
                         .action("open_bank")
                         .target(business.getId())
@@ -152,10 +146,10 @@ public final class BusinessFinanceHistoryGUI {
         if (transaction.getTargetName() == null
                 || transaction.getTargetName().isBlank()) {
 
-            return "§7Cible: §8Aucune";
+            return "§8• §7Cible : §8Aucune";
         }
 
-        return "§7Cible: §f" + shortText(transaction.getTargetName(), 16);
+        return "§8• §7Cible : §f" + shortText(transaction.getTargetName(), 16);
     }
 
     private static String shortText(
@@ -167,26 +161,20 @@ public final class BusinessFinanceHistoryGUI {
             return "Aucun";
         }
 
-        String clean =
-                text.replaceAll("§.", "")
-                        .trim();
+        String clean = text.replaceAll("§.", "").trim();
 
         if (clean.length() <= max) {
             return clean;
         }
 
-        return clean.substring(
-                0,
-                Math.max(1, max - 3)
-        ) + "...";
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 
     private static String shortDate(
             long time
     ) {
 
-        String date =
-                TimeUtil.formatDate(time);
+        String date = TimeUtil.formatDate(time);
 
         if (date == null || date.equalsIgnoreCase("Jamais")) {
             return "Aucune";
