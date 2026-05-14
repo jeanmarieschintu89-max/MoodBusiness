@@ -95,34 +95,31 @@ public class BankChatListener
 
         if (mode == Mode.DEPOSIT) {
 
-            p.sendMessage("§fÉcris le montant à déposer.");
-            p.sendMessage("§7Entreprise: §e" + business.getName());
+            p.sendMessage("§e➜ §fÉcris le montant à déposer.");
+            p.sendMessage("§8• §7Entreprise : §e" + business.getName());
             p.sendMessage("");
-            p.sendMessage("§8• §7Exemple: §e5000");
-            p.sendMessage("§8• §7Les fonds seront retirés");
-            p.sendMessage("§8• §7de votre argent personnel.");
+            p.sendMessage("§8• §7Exemple : §e5000");
+            p.sendMessage("§8• §7Les fonds seront retirés de votre argent personnel.");
 
         } else if (mode == Mode.WITHDRAW) {
 
-            p.sendMessage("§fÉcris le montant à retirer.");
-            p.sendMessage("§7Entreprise: §e" + business.getName());
+            p.sendMessage("§e➜ §fÉcris le montant à retirer.");
+            p.sendMessage("§8• §7Entreprise : §e" + business.getName());
             p.sendMessage("");
-            p.sendMessage("§8• §7Exemple: §e5000");
-            p.sendMessage("§8• §7Les fonds seront versés");
-            p.sendMessage("§8• §7sur votre compte personnel.");
+            p.sendMessage("§8• §7Exemple : §e5000");
+            p.sendMessage("§8• §7Les fonds seront versés sur votre compte personnel.");
 
         } else {
 
-            p.sendMessage("§fÉcris le pseudo du membre à primer.");
-            p.sendMessage("§7Entreprise: §e" + business.getName());
+            p.sendMessage("§e➜ §fÉcris le pseudo du membre à primer.");
+            p.sendMessage("§8• §7Entreprise : §e" + business.getName());
             p.sendMessage("");
-            p.sendMessage("§8• §7Exemple: §eSteven2621");
-            p.sendMessage("§8• §7Le joueur doit être membre");
-            p.sendMessage("§8• §7de l'entreprise.");
+            p.sendMessage("§8• §7Exemple : §eSteven2621");
+            p.sendMessage("§8• §7Le joueur doit être membre de l'entreprise.");
         }
 
         p.sendMessage("");
-        p.sendMessage("§7Tape §cannuler §7pour quitter.");
+        p.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
 
         BusinessMessages.footer(p);
 
@@ -271,7 +268,7 @@ public class BankChatListener
             BusinessMessages.deny(
                     p,
                     "Banque Entreprise",
-                    "Montant invalide. Exemple: §e5000"
+                    "Montant invalide. Exemple : §e5000"
             );
 
             return;
@@ -332,7 +329,7 @@ public class BankChatListener
             BusinessMessages.deny(
                     p,
                     "Banque Entreprise",
-                    "Montant invalide. Exemple: §e5000"
+                    "Montant invalide. Exemple : §e5000"
             );
 
             return;
@@ -414,11 +411,11 @@ public class BankChatListener
                 "Paie Entreprise"
         );
 
-        p.sendMessage("§fÉcris le montant de la prime.");
-        p.sendMessage("§7Joueur: §e" + business.getMemberName(targetUuid));
-        p.sendMessage("§7Entreprise: §e" + business.getName());
+        p.sendMessage("§e➜ §fÉcris le montant de la prime.");
+        p.sendMessage("§8• §7Joueur : §e" + business.getMemberName(targetUuid));
+        p.sendMessage("§8• §7Entreprise : §e" + business.getName());
         p.sendMessage("");
-        p.sendMessage("§8• §7Exemple: §e2500");
+        p.sendMessage("§8• §7Exemple : §e2500");
         p.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
 
         BusinessMessages.footer(p);
@@ -439,7 +436,7 @@ public class BankChatListener
             BusinessMessages.deny(
                     p,
                     "Paie Entreprise",
-                    "Montant invalide. Exemple: §e2500"
+                    "Montant invalide. Exemple : §e2500"
             );
 
             return;
@@ -466,12 +463,12 @@ public class BankChatListener
                     "Paie Entreprise"
             );
 
-            p.sendMessage("§ePrime élevée détectée.");
-            p.sendMessage("§7Joueur: §e" + business.getMemberName(draft.targetUuid));
-            p.sendMessage("§7Montant: §e" + VaultHook.format(amount));
+            p.sendMessage("§e➜ §fPrime élevée détectée.");
+            p.sendMessage("§8• §7Joueur : §e" + business.getMemberName(draft.targetUuid));
+            p.sendMessage("§8• §7Montant : §e" + VaultHook.format(amount));
             p.sendMessage("");
-            p.sendMessage("§7Écris §aconfirmer §7pour valider.");
-            p.sendMessage("§7Tape §cannuler §7pour quitter.");
+            p.sendMessage("§8• §7Écris §aconfirmer §7pour valider.");
+            p.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
 
             BusinessMessages.footer(p);
 
