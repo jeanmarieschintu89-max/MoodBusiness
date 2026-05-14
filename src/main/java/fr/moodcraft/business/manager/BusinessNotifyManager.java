@@ -17,10 +17,6 @@ public final class BusinessNotifyManager {
 
     private BusinessNotifyManager() {}
 
-    //
-    // 🏢 CRÉATION ENTREPRISE
-    //
-
     public static void businessCreated(
             Player owner,
             Business business
@@ -30,24 +26,15 @@ public final class BusinessNotifyManager {
             return;
         }
 
-        Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage("§8----- §6✦ Bureau des Entreprises ✦ §8-----");
-        Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage("§a✔ §fNouvelle entreprise créée.");
-        Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage("§7Entreprise: §e" + business.getName());
-        Bukkit.broadcastMessage("§7Dirigeant: §e" + owner.getName());
-        Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage("§8• §7Elle rejoint l'économie de §aMood§6Craft");
-        Bukkit.broadcastMessage("§8• §7Menu: §e/entreprise");
-        Bukkit.broadcastMessage("");
-        Bukkit.broadcastMessage("§8-----------------------------");
-        Bukkit.broadcastMessage("");
+        broadcast(
+                "Bureau des Entreprises",
+                "§a✔ §fNouvelle entreprise créée.",
+                "§e➜ §7Entreprise : §e" + business.getName(),
+                "§e➜ §7Dirigeant : §e" + owner.getName(),
+                "§e➜ §7Elle rejoint l'économie de §aMood§6Craft",
+                "§e➜ §7Menu : §e/entreprise"
+        );
     }
-
-    //
-    // 📋 NOUVELLE DEMANDE PUBLIÉE
-    //
 
     public static void notifyRequestCreated(
             BusinessRequest request
@@ -57,42 +44,30 @@ public final class BusinessNotifyManager {
             return;
         }
 
-        for (Player online :
-                Bukkit.getOnlinePlayers()) {
+        for (Player online : Bukkit.getOnlinePlayers()) {
 
-            Business business =
-                    BusinessManager.getMemberBusiness(
-                            online.getUniqueId()
-                    );
+            Business business = BusinessManager.getMemberBusiness(online.getUniqueId());
 
             if (business == null) {
                 continue;
             }
 
-            BusinessRole role =
-                    business.getRole(
-                            online.getUniqueId()
-                    );
+            BusinessRole role = business.getRole(online.getUniqueId());
 
-            if (role == null
-                    || !role.canManageContracts()) {
+            if (role == null || !role.canManageContracts()) {
                 continue;
             }
 
-            online.sendMessage("");
-            online.sendMessage("§8----- §6✦ Bureau des Entreprises ✦ §8-----");
-            online.sendMessage("");
-            online.sendMessage("§fNouvelle demande publiée.");
-            online.sendMessage("");
-            online.sendMessage("§7Type: " + request.getCategory().getDisplayName());
-            online.sendMessage("§7Budget: §e" + VaultHook.format(request.getBudget()));
-            online.sendMessage("§7Délai: §b" + request.getDueDays() + " jours");
-            online.sendMessage("");
-            online.sendMessage("§8• §7Les entreprises peuvent répondre");
-            online.sendMessage("§8• §7Menu: §e/demandes");
-            online.sendMessage("");
-            online.sendMessage("§8-----------------------------");
-            online.sendMessage("");
+            send(
+                    online,
+                    "Bureau des Entreprises",
+                    "§e➜ §7Nouvelle demande publiée.",
+                    "§e➜ §7Type : " + request.getCategory().getDisplayName(),
+                    "§e➜ §7Budget : §e" + VaultHook.format(request.getBudget()),
+                    "§e➜ §7Délai : §b" + request.getDueDays() + " jours",
+                    "§e➜ §7Les entreprises peuvent répondre",
+                    "§e➜ §7Menu : §e/demandes"
+            );
 
             online.playSound(
                     online.getLocation(),
@@ -105,15 +80,10 @@ public final class BusinessNotifyManager {
                     online,
                     AlertType.REQUEST,
                     "Nouvelle demande publiée",
-                    "Une demande est disponible. Budget: "
-                            + VaultHook.format(request.getBudget())
+                    "Une demande est disponible. Budget: " + VaultHook.format(request.getBudget())
             );
         }
     }
-
-    //
-    // 👥 MEMBRE AJOUTÉ
-    //
 
     public static void memberJoined(
             OfflinePlayer target,
@@ -129,43 +99,25 @@ public final class BusinessNotifyManager {
                 target,
                 AlertType.BUSINESS,
                 "Vous avez rejoint une entreprise",
-                "Entreprise: "
-                        + business.getName()
-                        + " - Rôle: "
-                        + role.name()
+                "Entreprise: " + business.getName() + " - Rôle: " + role.name()
         );
 
-        if (target.isOnline()
-                && target.getPlayer() != null) {
+        if (target.isOnline() && target.getPlayer() != null) {
 
-            Player p =
-                    target.getPlayer();
+            Player p = target.getPlayer();
 
-            p.sendMessage("");
-            p.sendMessage("§8----- §6✦ Bureau des Entreprises ✦ §8-----");
-            p.sendMessage("");
-            p.sendMessage("§a✔ §fVous avez rejoint une entreprise.");
-            p.sendMessage("");
-            p.sendMessage("§7Entreprise: §e" + business.getName());
-            p.sendMessage("§7Rôle: " + role.getDisplayName());
-            p.sendMessage("");
-            p.sendMessage("§8• §7Menu: §e/entreprise");
-            p.sendMessage("");
-            p.sendMessage("§8-----------------------------");
-            p.sendMessage("");
-
-            p.playSound(
-                    p.getLocation(),
-                    Sound.UI_TOAST_CHALLENGE_COMPLETE,
-                    0.8f,
-                    1.1f
+            send(
+                    p,
+                    "Bureau des Entreprises",
+                    "§a✔ §fVous avez rejoint une entreprise.",
+                    "§e➜ §7Entreprise : §e" + business.getName(),
+                    "§e➜ §7Rôle : " + role.getDisplayName(),
+                    "§e➜ §7Menu : §e/entreprise"
             );
+
+            p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 0.8f, 1.1f);
         }
     }
-
-    //
-    // 🏷 RÔLE MODIFIÉ
-    //
 
     public static void roleChanged(
             OfflinePlayer target,
@@ -181,41 +133,24 @@ public final class BusinessNotifyManager {
                 target,
                 AlertType.BUSINESS,
                 "Votre rôle a changé",
-                "Entreprise: "
-                        + business.getName()
-                        + " - Nouveau rôle: "
-                        + role.name()
+                "Entreprise: " + business.getName() + " - Nouveau rôle: " + role.name()
         );
 
-        if (target.isOnline()
-                && target.getPlayer() != null) {
+        if (target.isOnline() && target.getPlayer() != null) {
 
-            Player p =
-                    target.getPlayer();
+            Player p = target.getPlayer();
 
-            p.sendMessage("");
-            p.sendMessage("§8----- §6✦ Bureau des Entreprises ✦ §8-----");
-            p.sendMessage("");
-            p.sendMessage("§a✔ §fVotre rôle a changé.");
-            p.sendMessage("");
-            p.sendMessage("§7Entreprise: §e" + business.getName());
-            p.sendMessage("§7Nouveau rôle: " + role.getDisplayName());
-            p.sendMessage("");
-            p.sendMessage("§8-----------------------------");
-            p.sendMessage("");
-
-            p.playSound(
-                    p.getLocation(),
-                    Sound.BLOCK_NOTE_BLOCK_PLING,
-                    0.8f,
-                    1.2f
+            send(
+                    p,
+                    "Bureau des Entreprises",
+                    "§a✔ §fVotre rôle a changé.",
+                    "§e➜ §7Entreprise : §e" + business.getName(),
+                    "§e➜ §7Nouveau rôle : " + role.getDisplayName()
             );
+
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.8f, 1.2f);
         }
     }
-
-    //
-    // ❌ MEMBRE RETIRÉ
-    //
 
     public static void memberRemoved(
             OfflinePlayer target,
@@ -233,35 +168,21 @@ public final class BusinessNotifyManager {
                 "Entreprise: " + business.getName()
         );
 
-        if (target.isOnline()
-                && target.getPlayer() != null) {
+        if (target.isOnline() && target.getPlayer() != null) {
 
-            Player p =
-                    target.getPlayer();
+            Player p = target.getPlayer();
 
-            p.sendMessage("");
-            p.sendMessage("§8----- §6✦ Bureau des Entreprises ✦ §8-----");
-            p.sendMessage("");
-            p.sendMessage("§c✘ §fVous avez quitté l'entreprise.");
-            p.sendMessage("");
-            p.sendMessage("§7Entreprise: §e" + business.getName());
-            p.sendMessage("§7Décision: §cLicenciement");
-            p.sendMessage("");
-            p.sendMessage("§8-----------------------------");
-            p.sendMessage("");
-
-            p.playSound(
-                    p.getLocation(),
-                    Sound.BLOCK_NOTE_BLOCK_BASS,
-                    0.8f,
-                    0.8f
+            send(
+                    p,
+                    "Bureau des Entreprises",
+                    "§c✖ §fVous avez quitté l'entreprise.",
+                    "§e➜ §7Entreprise : §e" + business.getName(),
+                    "§e➜ §7Décision : §cLicenciement"
             );
+
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 0.8f, 0.8f);
         }
     }
-
-    //
-    // 🎁 PRIME REÇUE
-    //
 
     public static void bonusPaid(
             OfflinePlayer target,
@@ -277,41 +198,24 @@ public final class BusinessNotifyManager {
                 target,
                 AlertType.PAYROLL,
                 "Prime reçue",
-                "Entreprise: "
-                        + business.getName()
-                        + " - Montant: "
-                        + VaultHook.format(amount)
+                "Entreprise: " + business.getName() + " - Montant: " + VaultHook.format(amount)
         );
 
-        if (target.isOnline()
-                && target.getPlayer() != null) {
+        if (target.isOnline() && target.getPlayer() != null) {
 
-            Player p =
-                    target.getPlayer();
+            Player p = target.getPlayer();
 
-            p.sendMessage("");
-            p.sendMessage("§8----- §6✦ Paie Entreprise ✦ §8-----");
-            p.sendMessage("");
-            p.sendMessage("§a✔ §fPrime reçue.");
-            p.sendMessage("");
-            p.sendMessage("§7Entreprise: §e" + business.getName());
-            p.sendMessage("§7Montant: §e" + VaultHook.format(amount));
-            p.sendMessage("");
-            p.sendMessage("§8-----------------------------");
-            p.sendMessage("");
-
-            p.playSound(
-                    p.getLocation(),
-                    Sound.ENTITY_EXPERIENCE_ORB_PICKUP,
-                    0.8f,
-                    1.2f
+            send(
+                    p,
+                    "Paie Entreprise",
+                    "§a✔ §fPrime reçue.",
+                    "§e➜ §7Entreprise : §e" + business.getName(),
+                    "§e➜ §7Montant : §e" + VaultHook.format(amount)
             );
+
+            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8f, 1.2f);
         }
     }
-
-    //
-    // 💰 SALAIRE REÇU
-    //
 
     public static void payrollPaid(
             OfflinePlayer target,
@@ -327,43 +231,25 @@ public final class BusinessNotifyManager {
                 target,
                 AlertType.PAYROLL,
                 "Salaire reçu",
-                "Entreprise: "
-                        + business.getName()
-                        + " - Montant: "
-                        + VaultHook.format(amount)
+                "Entreprise: " + business.getName() + " - Montant: " + VaultHook.format(amount)
         );
 
-        if (target.isOnline()
-                && target.getPlayer() != null) {
+        if (target.isOnline() && target.getPlayer() != null) {
 
-            Player p =
-                    target.getPlayer();
+            Player p = target.getPlayer();
 
-            p.sendMessage("");
-            p.sendMessage("§8----- §6✦ Paie Entreprise ✦ §8-----");
-            p.sendMessage("");
-            p.sendMessage("§a✔ §fSalaire reçu.");
-            p.sendMessage("");
-            p.sendMessage("§7Entreprise: §e" + business.getName());
-            p.sendMessage("§7Montant: §e" + VaultHook.format(amount));
-            p.sendMessage("");
-            p.sendMessage("§8• §7Paie mensuelle versée");
-            p.sendMessage("");
-            p.sendMessage("§8-----------------------------");
-            p.sendMessage("");
-
-            p.playSound(
-                    p.getLocation(),
-                    Sound.ENTITY_EXPERIENCE_ORB_PICKUP,
-                    0.8f,
-                    1.2f
+            send(
+                    p,
+                    "Paie Entreprise",
+                    "§a✔ §fSalaire reçu.",
+                    "§e➜ §7Entreprise : §e" + business.getName(),
+                    "§e➜ §7Montant : §e" + VaultHook.format(amount),
+                    "§e➜ §7Paie mensuelle versée"
             );
+
+            p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8f, 1.2f);
         }
     }
-
-    //
-    // ⚠ PAIE BLOQUÉE
-    //
 
     public static void payrollBlocked(
             Business business,
@@ -374,38 +260,58 @@ public final class BusinessNotifyManager {
             return;
         }
 
-        OfflinePlayer owner =
-                Bukkit.getOfflinePlayer(
-                        business.getOwnerUuid()
-                );
+        OfflinePlayer owner = Bukkit.getOfflinePlayer(business.getOwnerUuid());
 
         AlertManager.add(
                 owner,
                 AlertType.PAYROLL,
                 "Paie bloquée",
-                "Fonds insuffisants. Requis: "
-                        + VaultHook.format(required)
+                "Fonds insuffisants. Requis: " + VaultHook.format(required)
         );
 
-        if (owner.isOnline()
-                && owner.getPlayer() != null) {
+        if (owner.isOnline() && owner.getPlayer() != null) {
 
-            Player p =
-                    owner.getPlayer();
+            Player p = owner.getPlayer();
 
-            p.sendMessage("");
-            p.sendMessage("§8----- §6✦ Paie Entreprise ✦ §8-----");
-            p.sendMessage("");
-            p.sendMessage("§c✘ §fPaie bloquée.");
-            p.sendMessage("");
-            p.sendMessage("§7Entreprise: §e" + business.getName());
-            p.sendMessage("§7Requis: §e" + VaultHook.format(required));
-            p.sendMessage("");
-            p.sendMessage("§8• §7Déposez de l'argent");
-            p.sendMessage("§8• §7dans la banque entreprise");
-            p.sendMessage("");
-            p.sendMessage("§8-----------------------------");
-            p.sendMessage("");
+            send(
+                    p,
+                    "Paie Entreprise",
+                    "§c✖ §fPaie bloquée.",
+                    "§e➜ §7Entreprise : §e" + business.getName(),
+                    "§e➜ §7Requis : §e" + VaultHook.format(required),
+                    "§e➜ §7Déposez de l'argent dans la banque entreprise"
+            );
         }
+    }
+
+    private static void send(
+            Player player,
+            String title,
+            String... lines
+    ) {
+
+        player.sendMessage("");
+        player.sendMessage("§8----- §6✦ " + title + " ✦ §8-----");
+
+        for (String line : lines) {
+            player.sendMessage(line);
+        }
+
+        player.sendMessage("§8-----------------------------");
+    }
+
+    private static void broadcast(
+            String title,
+            String... lines
+    ) {
+
+        Bukkit.broadcastMessage("");
+        Bukkit.broadcastMessage("§8----- §6✦ " + title + " ✦ §8-----");
+
+        for (String line : lines) {
+            Bukkit.broadcastMessage(line);
+        }
+
+        Bukkit.broadcastMessage("§8-----------------------------");
     }
 }
