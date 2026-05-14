@@ -30,7 +30,7 @@ public final class ContractMainGUI {
         Inventory inv =
                 Bukkit.createInventory(
                         null,
-                        54,
+                        45,
                         TITLE
                 );
 
@@ -44,94 +44,92 @@ public final class ContractMainGUI {
                         p.getUniqueId()
                 ).size();
 
-        SafeGUI.set(
-                inv,
-                13,
-                new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §fMes contrats §6✦")
-                        .lore(
-                                "§7Voir vos contrats",
-                                "§7personnels.",
-                                "",
-                                "§7Contrats: §e" + myContracts,
-                                "",
-                                "§8• §7En cours",
-                                "§8• §7Terminés",
-                                "§8• §7Litiges",
-                                "",
-                                "§eClique pour ouvrir"
-                        )
-                        .action("contract_my_list")
-                        .build()
-        );
-
         Business business =
                 BusinessManager.getMemberBusiness(
                         p.getUniqueId()
                 );
 
-        if (business != null) {
-
-            SafeGUI.set(
-                    inv,
-                    21,
-                    new ItemBuilder(Material.WRITABLE_BOOK)
-                            .name("§6✦ §fContrats entreprise §6✦")
-                            .lore(
-                                    "§7Voir les contrats",
-                                    "§7de votre entreprise.",
-                                    "",
-                                    "§7Entreprise: §e" + shortText(business.getName(), 18),
-                                    "§7Contrats: §e"
-                                            + ContractManager.getByBusiness(business).size(),
-                                    "",
-                                    "§8• §7Travail à faire",
-                                    "§8• §7Paiements à valider",
-                                    "",
-                                    "§eClique pour ouvrir"
-                            )
-                            .action("contract_business_list")
-                            .target(business.getId())
-                            .build()
-            );
-        }
-
         SafeGUI.set(
                 inv,
-                23,
-                new ItemBuilder(Material.IRON_PICKAXE)
-                        .name("§6✦ §fMes missions §6✦")
+                4,
+                new ItemBuilder(Material.WRITABLE_BOOK)
+                        .name("§6✦ §fContrats §6✦")
                         .lore(
-                                "§7Contrats où vous",
-                                "§7êtes assigné.",
+                                "§8• §7Paiement sécurisé",
+                                "§8• §7Argent bloqué",
+                                "§8• §7Taxe 20%",
+                                "§8• §7Litiges possibles",
                                 "",
-                                "§7Missions: §e" + myMissions,
-                                "",
-                                "§8• §7Employé",
-                                "§8• §7Apprenti",
-                                "§8• §7Stagiaire",
-                                "",
-                                "§eClique pour ouvrir"
+                                "§e➜ §fCentre des contrats"
                         )
-                        .action("contract_my_missions")
                         .build()
         );
 
         SafeGUI.set(
                 inv,
-                25,
-                new ItemBuilder(Material.GOLD_INGOT)
-                        .name("§6✦ §fArgent bloqué §6✦")
+                20,
+                new ItemBuilder(Material.BOOK)
+                        .name("§6✦ §fMes contrats §6✦")
                         .lore(
-                                "§7Quand une offre est acceptée,",
-                                "§7l'argent est gardé de côté.",
+                                "§8• §7Contrats client : §e" + myContracts,
+                                "§8• §7Vos commandes passées",
+                                "§8• §7Suivi et validation",
                                 "",
-                                "§8• §7Le client paie avant",
-                                "§8• §7L'entreprise reçoit après",
-                                "§8• §7Taxe: §c20%",
-                                "",
-                                "§7Cela protège les deux joueurs."
+                                "§e➜ §fOuvrir"
                         )
+                        .action("contract_my_list")
+                        .build()
+        );
+
+        SafeGUI.set(
+                inv,
+                22,
+                new ItemBuilder(
+                        business != null
+                                ? Material.LECTERN
+                                : Material.GRAY_DYE
+                )
+                        .name("§6✦ §fContrats entreprise §6✦")
+                        .lore(
+                                business != null
+                                        ? "§8• §7Entreprise : §e" + shortText(business.getName(), 18)
+                                        : "§8• §7Aucune entreprise active",
+                                business != null
+                                        ? "§8• §7Contrats : §e" + ContractManager.getByBusiness(business).size()
+                                        : "§8• §7Rejoignez ou créez une entreprise",
+                                "§8• §7Travail à faire",
+                                "§8• §7Paiements à valider",
+                                "",
+                                business != null
+                                        ? "§e➜ §fOuvrir"
+                                        : "§c✖ §fIndisponible"
+                        )
+                        .action(
+                                business != null
+                                        ? "contract_business_list"
+                                        : "coming_soon"
+                        )
+                        .target(
+                                business != null
+                                        ? business.getId()
+                                        : ""
+                        )
+                        .build()
+        );
+
+        SafeGUI.set(
+                inv,
+                24,
+                new ItemBuilder(Material.IRON_PICKAXE)
+                        .name("§6✦ §fMes missions §6✦")
+                        .lore(
+                                "§8• §7Missions assignées : §e" + myMissions,
+                                "§8• §7Travail à effectuer",
+                                "§8• §7Progression et paiement",
+                                "",
+                                "§e➜ §fOuvrir"
+                        )
+                        .action("contract_my_missions")
                         .build()
         );
 
@@ -141,16 +139,13 @@ public final class ContractMainGUI {
                     inv,
                     31,
                     new ItemBuilder(Material.ANVIL)
-                            .name("§6✦ §fLitiges §6✦")
+                            .name("§6✦ §fLitiges staff §6✦")
                             .lore(
-                                    "§7Voir les contrats",
-                                    "§7avec un problème.",
+                                    "§8• §7Contrats signalés",
+                                    "§8• §7Rembourser ou payer",
+                                    "§8• §7Décision administrative",
                                     "",
-                                    "§8• §7Analyser le litige",
-                                    "§8• §7Payer l'entreprise",
-                                    "§8• §7Rembourser le client",
-                                    "",
-                                    "§cAccès staff"
+                                    "§c✖ §fAccès staff"
                             )
                             .action("contract_litige_list")
                             .build()
@@ -159,11 +154,11 @@ public final class ContractMainGUI {
 
         SafeGUI.set(
                 inv,
-                49,
-                new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
+                40,
+                new ItemBuilder(Material.ARROW)
+                        .name("§6✦ §fRetour §6✦")
                         .lore(
-                                "§7Bureau des Entreprises"
+                                "§8• §7Bureau des Entreprises"
                         )
                         .action("back_main")
                         .build()
