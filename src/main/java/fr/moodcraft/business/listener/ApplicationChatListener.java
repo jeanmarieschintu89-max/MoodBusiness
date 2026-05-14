@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,18 +29,28 @@ public class ApplicationChatListener implements Listener {
     private static final Map<UUID, Draft> drafts =
             new HashMap<>();
 
+    private static final long TIMEOUT_TICKS =
+            20L * 60L;
+
     public static void start(
             Player player,
             Business business,
             ApplicationType type
     ) {
 
-        drafts.put(
-                player.getUniqueId(),
+        if (player == null || business == null || type == null) {
+            return;
+        }
+
+        Draft draft =
                 new Draft(
                         business.getId(),
                         type
-                )
+                );
+
+        drafts.put(
+                player.getUniqueId(),
+                draft
         );
 
         player.closeInventory();
@@ -51,9 +62,51 @@ public class ApplicationChatListener implements Listener {
 
         player.sendMessage("§e➜ §fÉcris une courte présentation.");
         player.sendMessage("§8• §7Exemple : §eJe souhaite apprendre la construction médiévale.");
+        player.sendMessage("§8• §7Minimum : §e10 caractères");
         player.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
+        player.sendMessage("§8• §7Annulation auto dans §e60 secondes");
 
         BusinessMessages.footer(player);
+
+        Bukkit.getScheduler().runTaskLater(
+                Main.getInstance(),
+                () -> {
+
+                    Draft current =
+                            drafts.get(
+                                    player.getUniqueId()
+                            );
+
+                    if (current == null || current != draft) {
+                        return;
+                    }
+
+                    drafts.remove(
+                            player.getUniqueId()
+                    );
+
+                    if (!player.isOnline()) {
+                        return;
+                    }
+
+                    BusinessMessages.info(
+                            player,
+                            "Candidature " + BusinessMessages.brand(),
+                            "Candidature annulée : temps écoulé."
+                    );
+                },
+                TIMEOUT_TICKS
+        );
+    }
+
+    @EventHandler
+    public void onQuit(
+            PlayerQuitEvent event
+    ) {
+
+        drafts.remove(
+                event.getPlayer().getUniqueId()
+        );
     }
 
     @EventHandler
@@ -112,8 +165,22 @@ public class ApplicationChatListener implements Listener {
 
         if (draft.step == 0) {
 
+            String presentation =
+                    message.trim();
+
+            if (presentation.length() < 10) {
+
+                BusinessMessages.deny(
+                        player,
+                        "Candidature " + BusinessMessages.brand(),
+                        "Présentation trop courte. Ajoute quelques détails."
+                );
+
+                return;
+            }
+
             draft.presentation =
-                    message;
+                    presentation;
 
             draft.step = 1;
 
@@ -124,6 +191,7 @@ public class ApplicationChatListener implements Listener {
 
             player.sendMessage("§e➜ §fIndique tes disponibilités.");
             player.sendMessage("§8• §7Exemple : §esoir et week-end.");
+            player.sendMessage("§8• §7Minimum : §e3 caractères");
             player.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
 
             BusinessMessages.footer(player);
@@ -133,11 +201,25 @@ public class ApplicationChatListener implements Listener {
 
         if (draft.step == 1) {
 
+            String availability =
+                    message.trim();
+
+            if (availability.length() < 3) {
+
+                BusinessMessages.deny(
+                        player,
+                        "Candidature " + BusinessMessages.brand(),
+                        "Disponibilités trop courtes. Exemple : §esoir§7."
+                );
+
+                return;
+            }
+
             draft.availability =
-                    message;
+                    availability;
 
             Business business =
-                    BusinessManager.getByName(
+                    BusinessManager.getById(
                             draft.businessId
                     );
 
