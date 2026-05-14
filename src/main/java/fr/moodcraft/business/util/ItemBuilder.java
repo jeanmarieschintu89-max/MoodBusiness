@@ -30,12 +30,16 @@ public class ItemBuilder {
     ) {
 
         this.item =
-                new ItemStack(material);
+                new ItemStack(material == null ? Material.BARRIER : material);
     }
 
     public ItemBuilder name(
             String name
     ) {
+
+        if (isReturnButton(name)) {
+            item.setType(Material.BARRIER);
+        }
 
         ItemMeta meta =
                 item.getItemMeta();
@@ -58,57 +62,31 @@ public class ItemBuilder {
 
         if (meta != null) {
 
-            meta.setLore(
-                    normalizeLore(lore)
-            );
-
+            meta.setLore(normalizeLore(lore));
             hide(meta);
-
             item.setItemMeta(meta);
         }
 
         return this;
     }
 
-    public ItemBuilder action(
-            String action
-    ) {
-
-        setString(
-                ACTION_KEY,
-                action
-        );
-
+    public ItemBuilder action(String action) {
+        setString(ACTION_KEY, action);
         return this;
     }
 
-    public ItemBuilder target(
-            String target
-    ) {
-
-        setString(
-                TARGET_KEY,
-                target
-        );
-
+    public ItemBuilder target(String target) {
+        setString(TARGET_KEY, target);
         return this;
     }
 
-    private void setString(
-            String key,
-            String value
-    ) {
+    private void setString(String key, String value) {
 
-        ItemMeta meta =
-                item.getItemMeta();
+        ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
-
             meta.getPersistentDataContainer().set(
-                    new NamespacedKey(
-                            Main.getInstance(),
-                            key
-                    ),
+                    new NamespacedKey(Main.getInstance(), key),
                     PersistentDataType.STRING,
                     value == null ? "" : value
             );
@@ -118,119 +96,79 @@ public class ItemBuilder {
     }
 
     public ItemStack build() {
-
         return item;
     }
 
-    public static String getAction(
-            ItemStack item
-    ) {
-
-        return getString(
-                item,
-                ACTION_KEY
-        );
+    public static String getAction(ItemStack item) {
+        return getString(item, ACTION_KEY);
     }
 
-    public static String getTarget(
-            ItemStack item
-    ) {
-
-        return getString(
-                item,
-                TARGET_KEY
-        );
+    public static String getTarget(ItemStack item) {
+        return getString(item, TARGET_KEY);
     }
 
-    private static String getString(
-            ItemStack item,
-            String key
-    ) {
+    private static String getString(ItemStack item, String key) {
 
         if (item == null || item.getType().isAir()) {
             return null;
         }
 
-        ItemMeta meta =
-                item.getItemMeta();
+        ItemMeta meta = item.getItemMeta();
 
         if (meta == null) {
             return null;
         }
 
         String value = meta.getPersistentDataContainer().get(
-                new NamespacedKey(
-                        Main.getInstance(),
-                        key
-                ),
+                new NamespacedKey(Main.getInstance(), key),
                 PersistentDataType.STRING
         );
 
-        return value == null || value.isBlank()
-                ? null
-                : value;
+        return value == null || value.isBlank() ? null : value;
     }
 
-    private static List<String> normalizeLore(
-            String... lore
-    ) {
+    private static List<String> normalizeLore(String... lore) {
 
-        List<String> result =
-                new ArrayList<>();
+        List<String> result = new ArrayList<>();
 
         if (lore == null) {
             return result;
         }
 
         for (String line : lore) {
-
             if (line == null || line.isBlank()) {
-
                 result.add("");
-                continue;
+            } else {
+                result.add(normalizeLine(line));
             }
-
-            result.add(
-                    normalizeLine(line)
-            );
         }
 
         return result;
     }
 
-    private static String normalizeLine(
-            String line
-    ) {
+    private static String normalizeLine(String line) {
 
-        String trimmed =
-                line.trim()
-                        .replace("§c✘", "§c✖");
+        String trimmed = line.trim().replace("§c✘", "§c✖");
 
         if (trimmed.startsWith("§8•")
                 || trimmed.startsWith("§e➜")
                 || trimmed.startsWith("§a✔")
                 || trimmed.startsWith("§c✖")) {
-
             return trimmed;
         }
 
-        if (trimmed.startsWith("§eClique")) {
-            return "§e➜ §f" + cleanPrefix(trimmed.replaceFirst("^§e", ""));
-        }
-
-        if (trimmed.startsWith("§aClique")) {
-            return "§e➜ §f" + cleanPrefix(trimmed.replaceFirst("^§a", ""));
+        if (trimmed.startsWith("§eClique") || trimmed.startsWith("§aClique")) {
+            return "§e➜ §f" + cleanPrefix(trimmed);
         }
 
         if (trimmed.startsWith("§cClique")) {
-            return "§c✖ §f" + cleanPrefix(trimmed.replaceFirst("^§c", ""));
+            return "§c✖ §f" + cleanPrefix(trimmed);
         }
 
         if (trimmed.startsWith("§cAccès")
                 || trimmed.startsWith("§cRéservé")
                 || trimmed.startsWith("§cNon")
                 || trimmed.startsWith("§cAction")) {
-
             return "§c✖ §f" + cleanPrefix(trimmed);
         }
 
@@ -238,19 +176,33 @@ public class ItemBuilder {
             return "§a✔ §f" + cleanPrefix(trimmed);
         }
 
-        if (trimmed.startsWith("§7")
-                || trimmed.startsWith("§8")) {
-
+        if (trimmed.startsWith("§7") || trimmed.startsWith("§8")) {
             return "§8• §7" + cleanPrefix(trimmed);
         }
 
         return trimmed;
     }
 
-    private static String cleanPrefix(
-            String text
-    ) {
+    private static boolean isReturnButton(String name) {
+        if (name == null) {
+            return false;
+        }
 
+        String clean = name
+                .replaceAll("§.", "")
+                .replace("✦", "")
+                .trim()
+                .toLowerCase();
+
+        return clean.equals("retour")
+                || clean.equals("fermer")
+                || clean.equals("revenir")
+                || clean.equals("annuler")
+                || clean.contains("retour au menu")
+                || clean.contains("fermer le menu");
+    }
+
+    private static String cleanPrefix(String text) {
         if (text == null) {
             return "";
         }
@@ -265,10 +217,7 @@ public class ItemBuilder {
                 .trim();
     }
 
-    private static void hide(
-            ItemMeta meta
-    ) {
-
+    private static void hide(ItemMeta meta) {
         if (meta == null) {
             return;
         }
@@ -283,12 +232,7 @@ public class ItemBuilder {
         );
 
         try {
-
-            ItemFlag flag =
-                    ItemFlag.valueOf("HIDE_ITEM_SPECIFICS");
-
-            meta.addItemFlags(flag);
-
+            meta.addItemFlags(ItemFlag.valueOf("HIDE_ITEM_SPECIFICS"));
         } catch (IllegalArgumentException ignored) {
         }
     }
