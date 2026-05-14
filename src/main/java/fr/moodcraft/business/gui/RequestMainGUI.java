@@ -29,7 +29,7 @@ public final class RequestMainGUI {
         Inventory inv =
                 Bukkit.createInventory(
                         null,
-                        54,
+                        45,
                         TITLE
                 );
 
@@ -42,21 +42,31 @@ public final class RequestMainGUI {
 
         SafeGUI.set(
                 inv,
-                13,
+                4,
+                new ItemBuilder(Material.BOOK)
+                        .name("§6✦ §fDemandes économiques §6✦")
+                        .lore(
+                                "§8• §7Publier un besoin",
+                                "§8• §7Recevoir des offres",
+                                "§8• §7Choisir une entreprise",
+                                "",
+                                "§e➜ §fCentre des demandes"
+                        )
+                        .build()
+        );
+
+        SafeGUI.set(
+                inv,
+                20,
                 new ItemBuilder(Material.WRITABLE_BOOK)
                         .name("§6✦ §fCréer une demande §6✦")
                         .lore(
-                                "§7Publier un besoin",
-                                "§7pour une entreprise.",
-                                "",
-                                "§7Demandes actives: §e" + active,
-                                "",
                                 "§8• §7Titre",
                                 "§8• §7Description",
                                 "§8• §7Budget",
                                 "§8• §7Délai",
                                 "",
-                                "§eClique pour commencer"
+                                "§e➜ §fCommencer"
                         )
                         .action("request_create")
                         .build()
@@ -64,18 +74,15 @@ public final class RequestMainGUI {
 
         SafeGUI.set(
                 inv,
-                21,
-                new ItemBuilder(Material.BOOK)
+                22,
+                new ItemBuilder(Material.CHEST)
                         .name("§6✦ §fMes demandes §6✦")
                         .lore(
-                                "§7Voir vos demandes",
-                                "§7et les offres reçues.",
+                                "§8• §7Demandes actives : §e" + active,
+                                "§8• §7Voir les offres reçues",
+                                "§8• §7Annuler une demande",
                                 "",
-                                "§8• §7Demandes ouvertes",
-                                "§8• §7Offres proposées",
-                                "§8• §7Contrats créés",
-                                "",
-                                "§eClique pour ouvrir"
+                                "§e➜ §fGérer mes demandes"
                         )
                         .action("request_my_list")
                         .build()
@@ -83,19 +90,15 @@ public final class RequestMainGUI {
 
         SafeGUI.set(
                 inv,
-                23,
+                24,
                 new ItemBuilder(Material.COMPASS)
                         .name("§6✦ §fDemandes publiques §6✦")
                         .lore(
-                                "§7Voir les besoins",
-                                "§7des autres joueurs.",
+                                "§8• §7Besoins des joueurs",
+                                "§8• §7Offres d'entreprises",
+                                "§8• §7Missions ouvertes",
                                 "",
-                                "§8• §7Construction",
-                                "§8• §7Livraison",
-                                "§8• §7Commerce",
-                                "§8• §7Service",
-                                "",
-                                "§eClique pour voir"
+                                "§e➜ §fVoir les demandes"
                         )
                         .action("request_public_list")
                         .build()
@@ -116,18 +119,13 @@ public final class RequestMainGUI {
                     inv,
                     31,
                     new ItemBuilder(Material.EMERALD)
-                            .name("§6✦ §fRépondre aux demandes §6✦")
+                            .name("§6✦ §fRépondre avec mon entreprise §6✦")
                             .lore(
-                                    "§7Envoyer une offre",
-                                    "§7avec votre entreprise.",
+                                    "§8• §7Entreprise : §e" + shortText(business.getName(), 18),
+                                    "§8• §7Proposer un prix",
+                                    "§8• §7Créer un contrat",
                                     "",
-                                    "§7Entreprise: §e" + shortText(business.getName(), 18),
-                                    "",
-                                    "§8• §7Montant",
-                                    "§8• §7Délai",
-                                    "§8• §7Commentaire",
-                                    "",
-                                    "§a✔ Accès autorisé"
+                                    "§a✔ §fAccès autorisé"
                             )
                             .action("request_public_list")
                             .build()
@@ -136,11 +134,11 @@ public final class RequestMainGUI {
 
         SafeGUI.set(
                 inv,
-                49,
-                new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
+                40,
+                new ItemBuilder(Material.ARROW)
+                        .name("§6✦ §fRetour §6✦")
                         .lore(
-                                "§7Bureau des Entreprises"
+                                "§8• §7Bureau des Entreprises"
                         )
                         .action("back_main")
                         .build()
