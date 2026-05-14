@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,31 +27,22 @@ public class ContractChatListener implements Listener {
     private static final Map<UUID, Draft> drafts =
             new HashMap<>();
 
+    private static final long TIMEOUT_TICKS =
+            20L * 60L;
+
     public static void startComplete(
             Player player,
             Contract contract
     ) {
 
-        drafts.put(
-                player.getUniqueId(),
-                new Draft(
-                        contract.getId(),
-                        Mode.COMPLETE
-                )
-        );
-
-        player.closeInventory();
-
-        BusinessMessages.header(
+        start(
                 player,
-                "Contrat Officiel"
+                contract,
+                Mode.COMPLETE,
+                "Contrat Officiel",
+                "§e➜ §fÉcris un commentaire de fin.",
+                "§8• §7Exemple : §eConstruction terminée avec intérieur complet."
         );
-
-        player.sendMessage("§fÉcris un commentaire de fin.");
-        player.sendMessage("§7Exemple: Construction terminée avec intérieur complet.");
-        player.sendMessage("§7Tape §cannuler §7pour quitter.");
-
-        BusinessMessages.footer(player);
     }
 
     public static void startLitige(
@@ -58,26 +50,94 @@ public class ContractChatListener implements Listener {
             Contract contract
     ) {
 
-        drafts.put(
-                player.getUniqueId(),
+        start(
+                player,
+                contract,
+                Mode.LITIGE,
+                "Litige Économique",
+                "§e➜ §fExplique la raison du litige.",
+                "§8• §7Les fonds resteront bloqués."
+        );
+    }
+
+    private static void start(
+            Player player,
+            Contract contract,
+            Mode mode,
+            String module,
+            String mainLine,
+            String detailLine
+    ) {
+
+        if (player == null || contract == null || mode == null) {
+            return;
+        }
+
+        Draft draft =
                 new Draft(
                         contract.getId(),
-                        Mode.LITIGE
-                )
+                        mode
+                );
+
+        drafts.put(
+                player.getUniqueId(),
+                draft
         );
 
         player.closeInventory();
 
         BusinessMessages.header(
                 player,
-                "Litige Économique"
+                module
         );
 
-        player.sendMessage("§fExplique la raison du litige.");
-        player.sendMessage("§7Les fonds resteront bloqués.");
-        player.sendMessage("§7Tape §cannuler §7pour quitter.");
+        player.sendMessage(mainLine);
+        player.sendMessage(detailLine);
+        player.sendMessage("§8• §7Minimum : §e5 caractères");
+        player.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
+        player.sendMessage("§8• §7Annulation auto dans §e60 secondes");
 
         BusinessMessages.footer(player);
+
+        Bukkit.getScheduler().runTaskLater(
+                Main.getInstance(),
+                () -> {
+
+                    Draft current =
+                            drafts.get(
+                                    player.getUniqueId()
+                            );
+
+                    if (current == null || current != draft) {
+                        return;
+                    }
+
+                    drafts.remove(
+                            player.getUniqueId()
+                    );
+
+                    if (!player.isOnline()) {
+                        return;
+                    }
+
+                    BusinessMessages.info(
+                            player,
+                            module,
+                            "Saisie annulée : temps écoulé."
+                    );
+                },
+                TIMEOUT_TICKS
+        );
+    }
+
+    @EventHandler
+    public void onQuit(
+            PlayerQuitEvent event
+    ) {
+
+        drafts.remove(
+                event.getPlayer().getUniqueId()
+        );
     }
 
     @EventHandler
@@ -118,6 +178,11 @@ public class ContractChatListener implements Listener {
             String message
     ) {
 
+        String module =
+                draft.mode == Mode.COMPLETE
+                        ? "Contrat Officiel"
+                        : "Litige Économique";
+
         if (message.equalsIgnoreCase("annuler")
                 || message.equalsIgnoreCase("cancel")) {
 
@@ -127,8 +192,22 @@ public class ContractChatListener implements Listener {
 
             BusinessMessages.info(
                     player,
-                    "Contrat Officiel",
+                    module,
                     "Saisie annulée."
+            );
+
+            return;
+        }
+
+        String comment =
+                message.trim();
+
+        if (comment.length() < 5) {
+
+            BusinessMessages.deny(
+                    player,
+                    module,
+                    "Message trop court. Ajoute quelques détails."
             );
 
             return;
@@ -147,7 +226,7 @@ public class ContractChatListener implements Listener {
 
             BusinessMessages.deny(
                     player,
-                    "Contrat Officiel",
+                    module,
                     "Contrat introuvable."
             );
 
@@ -162,7 +241,7 @@ public class ContractChatListener implements Listener {
                     ContractManager.complete(
                             player,
                             contract,
-                            message
+                            comment
                     );
 
         } else {
@@ -171,7 +250,7 @@ public class ContractChatListener implements Listener {
                     ContractManager.openLitige(
                             player,
                             contract,
-                            message
+                            comment
                     );
         }
 
@@ -179,9 +258,7 @@ public class ContractChatListener implements Listener {
 
             BusinessMessages.deny(
                     player,
-                    draft.mode == Mode.COMPLETE
-                            ? "Contrat Officiel"
-                            : "Litige Économique",
+                    module,
                     result.message()
             );
 
@@ -190,9 +267,7 @@ public class ContractChatListener implements Listener {
 
         BusinessMessages.success(
                 player,
-                draft.mode == Mode.COMPLETE
-                        ? "Contrat Officiel"
-                        : "Litige Économique",
+                module,
                 result.message()
         );
     }
