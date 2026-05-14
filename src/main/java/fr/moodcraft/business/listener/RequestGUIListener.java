@@ -103,7 +103,7 @@ public class RequestGUIListener implements Listener {
 
                     BusinessMessages.deny(
                             p,
-                            "Demandes " + BusinessMessages.brand(),
+                            "Demandes",
                             "Demande introuvable."
                     );
 
@@ -114,6 +114,48 @@ public class RequestGUIListener implements Listener {
                         p,
                         request
                 );
+            }
+
+            case "request_cancel" -> {
+
+                BusinessRequest request =
+                        RequestManager.get(target);
+
+                if (request == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Demandes",
+                            "Demande introuvable."
+                    );
+
+                    return;
+                }
+
+                RequestManager.RequestResult result =
+                        RequestManager.cancel(
+                                p,
+                                request
+                        );
+
+                if (!result.success()) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Demandes",
+                            result.message()
+                    );
+
+                    return;
+                }
+
+                BusinessMessages.success(
+                        p,
+                        "Demandes",
+                        result.message()
+                );
+
+                RequestListGUI.openMy(p);
             }
 
             case "offer_start" -> {
@@ -244,8 +286,7 @@ public class RequestGUIListener implements Listener {
             String title
     ) {
 
-        return title.equals(BusinessMainGUI.TITLE)
-                || title.equals(RequestMainGUI.TITLE)
+        return title.equals(RequestMainGUI.TITLE)
                 || title.equals(RequestCategoryGUI.TITLE)
                 || title.equals(RequestListGUI.TITLE_PUBLIC)
                 || title.equals(RequestListGUI.TITLE_MY)
