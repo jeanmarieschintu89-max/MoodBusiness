@@ -43,17 +43,18 @@ public final class RequestDetailGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §f" + shortText(request.getTitle(), 24))
+                        .name("§6✦ §f" + shortText(request.getTitle(), 24) + " §6✦")
                         .lore(
-                                "§7Auteur: §e" + shortText(request.getCreatorName(), 14),
-                                "§7Type: " + request.getCategory().getDisplayName(),
-                                "§7Budget: §e" + VaultHook.format(request.getBudget()),
-                                "§7Délai: §b" + request.getDueDays() + "j",
-                                "§7État: " + request.getStatus().getDisplayName(),
-                                "§7Créée: §f" + shortDate(request.getCreatedAt()),
+                                "§8• §7Auteur : §e" + shortText(request.getCreatorName(), 14),
+                                "§8• §7Type : " + request.getCategory().getDisplayName(),
+                                "§8• §7Budget : §e" + VaultHook.format(request.getBudget()),
+                                "§8• §7Délai : §b" + request.getDueDays() + "j",
+                                "§8• §7État : " + request.getStatus().getDisplayName(),
+                                "§8• §7Créée : §f" + shortDate(request.getCreatedAt()),
+                                "§8• §7ID : §8" + request.getId(),
                                 "",
-                                "§6✦ §fDescription",
-                                "§7" + shortText(request.getDescription(), 32)
+                                "§6✦ §fDescription §6✦",
+                                "§8• §7" + shortText(request.getDescription(), 32)
                         )
                         .build()
         );
@@ -89,12 +90,11 @@ public final class RequestDetailGUI {
                     )
                             .name("§6✦ §fProposer une offre §6✦")
                             .lore(
-                                    "§7Entreprise: §e" + shortText(business.getName(), 16),
+                                    "§8• §7Entreprise : §e" + shortText(business.getName(), 16),
                                     "",
                                     hasOffer
-                                            ? "§cOffre déjà envoyée"
-                                            : "§a✔ Formulaire guidé",
-                                    "",
+                                            ? "§c✖ §fOffre déjà envoyée"
+                                            : "§a✔ §fFormulaire guidé",
                                     "§8• §7Montant",
                                     "§8• §7Délai",
                                     "§8• §7Commentaire"
@@ -115,28 +115,48 @@ public final class RequestDetailGUI {
 
             SafeGUI.set(
                     inv,
-                    23,
+                    21,
                     new ItemBuilder(Material.CHEST)
                             .name("§6✦ §fOffres reçues §6✦")
                             .lore(
-                                    "§7Voir les propositions",
-                                    "§7des entreprises.",
+                                    "§8• §7Propositions des entreprises",
+                                    "§8• §7Choisir une offre",
                                     "",
-                                    "§eClique pour ouvrir"
+                                    "§e➜ §fOuvrir"
                             )
                             .action("offer_list")
                             .target(request.getId())
                             .build()
             );
+
+            if (request.getStatus().isOpen()) {
+
+                SafeGUI.set(
+                        inv,
+                        23,
+                        new ItemBuilder(Material.REDSTONE_BLOCK)
+                                .name("§c✦ §fAnnuler la demande §c✦")
+                                .lore(
+                                        "§8• §7Ferme cette demande",
+                                        "§8• §7Les registres sont gardés",
+                                        "§8• §7Aucune suppression brutale",
+                                        "",
+                                        "§c✖ §fClique pour annuler"
+                                )
+                                .action("request_cancel")
+                                .target(request.getId())
+                                .build()
+                );
+            }
         }
 
         SafeGUI.set(
                 inv,
                 49,
-                new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
+                new ItemBuilder(Material.ARROW)
+                        .name("§6✦ §fRetour §6✦")
                         .lore(
-                                "§7Menu demandes"
+                                "§8• §7Menu demandes"
                         )
                         .action("open_requests")
                         .build()
