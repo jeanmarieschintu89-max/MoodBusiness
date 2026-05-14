@@ -23,13 +23,12 @@ import java.util.UUID;
 public final class BusinessEmployeesGUI {
 
     public static final String TITLE =
-            "§6✦ §8Employés §6✦";
+            "§6✦ §8Équipe entreprise §6✦";
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34,
-            37, 38, 39, 40, 41, 42, 43
+            28, 29, 30, 31, 32, 33, 34
     };
 
     private BusinessEmployeesGUI() {}
@@ -42,7 +41,7 @@ public final class BusinessEmployeesGUI {
         Inventory inv =
                 Bukkit.createInventory(
                         null,
-                        54,
+                        45,
                         TITLE
                 );
 
@@ -63,18 +62,17 @@ public final class BusinessEmployeesGUI {
         SafeGUI.set(
                 inv,
                 4,
-                new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §f" + shortText(business.getName(), 20) + " §6✦")
+                new ItemBuilder(Material.PLAYER_HEAD)
+                        .name("§6✦ §fÉquipe §6✦")
                         .lore(
-                                "§7Membres total: §e" + business.getMembers().size(),
-                                "§7Employés: §e" + employees,
-                                "§7Gestion: "
-                                        + (canManage
-                                        ? "§aOui"
-                                        : "§cNon"),
+                                "§8• §7Entreprise : §e" + shortText(business.getName(), 18),
+                                "§8• §7Membres : §e" + business.getMembers().size(),
+                                "§8• §7Employés : §e" + employees,
+                                "§8• §7Gestion : " + (canManage ? "§aoui" : "§cnon"),
                                 "",
-                                "§8• §7Clique un membre",
-                                "§8• §7pour voir sa fiche"
+                                canManage
+                                        ? "§e➜ §fClique un membre pour gérer"
+                                        : "§e➜ §fLecture seule"
                         )
                         .build()
         );
@@ -113,21 +111,18 @@ public final class BusinessEmployeesGUI {
             List<String> lore =
                     new ArrayList<>();
 
-            lore.add("§7Rôle: " + role.getDisplayName());
+            lore.add("§8• §7Rôle : " + role.getDisplayName());
 
             if (business.isOwner(uuid)) {
 
-                lore.add("");
                 lore.add("§8• §7Dirigeant officiel");
 
             } else if (canManage) {
 
-                lore.add("");
-                lore.add("§eClique pour gérer");
+                lore.add("§e➜ §fGérer ce membre");
 
             } else {
 
-                lore.add("");
                 lore.add("§8• §7Lecture seule");
             }
 
@@ -160,19 +155,17 @@ public final class BusinessEmployeesGUI {
 
         SafeGUI.set(
                 inv,
-                45,
+                36,
                 new ItemBuilder(Material.EMERALD)
                         .name("§6✦ §fRecruter §6✦")
                         .lore(
-                                "§7Ajouter un joueur",
-                                "§7dans l'entreprise.",
-                                "",
+                                "§8• §7Ajouter un joueur",
                                 "§8• §7Pseudo dans le chat",
                                 "§8• §7Rôle dans le chat",
                                 "",
                                 canManage
-                                        ? "§a✔ Cliquer pour saisir"
-                                        : "§cAccès refusé"
+                                        ? "§e➜ §fCommencer le recrutement"
+                                        : "§c✖ §fAccès limité"
                         )
                         .action(
                                 canManage
@@ -185,11 +178,11 @@ public final class BusinessEmployeesGUI {
 
         SafeGUI.set(
                 inv,
-                49,
-                new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
+                40,
+                new ItemBuilder(Material.ARROW)
+                        .name("§6✦ §fRetour §6✦")
                         .lore(
-                                "§7Gestion entreprise"
+                                "§8• §7Mon entreprise"
                         )
                         .action("open_business_dashboard")
                         .target(business.getId())
