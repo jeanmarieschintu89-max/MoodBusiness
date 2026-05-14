@@ -15,6 +15,7 @@ import fr.moodcraft.business.model.BusinessRequest;
 import fr.moodcraft.business.model.RequestCategory;
 
 import fr.moodcraft.business.util.BusinessMessages;
+import fr.moodcraft.business.util.ContractBookUtil;
 import fr.moodcraft.business.util.ItemBuilder;
 
 import org.bukkit.entity.Player;
@@ -168,10 +169,15 @@ public class RequestGUIListener implements Listener {
                     return;
                 }
 
+                ContractBookUtil.giveProofBooks(
+                        result.contract()
+                );
+
                 BusinessMessages.success(
                         p,
                         "Prise en charge",
-                        result.message()
+                        result.message(),
+                        "§8• §7Deux livres de preuve ont été générés."
                 );
             }
 
