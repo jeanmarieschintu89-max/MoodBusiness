@@ -1,7 +1,6 @@
 package fr.moodcraft.business.gui;
 
 import fr.moodcraft.business.manager.BusinessManager;
-import fr.moodcraft.business.manager.OfferManager;
 
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRequest;
@@ -33,7 +32,7 @@ public final class RequestDetailGUI {
         Inventory inv =
                 Bukkit.createInventory(
                         null,
-                        54,
+                        45,
                         TITLE
                 );
 
@@ -51,7 +50,6 @@ public final class RequestDetailGUI {
                                 "§8• §7Délai : §b" + request.getDueDays() + "j",
                                 "§8• §7État : " + request.getStatus().getDisplayName(),
                                 "§8• §7Créée : §f" + shortDate(request.getCreatedAt()),
-                                "§8• §7ID : §8" + request.getId(),
                                 "",
                                 "§6✦ §fDescription §6✦",
                                 "§8• §7" + shortText(request.getDescription(), 32)
@@ -74,36 +72,20 @@ public final class RequestDetailGUI {
                 p.getUniqueId()
         )) {
 
-            boolean hasOffer =
-                    OfferManager.hasActiveOffer(
-                            request.getId(),
-                            business.getId()
-                    );
-
             SafeGUI.set(
                     inv,
-                    21,
-                    new ItemBuilder(
-                            hasOffer
-                                    ? Material.GRAY_DYE
-                                    : Material.EMERALD
-                    )
-                            .name("§6✦ §fProposer une offre §6✦")
+                    20,
+                    new ItemBuilder(Material.EMERALD)
+                            .name("§6✦ §fPrendre en charge §6✦")
                             .lore(
                                     "§8• §7Entreprise : §e" + shortText(business.getName(), 16),
+                                    "§8• §7Budget client : §e" + VaultHook.format(request.getBudget()),
+                                    "§8• §7Délai : §b" + request.getDueDays() + "j",
                                     "",
-                                    hasOffer
-                                            ? "§c✖ §fOffre déjà envoyée"
-                                            : "§a✔ §fFormulaire guidé",
-                                    "§8• §7Montant",
-                                    "§8• §7Délai",
-                                    "§8• §7Commentaire"
+                                    "§a✔ §fCrée le contrat directement",
+                                    "§8• §7L'argent du client sera bloqué"
                             )
-                            .action(
-                                    hasOffer
-                                            ? "coming_soon"
-                                            : "offer_start"
-                            )
+                            .action("request_take")
                             .target(request.getId())
                             .build()
             );
@@ -115,17 +97,16 @@ public final class RequestDetailGUI {
 
             SafeGUI.set(
                     inv,
-                    21,
+                    20,
                     new ItemBuilder(Material.CHEST)
-                            .name("§6✦ §fOffres reçues §6✦")
+                            .name("§6✦ §fSuivi de la demande §6✦")
                             .lore(
-                                    "§8• §7Propositions des entreprises",
-                                    "§8• §7Choisir une offre",
+                                    "§8• §7Une entreprise peut la prendre",
+                                    "§8• §7Contrat créé automatiquement",
+                                    "§8• §7Argent bloqué à la prise en charge",
                                     "",
-                                    "§e➜ §fOuvrir"
+                                    "§e➜ §fAucune offre à accepter"
                             )
-                            .action("offer_list")
-                            .target(request.getId())
                             .build()
             );
 
@@ -133,13 +114,12 @@ public final class RequestDetailGUI {
 
                 SafeGUI.set(
                         inv,
-                        23,
+                        24,
                         new ItemBuilder(Material.REDSTONE_BLOCK)
                                 .name("§c✦ §fAnnuler la demande §c✦")
                                 .lore(
                                         "§8• §7Ferme cette demande",
-                                        "§8• §7Les registres sont gardés",
-                                        "§8• §7Aucune suppression brutale",
+                                        "§8• §7Aucun contrat ne sera créé",
                                         "",
                                         "§c✖ §fClique pour annuler"
                                 )
@@ -152,7 +132,7 @@ public final class RequestDetailGUI {
 
         SafeGUI.set(
                 inv,
-                49,
+                40,
                 new ItemBuilder(Material.ARROW)
                         .name("§6✦ §fRetour §6✦")
                         .lore(
