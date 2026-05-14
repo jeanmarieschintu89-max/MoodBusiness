@@ -27,24 +27,12 @@ public final class BusinessMainGUI {
             Player p
     ) {
 
-        Inventory inv =
-                Bukkit.createInventory(
-                        null,
-                        54,
-                        TITLE
-                );
+        Inventory inv = Bukkit.createInventory(null, 54, TITLE);
 
         SafeGUI.fill(inv);
 
-        Business business =
-                BusinessManager.getMemberBusiness(
-                        p.getUniqueId()
-                );
-
-        double nextPrice =
-                BusinessManager.getCreationPrice(
-                        p.getUniqueId()
-                );
+        Business business = BusinessManager.getMemberBusiness(p.getUniqueId());
+        double nextPrice = BusinessManager.getCreationPrice(p.getUniqueId());
 
         SafeGUI.set(
                 inv,
@@ -82,10 +70,7 @@ public final class BusinessMainGUI {
 
         } else {
 
-            BusinessRole role =
-                    business.getRole(
-                            p.getUniqueId()
-                    );
+            BusinessRole role = business.getRole(p.getUniqueId());
 
             SafeGUI.set(
                     inv,
@@ -94,12 +79,8 @@ public final class BusinessMainGUI {
                             .name("§6✦ §fMon entreprise §6✦")
                             .lore(
                                     "§8• §7Nom : §e" + shortText(business.getName(), 18),
-                                    "§8• §7Rôle : "
-                                            + (role != null
-                                            ? role.getDisplayName()
-                                            : "§7Membre"),
-                                    "§8• §7État : "
-                                            + business.getStatus().getDisplayName(),
+                                    "§8• §7Rôle : " + (role != null ? role.getDisplayName() : "§7Membre"),
+                                    "§8• §7État : " + business.getStatus().getDisplayName(),
                                     "",
                                     "§e➜ §fOuvrir le tableau de bord"
                             )
@@ -157,6 +138,20 @@ public final class BusinessMainGUI {
                         .build()
         );
 
+        SafeGUI.set(
+                inv,
+                40,
+                new ItemBuilder(Material.BARRIER)
+                        .name("§c✦ §fRetour §c✦")
+                        .lore(
+                                "§8• §7Retour au menu principal",
+                                "",
+                                "§c✖ §fOuvrir /menu"
+                        )
+                        .action("back_server_menu")
+                        .build()
+        );
+
         if (p.hasPermission("moodbusiness.staff")) {
 
             SafeGUI.set(
@@ -179,26 +174,18 @@ public final class BusinessMainGUI {
         p.openInventory(inv);
     }
 
-    private static String shortText(
-            String text,
-            int max
-    ) {
+    private static String shortText(String text, int max) {
 
         if (text == null || text.isBlank()) {
             return "Inconnu";
         }
 
-        String clean =
-                text.replaceAll("§.", "")
-                        .trim();
+        String clean = text.replaceAll("§.", "").trim();
 
         if (clean.length() <= max) {
             return clean;
         }
 
-        return clean.substring(
-                0,
-                Math.max(1, max - 3)
-        ) + "...";
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 }
