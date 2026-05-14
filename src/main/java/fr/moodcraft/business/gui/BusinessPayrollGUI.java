@@ -22,7 +22,11 @@ import org.bukkit.inventory.Inventory;
 public final class BusinessPayrollGUI {
 
     public static final String TITLE =
-            "§6✦ §8Paie Entreprise §6✦";
+            "§6✦ §8Salaires §6✦";
+
+    private static final int[] ROLE_SLOTS = {
+            10, 11, 12, 14, 15, 16, 22
+    };
 
     private BusinessPayrollGUI() {}
 
@@ -34,7 +38,7 @@ public final class BusinessPayrollGUI {
         Inventory inv =
                 Bukkit.createInventory(
                         null,
-                        54,
+                        45,
                         TITLE
                 );
 
@@ -50,33 +54,25 @@ public final class BusinessPayrollGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.CLOCK)
-                        .name("§6✦ §fPaie mensuelle §6✦")
+                        .name("§6✦ §fSalaires mensuels §6✦")
                         .lore(
-                                "§7Salaires de l'entreprise.",
-                                "",
-                                "§7Entreprise: §e" + shortText(business.getName(), 18),
-                                "§7Solde: §e" + VaultHook.format(business.getBalance()),
-                                "§7Total/mois: §e"
-                                        + VaultHook.format(
-                                        PayrollManager.calculateTotalPayroll(
-                                                business
-                                        )
+                                "§8• §7Entreprise : §e" + shortText(business.getName(), 18),
+                                "§8• §7Solde : §e" + VaultHook.format(business.getBalance()),
+                                "§8• §7Total/mois : §e" + VaultHook.format(
+                                        PayrollManager.calculateTotalPayroll(business)
                                 ),
+                                "§8• §7Mode : " + (canConfig ? "§aédition" : "§7lecture seule"),
                                 "",
-                                "§7Mode: "
-                                        + (canConfig
-                                        ? "§aDirigeant"
-                                        : "§cLecture seule"),
-                                "",
-                                "§8• §7Versée chaque mois",
-                                "§8• §7Pas de dette automatique"
+                                "§e➜ §fClique un rôle pour modifier"
                         )
                         .build()
         );
 
-        int slot = 10;
+        BusinessRole[] roles = BusinessRole.values();
 
-        for (BusinessRole role : BusinessRole.values()) {
+        for (int i = 0; i < roles.length && i < ROLE_SLOTS.length; i++) {
+
+            BusinessRole role = roles[i];
 
             double salary =
                     PayrollStorage.getSalary(
@@ -98,18 +94,20 @@ public final class BusinessPayrollGUI {
 
             SafeGUI.set(
                     inv,
-                    slot,
-                    new ItemBuilder(icon)
+                    ROLE_SLOTS[i],
+                    new ItemBuilder(
+                            canConfig
+                                    ? icon
+                                    : Material.GRAY_DYE
+                    )
                             .name("§6✦ " + role.getDisplayName() + " §6✦")
                             .lore(
-                                    "§7Salaire/mois: §e"
-                                            + VaultHook.format(salary),
+                                    "§8• §7Salaire/mois : §e" + VaultHook.format(salary),
+                                    "§8• §7Rôle : " + role.getDisplayName(),
                                     "",
                                     canConfig
-                                            ? "§a✔ Clique pour modifier"
-                                            : "§cRéservé au dirigeant",
-                                    "",
-                                    "§8• §7Montant dans le chat"
+                                            ? "§e➜ §fModifier le montant"
+                                            : "§c✖ §fRéservé au dirigeant"
                             )
                             .action(
                                     canConfig
@@ -119,37 +117,25 @@ public final class BusinessPayrollGUI {
                             .target(business.getId() + ":" + role.name())
                             .build()
             );
-
-            slot++;
-
-            if (slot == 17) {
-                slot = 19;
-            }
-
-            if (slot == 26) {
-                slot = 28;
-            }
-
-            if (slot == 35) {
-                slot = 37;
-            }
         }
 
         SafeGUI.set(
                 inv,
-                45,
-                new ItemBuilder(Material.EMERALD)
+                31,
+                new ItemBuilder(
+                        canConfig
+                                ? Material.EMERALD_BLOCK
+                                : Material.GRAY_DYE
+                )
                         .name("§6✦ §fLancer la paie §6✦")
                         .lore(
-                                "§7Verse les salaires",
-                                "§7maintenant.",
-                                "",
-                                "§8• §7Utile pour tester",
-                                "§8• §7ou rattraper une paie",
+                                "§8• §7Verse les salaires maintenant",
+                                "§8• §7Utile pour rattraper une paie",
+                                "§8• §7Aucune dette si la banque est vide",
                                 "",
                                 canConfig
-                                        ? "§a✔ Lancer"
-                                        : "§cRéservé au dirigeant"
+                                        ? "§e➜ §fVoir la commande"
+                                        : "§c✖ §fRéservé au dirigeant"
                         )
                         .action(
                                 canConfig
@@ -162,11 +148,11 @@ public final class BusinessPayrollGUI {
 
         SafeGUI.set(
                 inv,
-                49,
-                new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
+                40,
+                new ItemBuilder(Material.ARROW)
+                        .name("§6✦ §fRetour §6✦")
                         .lore(
-                                "§7Banque entreprise"
+                                "§8• §7Argent entreprise"
                         )
                         .action("open_bank")
                         .target(business.getId())
@@ -185,17 +171,12 @@ public final class BusinessPayrollGUI {
             return "Inconnu";
         }
 
-        String clean =
-                text.replaceAll("§.", "")
-                        .trim();
+        String clean = text.replaceAll("§.", "").trim();
 
         if (clean.length() <= max) {
             return clean;
         }
 
-        return clean.substring(
-                0,
-                Math.max(1, max - 3)
-        ) + "...";
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 }
