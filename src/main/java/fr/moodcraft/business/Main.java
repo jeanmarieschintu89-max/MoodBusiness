@@ -18,7 +18,6 @@ import fr.moodcraft.business.listener.BusinessGUIListener;
 import fr.moodcraft.business.listener.BusinessInventoryGuardListener;
 import fr.moodcraft.business.listener.ContractChatListener;
 import fr.moodcraft.business.listener.ContractGUIListener;
-import fr.moodcraft.business.listener.ContractMissionGUIListener;
 import fr.moodcraft.business.listener.PayrollChatListener;
 import fr.moodcraft.business.listener.RecruitmentChatListener;
 import fr.moodcraft.business.listener.RequestChatListener;
@@ -32,7 +31,6 @@ import fr.moodcraft.business.storage.AlertStorage;
 import fr.moodcraft.business.storage.ApplicationStorage;
 import fr.moodcraft.business.storage.AuditLogStorage;
 import fr.moodcraft.business.storage.BusinessStorage;
-import fr.moodcraft.business.storage.ContractAssignmentStorage;
 import fr.moodcraft.business.storage.ContractStorage;
 import fr.moodcraft.business.storage.FinanceStorage;
 import fr.moodcraft.business.storage.OfferStorage;
@@ -69,7 +67,6 @@ public class Main extends JavaPlugin {
         RequestStorage.init();
         OfferStorage.init();
         ContractStorage.init();
-        ContractAssignmentStorage.init();
         FinanceStorage.init();
         PayrollStorage.init();
         AuditLogStorage.init();
@@ -88,7 +85,7 @@ public class Main extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage("§8----- §6✦ §aMood§6Business §6✦ §8-----");
         Bukkit.getConsoleSender().sendMessage("§a✔ §fBureau des Entreprises chargé.");
         Bukkit.getConsoleSender().sendMessage("§e➜ §7Service officiel de §aMood§6Craft§7.");
-        Bukkit.getConsoleSender().sendMessage("§8-----------------------------");
+        Bukkit.getConsoleSender().sendMessage("§8----------- §6✦ §8-----------");
     }
 
     @Override
@@ -101,7 +98,6 @@ public class Main extends JavaPlugin {
         RequestStorage.save();
         OfferStorage.save();
         ContractStorage.save();
-        ContractAssignmentStorage.save();
         FinanceStorage.save();
         PayrollStorage.save();
         AuditLogStorage.save();
@@ -110,7 +106,7 @@ public class Main extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage("");
         Bukkit.getConsoleSender().sendMessage("§8----- §6✦ §aMood§6Business §6✦ §8-----");
         Bukkit.getConsoleSender().sendMessage("§c✖ §fBureau des Entreprises arrêté.");
-        Bukkit.getConsoleSender().sendMessage("§8-----------------------------");
+        Bukkit.getConsoleSender().sendMessage("§8----------- §6✦ §8-----------");
     }
 
     private void registerCommands() {
@@ -147,7 +143,6 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new RequestChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new ContractGUIListener(), this);
         Bukkit.getPluginManager().registerEvents(new ContractChatListener(), this);
-        Bukkit.getPluginManager().registerEvents(new ContractMissionGUIListener(), this);
         Bukkit.getPluginManager().registerEvents(new BankGUIListener(), this);
         Bukkit.getPluginManager().registerEvents(new BankChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new PayrollChatListener(), this);
