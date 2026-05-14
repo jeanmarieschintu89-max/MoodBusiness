@@ -66,12 +66,43 @@ public final class VaultHook {
         );
     }
 
+    public static boolean has(
+            OfflinePlayer player,
+            double amount
+    ) {
+
+        return economy != null
+                && player != null
+                && economy.has(
+                player,
+                amount
+        );
+    }
+
     public static boolean withdraw(
             Player player,
             double amount
     ) {
 
         if (economy == null) {
+            return false;
+        }
+
+        EconomyResponse response =
+                economy.withdrawPlayer(
+                        player,
+                        amount
+                );
+
+        return response.transactionSuccess();
+    }
+
+    public static boolean withdraw(
+            OfflinePlayer player,
+            double amount
+    ) {
+
+        if (economy == null || player == null) {
             return false;
         }
 
