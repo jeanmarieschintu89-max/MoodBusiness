@@ -10,152 +10,55 @@ public final class BusinessMessages {
 
     private BusinessMessages() {}
 
-    //
-    // 🟢 BRAND
-    //
-
     public static String brand() {
-
         return "§aMood§6Craft";
     }
 
-    //
-    // 🎨 HEADER PREMIUM
-    //
-
-    public static void header(
-            CommandSender sender,
-            String title
-    ) {
-
-        sender.sendMessage("");
-        sender.sendMessage(
-                "§8----- §6✦ "
-                        + cleanTitle(title)
-                        + " ✦ §8-----"
-        );
+    public static String guiTitle(String title) {
+        return "§6✦ §8§l" + cleanTitle(title) + " §6✦";
     }
 
-    //
-    // 🎨 FOOTER
-    //
+    public static void header(CommandSender sender, String title) {
+        sender.sendMessage("");
+        sender.sendMessage("§8----- §6✦ " + cleanTitle(title) + " ✦ §8-----");
+    }
 
-    public static void footer(
-            CommandSender sender
-    ) {
-
+    public static void footer(CommandSender sender) {
         sender.sendMessage(FOOTER);
     }
 
-    //
-    // ➜ INFO
-    //
-
-    public static void infoLine(
-            CommandSender sender,
-            String message
-    ) {
-
-        sender.sendMessage(
-                "§e➜ §f" + cleanPrefix(message)
-        );
+    public static void infoLine(CommandSender sender, String message) {
+        sender.sendMessage("§e➜ §f" + cleanPrefix(message));
     }
 
-    //
-    // • DÉTAIL
-    //
-
-    public static void line(
-            CommandSender sender,
-            String message
-    ) {
-
-        sender.sendMessage(
-                "§8• §7" + cleanPrefix(message)
-        );
+    public static void line(CommandSender sender, String message) {
+        sender.sendMessage("§8• §7" + cleanPrefix(message));
     }
 
-    //
-    // ❌ REFUS
-    //
-
-    public static void deny(
-            CommandSender sender,
-            String title,
-            String reason,
-            String... details
-    ) {
-
-        header(
-                sender,
-                title
-        );
-
+    public static void deny(CommandSender sender, String title, String reason, String... details) {
+        header(sender, title);
         sender.sendMessage("§c✖ §fAction refusée.");
         line(sender, reason);
         sendDetails(sender, details);
-
         footer(sender);
     }
 
-    //
-    // ✅ SUCCÈS
-    //
-
-    public static void success(
-            CommandSender sender,
-            String title,
-            String message,
-            String... details
-    ) {
-
-        header(
-                sender,
-                title
-        );
-
+    public static void success(CommandSender sender, String title, String message, String... details) {
+        header(sender, title);
         sender.sendMessage("§a✔ §f" + cleanPrefix(message));
         sendDetails(sender, details);
-
         footer(sender);
     }
 
-    //
-    // ℹ INFO
-    //
-
-    public static void info(
-            CommandSender sender,
-            String title,
-            String message,
-            String... details
-    ) {
-
-        header(
-                sender,
-                title
-        );
-
+    public static void info(CommandSender sender, String title, String message, String... details) {
+        header(sender, title);
         sender.sendMessage("§e➜ §f" + cleanPrefix(message));
         sendDetails(sender, details);
-
         footer(sender);
     }
 
-    //
-    // 🏢 DOSSIER ENTREPRISE
-    //
-
-    public static void businessInfo(
-            CommandSender sender,
-            Business business
-    ) {
-
-        header(
-                sender,
-                "Dossier Entreprise"
-        );
-
+    public static void businessInfo(CommandSender sender, Business business) {
+        header(sender, "Dossier Entreprise");
         sender.sendMessage("§e➜ §fEntreprise : §6" + business.getName());
         line(sender, "Dirigeant : §e" + business.getOwnerName());
         line(sender, "État : " + business.getStatus().getDisplayName());
@@ -163,43 +66,19 @@ public final class BusinessMessages {
         line(sender, "Création n° : §e" + business.getCreationIndex());
         line(sender, "Frais : §e" + money(business.getCreationFee()));
         line(sender, "Créée : §f" + TimeUtil.formatDate(business.getCreatedAt()));
-        line(
-                sender,
-                "Service officiel de " + brand()
-        );
-
+        line(sender, "Service officiel de " + brand());
         footer(sender);
     }
 
-    //
-    // 💶 MONEY
-    //
-
-    public static String money(
-            double amount
-    ) {
-
+    public static String money(double amount) {
         return VaultHook.format(amount);
     }
 
-    //
-    // 🧾 DETAILS
-    //
-
-    private static void sendDetails(
-            CommandSender sender,
-            String... details
-    ) {
-
-        if (details == null) {
-            return;
-        }
+    private static void sendDetails(CommandSender sender, String... details) {
+        if (details == null) return;
 
         for (String detail : details) {
-
-            if (detail == null || detail.isBlank()) {
-                continue;
-            }
+            if (detail == null || detail.isBlank()) continue;
 
             String clean = detail.trim();
 
@@ -207,7 +86,6 @@ public final class BusinessMessages {
                     || clean.startsWith("§e➜")
                     || clean.startsWith("§a✔")
                     || clean.startsWith("§c✖")) {
-
                 sender.sendMessage(clean);
                 continue;
             }
@@ -216,14 +94,7 @@ public final class BusinessMessages {
         }
     }
 
-    //
-    // 🧼 TITLE CLEANER
-    //
-
-    private static String cleanTitle(
-            String title
-    ) {
-
+    private static String cleanTitle(String title) {
         if (title == null || title.isBlank()) {
             return "Bureau des Entreprises";
         }
@@ -235,17 +106,13 @@ public final class BusinessMessages {
                 .replace("§c", "")
                 .replace("§7", "")
                 .replace("§8", "")
+                .replace("§l", "")
                 .replace("✦", "")
                 .trim();
     }
 
-    private static String cleanPrefix(
-            String text
-    ) {
-
-        if (text == null) {
-            return "";
-        }
+    private static String cleanPrefix(String text) {
+        if (text == null) return "";
 
         return text
                 .replaceFirst("^§[0-9a-fk-or]", "")
