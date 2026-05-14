@@ -30,6 +30,15 @@ commands:
       - businessadmin
     usage: /entrepriseadmin
 
+  businessstaff:
+    description: Outils staff avancés MoodBusiness.
+    aliases:
+      - bstaff
+      - entrstaff
+      - entreprisestaff
+    usage: /businessstaff
+    permission: moodbusiness.staff
+
   demandes:
     description: Ouvre les demandes du Bureau des Entreprises.
     aliases:
