@@ -12,7 +12,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemBuilder {
 
@@ -58,12 +59,10 @@ public class ItemBuilder {
         if (meta != null) {
 
             meta.setLore(
-                    Arrays.asList(lore)
+                    normalizeLore(lore)
             );
 
-            meta.addItemFlags(
-                    ItemFlag.HIDE_ATTRIBUTES
-            );
+            hide(meta);
 
             item.setItemMeta(meta);
         }
@@ -111,7 +110,7 @@ public class ItemBuilder {
                             key
                     ),
                     PersistentDataType.STRING,
-                    value
+                    value == null ? "" : value
             );
 
             item.setItemMeta(meta);
@@ -159,12 +158,138 @@ public class ItemBuilder {
             return null;
         }
 
-        return meta.getPersistentDataContainer().get(
+        String value = meta.getPersistentDataContainer().get(
                 new NamespacedKey(
                         Main.getInstance(),
                         key
                 ),
                 PersistentDataType.STRING
         );
+
+        return value == null || value.isBlank()
+                ? null
+                : value;
+    }
+
+    private static List<String> normalizeLore(
+            String... lore
+    ) {
+
+        List<String> result =
+                new ArrayList<>();
+
+        if (lore == null) {
+            return result;
+        }
+
+        for (String line : lore) {
+
+            if (line == null || line.isBlank()) {
+
+                result.add("");
+                continue;
+            }
+
+            result.add(
+                    normalizeLine(line)
+            );
+        }
+
+        return result;
+    }
+
+    private static String normalizeLine(
+            String line
+    ) {
+
+        String trimmed =
+                line.trim()
+                        .replace("§c✘", "§c✖");
+
+        if (trimmed.startsWith("§8•")
+                || trimmed.startsWith("§e➜")
+                || trimmed.startsWith("§a✔")
+                || trimmed.startsWith("§c✖")) {
+
+            return trimmed;
+        }
+
+        if (trimmed.startsWith("§eClique")) {
+            return "§e➜ §f" + cleanPrefix(trimmed.replaceFirst("^§e", ""));
+        }
+
+        if (trimmed.startsWith("§aClique")) {
+            return "§e➜ §f" + cleanPrefix(trimmed.replaceFirst("^§a", ""));
+        }
+
+        if (trimmed.startsWith("§cClique")) {
+            return "§c✖ §f" + cleanPrefix(trimmed.replaceFirst("^§c", ""));
+        }
+
+        if (trimmed.startsWith("§cAccès")
+                || trimmed.startsWith("§cRéservé")
+                || trimmed.startsWith("§cNon")
+                || trimmed.startsWith("§cAction")) {
+
+            return "§c✖ §f" + cleanPrefix(trimmed);
+        }
+
+        if (trimmed.startsWith("§a")) {
+            return "§a✔ §f" + cleanPrefix(trimmed);
+        }
+
+        if (trimmed.startsWith("§7")
+                || trimmed.startsWith("§8")) {
+
+            return "§8• §7" + cleanPrefix(trimmed);
+        }
+
+        return trimmed;
+    }
+
+    private static String cleanPrefix(
+            String text
+    ) {
+
+        if (text == null) {
+            return "";
+        }
+
+        return text
+                .replaceFirst("^§[0-9a-fk-or]", "")
+                .replaceFirst("^➜\\s*", "")
+                .replaceFirst("^✔\\s*", "")
+                .replaceFirst("^✘\\s*", "")
+                .replaceFirst("^✖\\s*", "")
+                .replaceFirst("^•\\s*", "")
+                .trim();
+    }
+
+    private static void hide(
+            ItemMeta meta
+    ) {
+
+        if (meta == null) {
+            return;
+        }
+
+        meta.addItemFlags(
+                ItemFlag.HIDE_ATTRIBUTES,
+                ItemFlag.HIDE_ENCHANTS,
+                ItemFlag.HIDE_UNBREAKABLE,
+                ItemFlag.HIDE_DESTROYS,
+                ItemFlag.HIDE_PLACED_ON,
+                ItemFlag.HIDE_ADDITIONAL_TOOLTIP
+        );
+
+        try {
+
+            ItemFlag flag =
+                    ItemFlag.valueOf("HIDE_ITEM_SPECIFICS");
+
+            meta.addItemFlags(flag);
+
+        } catch (IllegalArgumentException ignored) {
+        }
     }
 }
