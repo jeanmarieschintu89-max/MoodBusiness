@@ -6,6 +6,8 @@ import org.bukkit.command.CommandSender;
 
 public final class BusinessMessages {
 
+    public static final String FOOTER = "§8----------- §6✦ §8-----------";
+
     private BusinessMessages() {}
 
     //
@@ -32,7 +34,6 @@ public final class BusinessMessages {
                         + cleanTitle(title)
                         + " ✦ §8-----"
         );
-        sender.sendMessage("");
     }
 
     //
@@ -43,11 +44,7 @@ public final class BusinessMessages {
             CommandSender sender
     ) {
 
-        sender.sendMessage("");
-        sender.sendMessage(
-                "§8-----------------------------"
-        );
-        sender.sendMessage("");
+        sender.sendMessage(FOOTER);
     }
 
     //
@@ -85,7 +82,8 @@ public final class BusinessMessages {
     public static void deny(
             CommandSender sender,
             String title,
-            String reason
+            String reason,
+            String... details
     ) {
 
         header(
@@ -94,8 +92,8 @@ public final class BusinessMessages {
         );
 
         sender.sendMessage("§c✖ §fAction refusée.");
-        sender.sendMessage("");
         line(sender, reason);
+        sendDetails(sender, details);
 
         footer(sender);
     }
@@ -107,7 +105,8 @@ public final class BusinessMessages {
     public static void success(
             CommandSender sender,
             String title,
-            String message
+            String message,
+            String... details
     ) {
 
         header(
@@ -116,6 +115,7 @@ public final class BusinessMessages {
         );
 
         sender.sendMessage("§a✔ §f" + cleanPrefix(message));
+        sendDetails(sender, details);
 
         footer(sender);
     }
@@ -127,7 +127,8 @@ public final class BusinessMessages {
     public static void info(
             CommandSender sender,
             String title,
-            String message
+            String message,
+            String... details
     ) {
 
         header(
@@ -136,6 +137,7 @@ public final class BusinessMessages {
         );
 
         sender.sendMessage("§e➜ §f" + cleanPrefix(message));
+        sendDetails(sender, details);
 
         footer(sender);
     }
@@ -155,14 +157,12 @@ public final class BusinessMessages {
         );
 
         sender.sendMessage("§e➜ §fEntreprise : §6" + business.getName());
-        sender.sendMessage("");
         line(sender, "Dirigeant : §e" + business.getOwnerName());
         line(sender, "État : " + business.getStatus().getDisplayName());
         line(sender, "Banque : §e" + money(business.getBalance()));
         line(sender, "Création n° : §e" + business.getCreationIndex());
         line(sender, "Frais : §e" + money(business.getCreationFee()));
         line(sender, "Créée : §f" + TimeUtil.formatDate(business.getCreatedAt()));
-        sender.sendMessage("");
         line(
                 sender,
                 "Service officiel de " + brand()
@@ -180,6 +180,40 @@ public final class BusinessMessages {
     ) {
 
         return VaultHook.format(amount);
+    }
+
+    //
+    // 🧾 DETAILS
+    //
+
+    private static void sendDetails(
+            CommandSender sender,
+            String... details
+    ) {
+
+        if (details == null) {
+            return;
+        }
+
+        for (String detail : details) {
+
+            if (detail == null || detail.isBlank()) {
+                continue;
+            }
+
+            String clean = detail.trim();
+
+            if (clean.startsWith("§8•")
+                    || clean.startsWith("§e➜")
+                    || clean.startsWith("§a✔")
+                    || clean.startsWith("§c✖")) {
+
+                sender.sendMessage(clean);
+                continue;
+            }
+
+            line(sender, clean);
+        }
     }
 
     //
