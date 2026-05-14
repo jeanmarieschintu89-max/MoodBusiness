@@ -1,11 +1,11 @@
 package fr.moodcraft.business.gui;
 
 import fr.moodcraft.business.manager.BusinessManager;
-import fr.moodcraft.business.manager.ContractAssignmentManager;
 import fr.moodcraft.business.manager.ContractManager;
 
 import fr.moodcraft.business.model.Business;
 
+import fr.moodcraft.business.util.BusinessMessages;
 import fr.moodcraft.business.util.ItemBuilder;
 import fr.moodcraft.business.util.SafeGUI;
 
@@ -19,7 +19,7 @@ import org.bukkit.inventory.Inventory;
 public final class ContractMainGUI {
 
     public static final String TITLE =
-            "§6✦ §8Contrats §6✦";
+            BusinessMessages.guiTitle("Contrats");
 
     private ContractMainGUI() {}
 
@@ -38,11 +38,6 @@ public final class ContractMainGUI {
 
         int myContracts =
                 ContractManager.getByClient(p).size();
-
-        int myMissions =
-                ContractAssignmentManager.getByMember(
-                        p.getUniqueId()
-                ).size();
 
         Business business =
                 BusinessManager.getMemberBusiness(
@@ -117,22 +112,6 @@ public final class ContractMainGUI {
                         .build()
         );
 
-        SafeGUI.set(
-                inv,
-                24,
-                new ItemBuilder(Material.IRON_PICKAXE)
-                        .name("§6✦ §fMes missions §6✦")
-                        .lore(
-                                "§8• §7Missions assignées : §e" + myMissions,
-                                "§8• §7Travail à effectuer",
-                                "§8• §7Progression et paiement",
-                                "",
-                                "§e➜ §fOuvrir"
-                        )
-                        .action("contract_my_missions")
-                        .build()
-        );
-
         if (p.hasPermission("moodbusiness.staff.litige")) {
 
             SafeGUI.set(
@@ -155,7 +134,7 @@ public final class ContractMainGUI {
         SafeGUI.set(
                 inv,
                 40,
-                new ItemBuilder(Material.ARROW)
+                new ItemBuilder(Material.BARRIER)
                         .name("§6✦ §fRetour §6✦")
                         .lore(
                                 "§8• §7Bureau des Entreprises"
