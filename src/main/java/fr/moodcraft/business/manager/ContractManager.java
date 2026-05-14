@@ -9,11 +9,13 @@ import fr.moodcraft.business.model.BusinessRequest;
 import fr.moodcraft.business.model.Contract;
 import fr.moodcraft.business.model.ContractStatus;
 import fr.moodcraft.business.model.Offer;
+import fr.moodcraft.business.model.RequestStatus;
 import fr.moodcraft.business.model.TransactionType;
 
 import fr.moodcraft.business.storage.BusinessStorage;
 import fr.moodcraft.business.storage.ContractStorage;
 import fr.moodcraft.business.storage.FinanceStorage;
+import fr.moodcraft.business.storage.RequestStorage;
 
 import fr.moodcraft.business.util.TimeUtil;
 import fr.moodcraft.business.util.VaultHook;
@@ -30,6 +32,217 @@ import java.util.List;
 public final class ContractManager {
 
     private ContractManager() {}
+
+    public static ContractResult createFromRequest(
+            Player actor,
+            Business business,
+            BusinessRequest request
+    ) {
+
+        if (actor == null || business == null || request == null) {
+
+            return ContractResult.fail(
+                    "Dossier de prise en charge invalide."
+            );
+        }
+
+        if (!business.isActive()) {
+
+            return ContractResult.fail(
+                    "Votre entreprise n'est pas active."
+            );
+        }
+
+        if (!BusinessManager.canManageContracts(
+                actor,
+                business
+        )) {
+
+            return ContractResult.fail(
+                    "Votre rôle ne permet pas de prendre cette demande."
+            );
+        }
+
+        if (!request.getStatus().isOpen()
+                || request.isExpired()) {
+
+            return ContractResult.fail(
+                    "Cette demande n'est plus disponible."
+            );
+        }
+
+        if (request.getCreatorUuid().equals(
+                actor.getUniqueId()
+        )) {
+
+            return ContractResult.fail(
+                    "Vous ne pouvez pas prendre votre propre demande."
+            );
+        }
+
+        OfflinePlayer client =
+                Bukkit.getOfflinePlayer(
+                        request.getCreatorUuid()
+                );
+
+        double gross =
+                request.getBudget();
+
+        if (!VaultHook.has(
+                client,
+                gross
+        )) {
+
+            return ContractResult.fail(
+                    "Fonds client insuffisants. Montant requis : §e"
+                            + VaultHook.format(gross)
+            );
+        }
+
+        if (!VaultHook.withdraw(
+                client,
+                gross
+        )) {
+
+            return ContractResult.fail(
+                    "Le blocage de l'argent du client a échoué."
+            );
+        }
+
+        double taxRate =
+                Main.getInstance()
+                        .getConfig()
+                        .getDouble(
+                                "economy.tax-rate",
+                                20.0
+                        );
+
+        double taxAmount =
+                Math.max(
+                        0,
+                        gross * (taxRate / 100.0)
+                );
+
+        double net =
+                Math.max(
+                        0,
+                        gross - taxAmount
+                );
+
+        long now =
+                System.currentTimeMillis();
+
+        String id =
+                "C-"
+                        + now
+                        + "-"
+                        + business.getId();
+
+        Contract contract =
+                new Contract(
+                        id,
+                        request.getId(),
+                        "DIRECT",
+                        request.getCreatorUuid(),
+                        request.getCreatorName(),
+                        business.getId(),
+                        business.getName(),
+                        actor.getUniqueId(),
+                        actor.getName(),
+                        request.getTitle(),
+                        request.getDescription(),
+                        gross,
+                        taxRate,
+                        taxAmount,
+                        net,
+                        gross,
+                        request.getDueDays(),
+                        ContractStatus.EN_COURS,
+                        now,
+                        now,
+                        now + TimeUtil.days(request.getDueDays()),
+                        0,
+                        0,
+                        new ArrayList<>()
+                );
+
+        contract.addHistory(
+                "§8• §6Pris en charge §7par §f"
+                        + business.getName()
+                        + " §8• §7Responsable : §f"
+                        + actor.getName()
+        );
+
+        contract.addHistory(
+                "§8• §eArgent bloqué §7Client : §f"
+                        + request.getCreatorName()
+                        + " §8• §7Montant : §e"
+                        + VaultHook.format(gross)
+        );
+
+        contract.addHistory(
+                "§8• §6Taxe prévue §7Taxe : §c"
+                        + VaultHook.format(taxAmount)
+                        + " §8("
+                        + taxRate
+                        + "%§8)"
+        );
+
+        ContractStorage.add(contract);
+
+        request.setAcceptedOfferId("DIRECT:" + business.getId());
+        request.setStatus(RequestStatus.TRANSFORMEE_CONTRAT);
+        RequestStorage.save();
+
+        AuditLogManager.log(
+                AuditLogType.CONTRACT_CREATED,
+                actor,
+                request.getTitle(),
+                business,
+                "Demande prise en charge directement. Brut : "
+                        + VaultHook.format(gross)
+                        + ", taxe prévue : "
+                        + VaultHook.format(taxAmount)
+                        + ", net entreprise : "
+                        + VaultHook.format(net)
+        );
+
+        AlertManager.add(
+                client,
+                AlertType.CONTRACT,
+                "Demande prise en charge",
+                business.getName()
+                        + " a pris en charge votre demande : "
+                        + request.getTitle()
+                        + ". Argent bloqué : "
+                        + VaultHook.format(gross)
+                        + "."
+        );
+
+        AlertManager.add(
+                business.getOwnerUuid(),
+                business.getOwnerName(),
+                AlertType.CONTRACT,
+                "Nouveau contrat",
+                "Votre entreprise a pris en charge : "
+                        + request.getTitle()
+                        + "."
+        );
+
+        AlertManager.add(
+                actor,
+                AlertType.CONTRACT,
+                "Contrat lancé",
+                "La demande "
+                        + request.getTitle()
+                        + " est maintenant prise en charge par votre entreprise."
+        );
+
+        return ContractResult.success(
+                contract,
+                "Demande prise en charge. Contrat créé et argent bloqué."
+        );
+    }
 
     public static ContractResult createFromOffer(
             Player client,
