@@ -30,7 +30,7 @@ public final class BusinessMessages {
         sender.sendMessage(
                 "§8----- §6✦ "
                         + cleanTitle(title)
-                        + " §6✦ §8-----"
+                        + " ✦ §8-----"
         );
         sender.sendMessage("");
     }
@@ -51,7 +51,21 @@ public final class BusinessMessages {
     }
 
     //
-    // • LIGNE SIMPLE
+    // ➜ INFO
+    //
+
+    public static void infoLine(
+            CommandSender sender,
+            String message
+    ) {
+
+        sender.sendMessage(
+                "§e➜ §f" + cleanPrefix(message)
+        );
+    }
+
+    //
+    // • DÉTAIL
     //
 
     public static void line(
@@ -60,7 +74,7 @@ public final class BusinessMessages {
     ) {
 
         sender.sendMessage(
-                "§8• §7" + message
+                "§8• §7" + cleanPrefix(message)
         );
     }
 
@@ -79,9 +93,9 @@ public final class BusinessMessages {
                 title
         );
 
-        sender.sendMessage("§c✘ §fAction refusée.");
+        sender.sendMessage("§c✖ §fAction refusée.");
         sender.sendMessage("");
-        sender.sendMessage("§7" + reason);
+        line(sender, reason);
 
         footer(sender);
     }
@@ -101,7 +115,7 @@ public final class BusinessMessages {
                 title
         );
 
-        sender.sendMessage("§a✔ §f" + message);
+        sender.sendMessage("§a✔ §f" + cleanPrefix(message));
 
         footer(sender);
     }
@@ -121,7 +135,7 @@ public final class BusinessMessages {
                 title
         );
 
-        sender.sendMessage("§7" + message);
+        sender.sendMessage("§e➜ §f" + cleanPrefix(message));
 
         footer(sender);
     }
@@ -140,14 +154,14 @@ public final class BusinessMessages {
                 "Dossier Entreprise"
         );
 
-        sender.sendMessage("§6✦ §f" + business.getName());
+        sender.sendMessage("§e➜ §fEntreprise : §6" + business.getName());
         sender.sendMessage("");
-        sender.sendMessage("§7Dirigeant: §e" + business.getOwnerName());
-        sender.sendMessage("§7État: " + business.getStatus().getDisplayName());
-        sender.sendMessage("§7Banque: §e" + money(business.getBalance()));
-        sender.sendMessage("§7Création n°: §e" + business.getCreationIndex());
-        sender.sendMessage("§7Frais: §e" + money(business.getCreationFee()));
-        sender.sendMessage("§7Créée: §f" + TimeUtil.formatDate(business.getCreatedAt()));
+        line(sender, "Dirigeant : §e" + business.getOwnerName());
+        line(sender, "État : " + business.getStatus().getDisplayName());
+        line(sender, "Banque : §e" + money(business.getBalance()));
+        line(sender, "Création n° : §e" + business.getCreationIndex());
+        line(sender, "Frais : §e" + money(business.getCreationFee()));
+        line(sender, "Créée : §f" + TimeUtil.formatDate(business.getCreatedAt()));
         sender.sendMessage("");
         line(
                 sender,
@@ -188,6 +202,24 @@ public final class BusinessMessages {
                 .replace("§7", "")
                 .replace("§8", "")
                 .replace("✦", "")
+                .trim();
+    }
+
+    private static String cleanPrefix(
+            String text
+    ) {
+
+        if (text == null) {
+            return "";
+        }
+
+        return text
+                .replaceFirst("^§[0-9a-fk-or]", "")
+                .replaceFirst("^➜\\s*", "")
+                .replaceFirst("^✔\\s*", "")
+                .replaceFirst("^✘\\s*", "")
+                .replaceFirst("^✖\\s*", "")
+                .replaceFirst("^•\\s*", "")
                 .trim();
     }
 }
