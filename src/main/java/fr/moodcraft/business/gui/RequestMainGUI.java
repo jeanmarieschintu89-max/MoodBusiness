@@ -5,6 +5,7 @@ import fr.moodcraft.business.manager.RequestManager;
 
 import fr.moodcraft.business.model.Business;
 
+import fr.moodcraft.business.util.BusinessMessages;
 import fr.moodcraft.business.util.ItemBuilder;
 import fr.moodcraft.business.util.SafeGUI;
 
@@ -18,7 +19,7 @@ import org.bukkit.inventory.Inventory;
 public final class RequestMainGUI {
 
     public static final String TITLE =
-            "§6✦ §8Demandes §6✦";
+            BusinessMessages.guiTitle("Demandes");
 
     private RequestMainGUI() {}
 
@@ -135,7 +136,7 @@ public final class RequestMainGUI {
         SafeGUI.set(
                 inv,
                 40,
-                new ItemBuilder(Material.ARROW)
+                new ItemBuilder(Material.BARRIER)
                         .name("§6✦ §fRetour §6✦")
                         .lore(
                                 "§8• §7Bureau des Entreprises"
