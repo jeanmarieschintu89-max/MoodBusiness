@@ -23,7 +23,7 @@ import org.bukkit.inventory.Inventory;
 public final class BusinessBankGUI {
 
     public static final String TITLE =
-            "§6✦ §8Banque Entreprise §6✦";
+            "§6✦ §8Argent entreprise §6✦";
 
     private BusinessBankGUI() {}
 
@@ -35,7 +35,7 @@ public final class BusinessBankGUI {
         Inventory inv =
                 Bukkit.createInventory(
                         null,
-                        54,
+                        45,
                         TITLE
                 );
 
@@ -56,41 +56,31 @@ public final class BusinessBankGUI {
                 inv,
                 4,
                 new ItemBuilder(Material.GOLD_INGOT)
-                        .name("§6✦ §f" + shortText(business.getName(), 22) + " §6✦")
+                        .name("§6✦ §fArgent de l'entreprise §6✦")
                         .lore(
-                                "§7Argent de l'entreprise.",
-                                "",
-                                "§7Solde: §e"
-                                        + VaultHook.format(
-                                        business.getBalance()
+                                "§8• §7Entreprise : §e" + shortText(business.getName(), 18),
+                                "§8• §7Solde : §e" + VaultHook.format(business.getBalance()),
+                                "§8• §7Paie/mois : §e" + VaultHook.format(
+                                        PayrollManager.calculateTotalPayroll(business)
                                 ),
-                                "§7Paie/mois: §e"
-                                        + VaultHook.format(
-                                        PayrollManager.calculateTotalPayroll(
-                                                business
-                                        )
-                                ),
-                                "§7Historique: §e" + historySize,
+                                "§8• §7Logs : §e" + historySize,
                                 "",
-                                "§8• §7Banque séparée",
-                                "§8• §7de la banque joueur"
+                                "§e➜ §fBanque séparée du joueur"
                         )
                         .build()
         );
 
         SafeGUI.set(
                 inv,
-                20,
+                19,
                 new ItemBuilder(Material.EMERALD)
                         .name("§6✦ §fDéposer §6✦")
                         .lore(
-                                "§7Ajouter de l'argent",
-                                "§7dans la banque entreprise.",
+                                "§8• §7Ajoute ton argent liquide",
+                                "§8• §7à la banque entreprise",
+                                "§8• §7Exemple : §e5000",
                                 "",
-                                "§8• §7Montant dans le chat",
-                                "§8• §7Exemple: §e5000",
-                                "",
-                                "§a✔ Cliquer pour saisir"
+                                "§e➜ §fSaisir le montant"
                         )
                         .action("bank_deposit_chat")
                         .target(business.getId())
@@ -99,7 +89,7 @@ public final class BusinessBankGUI {
 
         SafeGUI.set(
                 inv,
-                22,
+                21,
                 new ItemBuilder(
                         canManage
                                 ? Material.REDSTONE
@@ -107,16 +97,13 @@ public final class BusinessBankGUI {
                 )
                         .name("§6✦ §fRetirer §6✦")
                         .lore(
-                                "§7Retirer de l'argent",
-                                "§7de l'entreprise.",
-                                "",
-                                "§8• §7Montant dans le chat",
-                                "§8• §7Dirigeant / gérant",
-                                "§8• §7ou trésorier",
+                                "§8• §7Retire de l'argent",
+                                "§8• §7vers ton compte joueur",
+                                "§8• §7Dirigeant, gérant ou trésorier",
                                 "",
                                 canManage
-                                        ? "§a✔ Cliquer pour saisir"
-                                        : "§cAccès refusé"
+                                        ? "§e➜ §fSaisir le montant"
+                                        : "§c✖ §fAccès limité"
                         )
                         .action(
                                 canManage
@@ -129,7 +116,7 @@ public final class BusinessBankGUI {
 
         SafeGUI.set(
                 inv,
-                24,
+                23,
                 new ItemBuilder(
                         canManage
                                 ? Material.SUNFLOWER
@@ -137,16 +124,13 @@ public final class BusinessBankGUI {
                 )
                         .name("§6✦ §fPrime §6✦")
                         .lore(
-                                "§7Donner une prime",
-                                "§7à un membre.",
-                                "",
-                                "§8• §7Pseudo dans le chat",
-                                "§8• §7Montant dans le chat",
-                                "§8• §7Confirmation si élevé",
+                                "§8• §7Verse une prime à un membre",
+                                "§8• §7Pseudo puis montant dans le chat",
+                                "§8• §7Confirmation si montant élevé",
                                 "",
                                 canManage
-                                        ? "§a✔ Cliquer pour saisir"
-                                        : "§cAccès refusé"
+                                        ? "§e➜ §fSaisir la prime"
+                                        : "§c✖ §fAccès limité"
                         )
                         .action(
                                 canManage
@@ -159,25 +143,19 @@ public final class BusinessBankGUI {
 
         SafeGUI.set(
                 inv,
-                31,
+                25,
                 new ItemBuilder(Material.CLOCK)
-                        .name("§6✦ §fPaie mensuelle §6✦")
+                        .name("§6✦ §fSalaires §6✦")
                         .lore(
-                                "§7Gérer les salaires",
-                                "§7de chaque rôle.",
-                                "",
-                                "§7Jour de paie: §e"
-                                        + Main.getInstance()
-                                        .getConfig()
-                                        .getInt(
-                                                "payroll.default-payday",
-                                                1
-                                        ),
-                                "",
+                                "§8• §7Paie mensuelle",
                                 "§8• §7Salaire par rôle",
-                                "§8• §7Paie une fois par mois",
+                                "§8• §7Jour de paie : §e"
+                                        + Main.getInstance().getConfig().getInt(
+                                        "payroll.default-payday",
+                                        1
+                                ),
                                 "",
-                                "§eClique pour ouvrir"
+                                "§e➜ §fOuvrir les salaires"
                         )
                         .action("open_payroll")
                         .target(business.getId())
@@ -186,22 +164,17 @@ public final class BusinessBankGUI {
 
         SafeGUI.set(
                 inv,
-                33,
+                31,
                 new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §fHistorique §6✦")
+                        .name("§6✦ §fLogs financiers §6✦")
                         .lore(
-                                "§7Voir les mouvements",
-                                "§7de la banque entreprise.",
-                                "",
-                                "§7Lignes: §e" + historySize,
-                                "",
                                 "§8• §7Dépôts",
                                 "§8• §7Retraits",
                                 "§8• §7Primes",
-                                "§8• §7Paie",
-                                "§8• §7Contrats",
+                                "§8• §7Paie et contrats",
+                                "§8• §7Lignes : §e" + historySize,
                                 "",
-                                "§eClique pour ouvrir"
+                                "§e➜ §fOuvrir les logs"
                         )
                         .action("open_finance_history")
                         .target(business.getId())
@@ -210,11 +183,11 @@ public final class BusinessBankGUI {
 
         SafeGUI.set(
                 inv,
-                49,
-                new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
+                40,
+                new ItemBuilder(Material.ARROW)
+                        .name("§6✦ §fRetour §6✦")
                         .lore(
-                                "§7Bureau des Entreprises"
+                                "§8• §7Mon entreprise"
                         )
                         .action("back_business_main")
                         .build()
