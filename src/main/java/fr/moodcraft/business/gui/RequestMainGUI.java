@@ -46,11 +46,11 @@ public final class RequestMainGUI {
                 new ItemBuilder(Material.BOOK)
                         .name("§6✦ §fDemandes économiques §6✦")
                         .lore(
-                                "§8• §7Publier un besoin",
-                                "§8• §7Recevoir des offres",
-                                "§8• §7Choisir une entreprise",
+                                "§8• §7Un joueur publie un besoin",
+                                "§8• §7Une entreprise le prend en charge",
+                                "§8• §7Le contrat est créé directement",
                                 "",
-                                "§e➜ §fCentre des demandes"
+                                "§e➜ §fSimple et lisible"
                         )
                         .build()
         );
@@ -66,7 +66,7 @@ public final class RequestMainGUI {
                                 "§8• §7Budget",
                                 "§8• §7Délai",
                                 "",
-                                "§e➜ §fCommencer"
+                                "§e➜ §fPublier un besoin"
                         )
                         .action("request_create")
                         .build()
@@ -79,8 +79,8 @@ public final class RequestMainGUI {
                         .name("§6✦ §fMes demandes §6✦")
                         .lore(
                                 "§8• §7Demandes actives : §e" + active,
-                                "§8• §7Voir les offres reçues",
-                                "§8• §7Annuler une demande",
+                                "§8• §7Voir l'état",
+                                "§8• §7Annuler une demande ouverte",
                                 "",
                                 "§e➜ §fGérer mes demandes"
                         )
@@ -95,8 +95,8 @@ public final class RequestMainGUI {
                         .name("§6✦ §fDemandes publiques §6✦")
                         .lore(
                                 "§8• §7Besoins des joueurs",
-                                "§8• §7Offres d'entreprises",
-                                "§8• §7Missions ouvertes",
+                                "§8• §7Une entreprise peut prendre en charge",
+                                "§8• §7Contrat direct, sans offre",
                                 "",
                                 "§e➜ §fVoir les demandes"
                         )
@@ -119,11 +119,11 @@ public final class RequestMainGUI {
                     inv,
                     31,
                     new ItemBuilder(Material.EMERALD)
-                            .name("§6✦ §fRépondre avec mon entreprise §6✦")
+                            .name("§6✦ §fPrises en charge §6✦")
                             .lore(
                                     "§8• §7Entreprise : §e" + shortText(business.getName(), 18),
-                                    "§8• §7Proposer un prix",
-                                    "§8• §7Créer un contrat",
+                                    "§8• §7Ouvre les demandes publiques",
+                                    "§8• §7Clique une demande pour la prendre",
                                     "",
                                     "§a✔ §fAccès autorisé"
                             )
