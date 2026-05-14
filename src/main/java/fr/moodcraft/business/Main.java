@@ -2,6 +2,7 @@ package fr.moodcraft.business;
 
 import fr.moodcraft.business.command.BusinessAdminCommand;
 import fr.moodcraft.business.command.BusinessCommand;
+import fr.moodcraft.business.command.BusinessStaffCommand;
 import fr.moodcraft.business.command.ContractCommand;
 import fr.moodcraft.business.command.RequestsCommand;
 
@@ -51,7 +52,6 @@ public class Main extends JavaPlugin {
     private static Main instance;
 
     public static Main getInstance() {
-
         return instance;
     }
 
@@ -64,10 +64,6 @@ public class Main extends JavaPlugin {
 
         VaultHook.setup();
 
-        //
-        // 💾 STORAGE
-        //
-
         BusinessStorage.init();
         ApplicationStorage.init();
         RequestStorage.init();
@@ -79,56 +75,26 @@ public class Main extends JavaPlugin {
         AuditLogStorage.init();
         AlertStorage.init();
 
-        //
-        // 🧠 MANAGERS
-        //
-
         BusinessManager.init();
-
-        //
-        // ⚙️ COMMANDES + LISTENERS
-        //
 
         registerCommands();
         registerListeners();
 
-        //
-        // 💰 PAIE MENSUELLE
-        //
-
         PayrollManager.startTask();
 
-        //
-        // 🧾 LOG SYSTEME
-        //
-
-        AuditLogManager.system(
-                "MoodBusiness chargé."
-        );
+        AuditLogManager.system("MoodBusiness chargé.");
 
         Bukkit.getConsoleSender().sendMessage("");
-        Bukkit.getConsoleSender().sendMessage(
-                "§8----- §6✦ §aMood§6Business §6✦ §8-----"
-        );
-        Bukkit.getConsoleSender().sendMessage(
-                "§a✔ §fBureau des Entreprises chargé."
-        );
-        Bukkit.getConsoleSender().sendMessage(
-                "§7Service officiel de §aMood§6Craft§7."
-        );
-        Bukkit.getConsoleSender().sendMessage("");
+        Bukkit.getConsoleSender().sendMessage("§8----- §6✦ §aMood§6Business §6✦ §8-----");
+        Bukkit.getConsoleSender().sendMessage("§a✔ §fBureau des Entreprises chargé.");
+        Bukkit.getConsoleSender().sendMessage("§e➜ §7Service officiel de §aMood§6Craft§7.");
+        Bukkit.getConsoleSender().sendMessage("§8-----------------------------");
     }
 
     @Override
     public void onDisable() {
 
-        AuditLogManager.system(
-                "MoodBusiness arrêté."
-        );
-
-        //
-        // 💾 SAVE
-        //
+        AuditLogManager.system("MoodBusiness arrêté.");
 
         BusinessStorage.save();
         ApplicationStorage.save();
@@ -142,175 +108,49 @@ public class Main extends JavaPlugin {
         AlertStorage.save();
 
         Bukkit.getConsoleSender().sendMessage("");
-        Bukkit.getConsoleSender().sendMessage(
-                "§8----- §6✦ §aMood§6Business §6✦ §8-----"
-        );
-        Bukkit.getConsoleSender().sendMessage(
-                "§c✘ §fBureau des Entreprises arrêté."
-        );
-        Bukkit.getConsoleSender().sendMessage("");
+        Bukkit.getConsoleSender().sendMessage("§8----- §6✦ §aMood§6Business §6✦ §8-----");
+        Bukkit.getConsoleSender().sendMessage("§c✖ §fBureau des Entreprises arrêté.");
+        Bukkit.getConsoleSender().sendMessage("§8-----------------------------");
     }
 
     private void registerCommands() {
+        registerCommand("entreprise", new BusinessCommand());
+        registerCommand("entrepriseadmin", new BusinessAdminCommand());
+        registerCommand("businessstaff", new BusinessStaffCommand());
+        registerCommand("demandes", new RequestsCommand());
+        registerCommand("contrat", new ContractCommand());
+    }
 
-        PluginCommand entreprise =
-                getCommand("entreprise");
+    private void registerCommand(
+            String name,
+            org.bukkit.command.CommandExecutor executor
+    ) {
 
-        if (entreprise != null) {
+        PluginCommand command = getCommand(name);
 
-            entreprise.setExecutor(
-                    new BusinessCommand()
-            );
-        }
-
-        PluginCommand entrepriseAdmin =
-                getCommand("entrepriseadmin");
-
-        if (entrepriseAdmin != null) {
-
-            entrepriseAdmin.setExecutor(
-                    new BusinessAdminCommand()
-            );
-        }
-
-        PluginCommand demandes =
-                getCommand("demandes");
-
-        if (demandes != null) {
-
-            demandes.setExecutor(
-                    new RequestsCommand()
-            );
-        }
-
-        PluginCommand contrat =
-                getCommand("contrat");
-
-        if (contrat != null) {
-
-            contrat.setExecutor(
-                    new ContractCommand()
-            );
+        if (command != null) {
+            command.setExecutor(executor);
         }
     }
 
     private void registerListeners() {
 
-        //
-        // 🔒 PROTECTION GLOBALE DES GUI
-        //
-
-        Bukkit.getPluginManager().registerEvents(
-                new BusinessInventoryGuardListener(),
-                this
-        );
-
-        //
-        // 🏢 ENTREPRISES
-        //
-
-        Bukkit.getPluginManager().registerEvents(
-                new BusinessGUIListener(),
-                this
-        );
-
-        Bukkit.getPluginManager().registerEvents(
-                new BusinessCreationChatListener(),
-                this
-        );
-
-        Bukkit.getPluginManager().registerEvents(
-                new BusinessDissolveGUIListener(),
-                this
-        );
-
-        Bukkit.getPluginManager().registerEvents(
-                new BusinessAdminGUIListener(),
-                this
-        );
-
-        Bukkit.getPluginManager().registerEvents(
-                new BusinessEmployeeManageListener(),
-                this
-        );
-
-        Bukkit.getPluginManager().registerEvents(
-                new RecruitmentChatListener(),
-                this
-        );
-
-        //
-        // 📨 CANDIDATURES
-        //
-
-        Bukkit.getPluginManager().registerEvents(
-                new ApplicationChatListener(),
-                this
-        );
-
-        //
-        // 📋 DEMANDES / OFFRES
-        //
-
-        Bukkit.getPluginManager().registerEvents(
-                new RequestGUIListener(),
-                this
-        );
-
-        Bukkit.getPluginManager().registerEvents(
-                new RequestChatListener(),
-                this
-        );
-
-        //
-        // 📜 CONTRATS
-        //
-
-        Bukkit.getPluginManager().registerEvents(
-                new ContractGUIListener(),
-                this
-        );
-
-        Bukkit.getPluginManager().registerEvents(
-                new ContractChatListener(),
-                this
-        );
-
-        Bukkit.getPluginManager().registerEvents(
-                new ContractMissionGUIListener(),
-                this
-        );
-
-        //
-        // 💰 BANQUE ENTREPRISE
-        //
-
-        Bukkit.getPluginManager().registerEvents(
-                new BankGUIListener(),
-                this
-        );
-
-        Bukkit.getPluginManager().registerEvents(
-                new BankChatListener(),
-                this
-        );
-
-        //
-        // 🧾 PAIE MENSUELLE
-        //
-
-        Bukkit.getPluginManager().registerEvents(
-                new PayrollChatListener(),
-                this
-        );
-
-        //
-        // 🔔 ALERTES
-        //
-
-        Bukkit.getPluginManager().registerEvents(
-                new AlertJoinListener(),
-                this
-        );
+        Bukkit.getPluginManager().registerEvents(new BusinessInventoryGuardListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BusinessGUIListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BusinessCreationChatListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BusinessDissolveGUIListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BusinessAdminGUIListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BusinessEmployeeManageListener(), this);
+        Bukkit.getPluginManager().registerEvents(new RecruitmentChatListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ApplicationChatListener(), this);
+        Bukkit.getPluginManager().registerEvents(new RequestGUIListener(), this);
+        Bukkit.getPluginManager().registerEvents(new RequestChatListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ContractGUIListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ContractChatListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ContractMissionGUIListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BankGUIListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BankChatListener(), this);
+        Bukkit.getPluginManager().registerEvents(new PayrollChatListener(), this);
+        Bukkit.getPluginManager().registerEvents(new AlertJoinListener(), this);
     }
 }
