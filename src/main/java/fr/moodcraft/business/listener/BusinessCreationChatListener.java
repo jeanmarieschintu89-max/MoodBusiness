@@ -42,10 +42,6 @@ public class BusinessCreationChatListener
             return;
         }
 
-        //
-        // 🔒 Nettoie les autres saisies chat
-        //
-
         RecruitmentChatListener.cancel(p);
 
         WAITING_NAME.add(
@@ -59,13 +55,13 @@ public class BusinessCreationChatListener
                 "Bureau des Entreprises"
         );
 
-        p.sendMessage("§fÉcris le nom de ton entreprise.");
+        p.sendMessage("§e➜ §fÉcris le nom de ton entreprise.");
         p.sendMessage("");
-        p.sendMessage("§8• §7Exemple: §eNordBuild");
+        p.sendMessage("§8• §7Exemple : §eNordBuild");
         p.sendMessage("§8• §7Création directe");
         p.sendMessage("§8• §7Frais d'enregistrement vérifiés");
         p.sendMessage("");
-        p.sendMessage("§7Tape §cannuler §7pour quitter.");
+        p.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
         p.sendMessage("§8• §7Annulation auto dans §e60 secondes");
 
         BusinessMessages.footer(p);
@@ -239,9 +235,9 @@ public class BusinessCreationChatListener
 
         p.sendMessage("§a✔ §fEntreprise créée.");
         p.sendMessage("");
-        p.sendMessage("§7Nom: §e" + business.getName());
-        p.sendMessage("§7Frais: §e" + BusinessMessages.money(business.getCreationFee()));
-        p.sendMessage("§7État: " + business.getStatus().getDisplayName());
+        p.sendMessage("§8• §7Nom : §e" + business.getName());
+        p.sendMessage("§8• §7Frais : §e" + BusinessMessages.money(business.getCreationFee()));
+        p.sendMessage("§8• §7État : " + business.getStatus().getDisplayName());
         p.sendMessage("");
         BusinessMessages.line(
                 p,
