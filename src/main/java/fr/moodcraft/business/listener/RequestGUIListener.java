@@ -1,17 +1,17 @@
 package fr.moodcraft.business.listener;
 
 import fr.moodcraft.business.gui.BusinessMainGUI;
-import fr.moodcraft.business.gui.OfferListGUI;
 import fr.moodcraft.business.gui.RequestCategoryGUI;
 import fr.moodcraft.business.gui.RequestDetailGUI;
 import fr.moodcraft.business.gui.RequestListGUI;
 import fr.moodcraft.business.gui.RequestMainGUI;
 
-import fr.moodcraft.business.manager.OfferManager;
+import fr.moodcraft.business.manager.BusinessManager;
+import fr.moodcraft.business.manager.ContractManager;
 import fr.moodcraft.business.manager.RequestManager;
 
+import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRequest;
-import fr.moodcraft.business.model.Offer;
 import fr.moodcraft.business.model.RequestCategory;
 
 import fr.moodcraft.business.util.BusinessMessages;
@@ -116,6 +116,65 @@ public class RequestGUIListener implements Listener {
                 );
             }
 
+            case "request_take" -> {
+
+                BusinessRequest request =
+                        RequestManager.get(target);
+
+                if (request == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Demandes",
+                            "Demande introuvable."
+                    );
+
+                    return;
+                }
+
+                Business business =
+                        BusinessManager.getMemberBusiness(
+                                p.getUniqueId()
+                        );
+
+                if (business == null) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Bureau des Entreprises",
+                            "Vous n'êtes dans aucune entreprise."
+                    );
+
+                    return;
+                }
+
+                ContractManager.ContractResult result =
+                        ContractManager.createFromRequest(
+                                p,
+                                business,
+                                request
+                        );
+
+                p.closeInventory();
+
+                if (!result.success()) {
+
+                    BusinessMessages.deny(
+                            p,
+                            "Prise en charge",
+                            result.message()
+                    );
+
+                    return;
+                }
+
+                BusinessMessages.success(
+                        p,
+                        "Prise en charge",
+                        result.message()
+                );
+            }
+
             case "request_cancel" -> {
 
                 BusinessRequest request =
@@ -158,123 +217,6 @@ public class RequestGUIListener implements Listener {
                 RequestListGUI.openMy(p);
             }
 
-            case "offer_start" -> {
-
-                BusinessRequest request =
-                        RequestManager.get(target);
-
-                if (request == null) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Offre Entreprise",
-                            "Demande introuvable."
-                    );
-
-                    return;
-                }
-
-                RequestChatListener.startOffer(
-                        p,
-                        request
-                );
-            }
-
-            case "offer_list" -> {
-
-                BusinessRequest request =
-                        RequestManager.get(target);
-
-                if (request == null) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Offres Reçues",
-                            "Demande introuvable."
-                    );
-
-                    return;
-                }
-
-                if (!RequestManager.canManageRequest(
-                        p,
-                        request
-                )) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Offres Reçues",
-                            "Vous ne pouvez pas consulter ces offres."
-                    );
-
-                    return;
-                }
-
-                OfferListGUI.open(
-                        p,
-                        request
-                );
-            }
-
-            case "offer_accept" -> {
-
-                Offer offer =
-                        OfferManager.get(target);
-
-                if (offer == null) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Offres Reçues",
-                            "Offre introuvable."
-                    );
-
-                    return;
-                }
-
-                BusinessRequest request =
-                        RequestManager.get(
-                                offer.getRequestId()
-                        );
-
-                if (request == null) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Offres Reçues",
-                            "Demande introuvable."
-                    );
-
-                    return;
-                }
-
-                OfferManager.OfferResult result =
-                        OfferManager.acceptOffer(
-                                p,
-                                request,
-                                offer
-                        );
-
-                p.closeInventory();
-
-                if (!result.success()) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Offres Reçues",
-                            result.message()
-                    );
-
-                    return;
-                }
-
-                BusinessMessages.success(
-                        p,
-                        "Offres Reçues",
-                        result.message()
-                );
-            }
-
             case "back_main" ->
                     BusinessMainGUI.open(p);
 
@@ -290,7 +232,6 @@ public class RequestGUIListener implements Listener {
                 || title.equals(RequestCategoryGUI.TITLE)
                 || title.equals(RequestListGUI.TITLE_PUBLIC)
                 || title.equals(RequestListGUI.TITLE_MY)
-                || title.equals(RequestDetailGUI.TITLE)
-                || title.equals(OfferListGUI.TITLE);
+                || title.equals(RequestDetailGUI.TITLE);
     }
 }
