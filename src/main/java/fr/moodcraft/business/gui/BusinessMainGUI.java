@@ -46,25 +46,35 @@ public final class BusinessMainGUI {
                         p.getUniqueId()
                 );
 
+        SafeGUI.set(
+                inv,
+                4,
+                new ItemBuilder(Material.LECTERN)
+                        .name("§6✦ §fBureau des Entreprises §6✦")
+                        .lore(
+                                "§8• §7Entreprises",
+                                "§8• §7Demandes",
+                                "§8• §7Candidatures",
+                                "§8• §7Contrats",
+                                "",
+                                "§e➜ §fService officiel de §aMood§6Craft"
+                        )
+                        .build()
+        );
+
         if (business == null) {
 
             SafeGUI.set(
                     inv,
-                    13,
+                    20,
                     new ItemBuilder(Material.EMERALD)
                             .name("§6✦ §fCréer une entreprise §6✦")
                             .lore(
-                                    "§7Lance ton activité",
-                                    "§7sur §aMood§6Craft§7.",
-                                    "",
-                                    "§7Frais d'enregistrement:",
-                                    "§e" + VaultHook.format(nextPrice),
-                                    "",
-                                    "§8• §7Nom dans le chat",
                                     "§8• §7Création directe",
-                                    "§8• §7+15 000€ ensuite",
+                                    "§8• §7Nom saisi dans le chat",
+                                    "§8• §7Frais : §e" + VaultHook.format(nextPrice),
                                     "",
-                                    "§a✔ Clique pour commencer"
+                                    "§e➜ §fCommencer"
                             )
                             .action("business_creation_chat")
                             .build()
@@ -79,25 +89,19 @@ public final class BusinessMainGUI {
 
             SafeGUI.set(
                     inv,
-                    13,
-                    new ItemBuilder(Material.LECTERN)
-                            .name("§6✦ §fGestion d'entreprise §6✦")
+                    20,
+                    new ItemBuilder(Material.GOLDEN_HELMET)
+                            .name("§6✦ §fMon entreprise §6✦")
                             .lore(
-                                    "§7Entreprise: §e" + shortText(business.getName(), 18),
-                                    "§7Rôle: "
+                                    "§8• §7Nom : §e" + shortText(business.getName(), 18),
+                                    "§8• §7Rôle : "
                                             + (role != null
                                             ? role.getDisplayName()
                                             : "§7Membre"),
-                                    "§7État: "
+                                    "§8• §7État : "
                                             + business.getStatus().getDisplayName(),
                                     "",
-                                    "§8• §7Employés",
-                                    "§8• §7Banque",
-                                    "§8• §7Contrats",
-                                    "§8• §7Candidatures",
-                                    "§8• §7Demandes",
-                                    "",
-                                    "§a✔ Ouvrir"
+                                    "§e➜ §fOuvrir le tableau de bord"
                             )
                             .action("open_business_dashboard")
                             .target(business.getId())
@@ -107,36 +111,31 @@ public final class BusinessMainGUI {
 
         SafeGUI.set(
                 inv,
-                21,
-                new ItemBuilder(Material.COMPASS)
-                        .name("§6✦ §fEntreprises §6✦")
+                22,
+                new ItemBuilder(Material.PAPER)
+                        .name("§6✦ §fDemandes / Missions §6✦")
                         .lore(
-                                "§7Voir les entreprises",
-                                "§7actives du serveur.",
+                                "§8• §7Créer une demande",
+                                "§8• §7Voir mes demandes",
+                                "§8• §7Répondre aux besoins",
                                 "",
-                                "§8• §7Trouver une entreprise",
-                                "§8• §7Voir les infos publiques",
-                                "",
-                                "§eClique pour ouvrir"
+                                "§e➜ §fOuvrir les demandes"
                         )
-                        .action("open_public_active")
+                        .action("open_requests")
                         .build()
         );
 
         SafeGUI.set(
                 inv,
-                23,
+                24,
                 new ItemBuilder(Material.NAME_TAG)
-                        .name("§6✦ §fCandidatures §6✦")
+                        .name("§6✦ §fCandidatures / Emploi §6✦")
                         .lore(
-                                "§7Demande pour rejoindre",
-                                "§7une entreprise.",
+                                "§8• §7Postuler",
+                                "§8• §7Voir mes candidatures",
+                                "§8• §7Traiter les demandes reçues",
                                 "",
-                                "§8• §7Stage",
-                                "§8• §7Apprentissage",
-                                "§8• §7Emploi",
-                                "",
-                                "§eClique pour postuler"
+                                "§e➜ §fOuvrir les candidatures"
                         )
                         .action("open_applications")
                         .build()
@@ -145,19 +144,16 @@ public final class BusinessMainGUI {
         SafeGUI.set(
                 inv,
                 31,
-                new ItemBuilder(Material.PAPER)
-                        .name("§6✦ §fDemandes §6✦")
+                new ItemBuilder(Material.COMPASS)
+                        .name("§6✦ §fEntreprises publiques §6✦")
                         .lore(
-                                "§7Publier un besoin",
-                                "§7pour une entreprise.",
+                                "§8• §7Liste des entreprises actives",
+                                "§8• §7Informations publiques",
+                                "§8• §7Trouver une activité",
                                 "",
-                                "§8• §7Construction",
-                                "§8• §7Livraison",
-                                "§8• §7Service",
-                                "",
-                                "§eClique pour ouvrir"
+                                "§e➜ §fConsulter"
                         )
-                        .action("open_requests")
+                        .action("open_public_active")
                         .build()
         );
 
@@ -169,14 +165,11 @@ public final class BusinessMainGUI {
                     new ItemBuilder(Material.NETHER_STAR)
                             .name("§6✦ §fGestion staff §6✦")
                             .lore(
-                                    "§7Gérer les entreprises",
-                                    "§7et les litiges.",
-                                    "",
                                     "§8• §7Suspensions",
                                     "§8• §7Logs",
                                     "§8• §7Litiges",
                                     "",
-                                    "§cAccès staff"
+                                    "§c✖ §fAccès staff"
                             )
                             .action("open_staff")
                             .build()
