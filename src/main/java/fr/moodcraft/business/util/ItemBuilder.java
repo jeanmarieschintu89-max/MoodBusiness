@@ -25,27 +25,19 @@ public class ItemBuilder {
     private static final String TARGET_KEY =
             "business_target";
 
-    public ItemBuilder(
-            Material material
-    ) {
-
-        this.item =
-                new ItemStack(material == null ? Material.BARRIER : material);
+    public ItemBuilder(Material material) {
+        this.item = new ItemStack(material == null ? Material.BARRIER : material);
     }
 
-    public ItemBuilder name(
-            String name
-    ) {
+    public ItemBuilder name(String name) {
 
         if (isReturnButton(name)) {
             item.setType(Material.BARRIER);
         }
 
-        ItemMeta meta =
-                item.getItemMeta();
+        ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
-
             meta.setDisplayName(name);
             item.setItemMeta(meta);
         }
@@ -53,15 +45,11 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder lore(
-            String... lore
-    ) {
+    public ItemBuilder lore(String... lore) {
 
-        ItemMeta meta =
-                item.getItemMeta();
+        ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
-
             meta.setLore(normalizeLore(lore));
             hide(meta);
             item.setItemMeta(meta);
@@ -136,11 +124,7 @@ public class ItemBuilder {
         }
 
         for (String line : lore) {
-            if (line == null || line.isBlank()) {
-                result.add("");
-            } else {
-                result.add(normalizeLine(line));
-            }
+            result.add(normalizeLine(line));
         }
 
         return result;
@@ -148,7 +132,12 @@ public class ItemBuilder {
 
     private static String normalizeLine(String line) {
 
+        if (line == null || line.isBlank()) {
+            return "";
+        }
+
         String trimmed = line.trim().replace("§c✘", "§c✖");
+        String clean = cleanPrefix(trimmed).toLowerCase();
 
         if (trimmed.startsWith("§8•")
                 || trimmed.startsWith("§e➜")
@@ -157,18 +146,15 @@ public class ItemBuilder {
             return trimmed;
         }
 
-        if (trimmed.startsWith("§eClique") || trimmed.startsWith("§aClique")) {
+        if (isSectionTitle(trimmed)) {
+            return trimmed;
+        }
+
+        if (isActionLine(clean)) {
             return "§e➜ §f" + cleanPrefix(trimmed);
         }
 
-        if (trimmed.startsWith("§cClique")) {
-            return "§c✖ §f" + cleanPrefix(trimmed);
-        }
-
-        if (trimmed.startsWith("§cAccès")
-                || trimmed.startsWith("§cRéservé")
-                || trimmed.startsWith("§cNon")
-                || trimmed.startsWith("§cAction")) {
+        if (isDangerLine(clean) || trimmed.startsWith("§c")) {
             return "§c✖ §f" + cleanPrefix(trimmed);
         }
 
@@ -176,11 +162,45 @@ public class ItemBuilder {
             return "§a✔ §f" + cleanPrefix(trimmed);
         }
 
+        if (trimmed.startsWith("§e")) {
+            return "§e➜ §f" + cleanPrefix(trimmed);
+        }
+
         if (trimmed.startsWith("§7") || trimmed.startsWith("§8")) {
             return "§8• §7" + cleanPrefix(trimmed);
         }
 
-        return trimmed;
+        return "§8• §7" + cleanPrefix(trimmed);
+    }
+
+    private static boolean isSectionTitle(String text) {
+        String clean = text.replaceAll("§.", "").trim();
+        return clean.startsWith("✦") || clean.endsWith("✦");
+    }
+
+    private static boolean isActionLine(String clean) {
+        return clean.startsWith("clique")
+                || clean.startsWith("ouvrir")
+                || clean.startsWith("voir")
+                || clean.startsWith("consulter")
+                || clean.startsWith("commencer")
+                || clean.startsWith("sélectionner")
+                || clean.startsWith("selectionner")
+                || clean.startsWith("confirmer")
+                || clean.startsWith("rejoindre")
+                || clean.startsWith("postuler")
+                || clean.startsWith("gérer")
+                || clean.startsWith("gerer");
+    }
+
+    private static boolean isDangerLine(String clean) {
+        return clean.startsWith("accès")
+                || clean.startsWith("acces")
+                || clean.startsWith("réservé")
+                || clean.startsWith("reserve")
+                || clean.startsWith("non autorisé")
+                || clean.startsWith("action sensible")
+                || clean.startsWith("indisponible");
     }
 
     private static boolean isReturnButton(String name) {
