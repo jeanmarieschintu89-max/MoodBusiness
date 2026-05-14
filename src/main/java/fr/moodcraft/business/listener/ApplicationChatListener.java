@@ -49,9 +49,9 @@ public class ApplicationChatListener implements Listener {
                 "Candidature " + BusinessMessages.brand()
         );
 
-        player.sendMessage("§fÉcris une courte présentation.");
-        player.sendMessage("§7Exemple: Je souhaite apprendre la construction médiévale.");
-        player.sendMessage("§7Tape §cannuler §7pour quitter.");
+        player.sendMessage("§e➜ §fÉcris une courte présentation.");
+        player.sendMessage("§8• §7Exemple : §eJe souhaite apprendre la construction médiévale.");
+        player.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
 
         BusinessMessages.footer(player);
     }
@@ -122,9 +122,9 @@ public class ApplicationChatListener implements Listener {
                     "Candidature " + BusinessMessages.brand()
             );
 
-            player.sendMessage("§fIndique tes disponibilités.");
-            player.sendMessage("§7Exemple: soir et week-end.");
-            player.sendMessage("§7Tape §cannuler §7pour quitter.");
+            player.sendMessage("§e➜ §fIndique tes disponibilités.");
+            player.sendMessage("§8• §7Exemple : §esoir et week-end.");
+            player.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
 
             BusinessMessages.footer(player);
 
@@ -185,10 +185,10 @@ public class ApplicationChatListener implements Listener {
                     "Candidature " + BusinessMessages.brand()
             );
 
-            player.sendMessage("§fCandidature envoyée avec succès.");
-            player.sendMessage("§7Entreprise: §e" + business.getName());
-            player.sendMessage("§7Type: " + draft.type.getDisplayName());
-            player.sendMessage("§a✔ Le dossier est transmis à l'entreprise.");
+            player.sendMessage("§a✔ §fCandidature envoyée avec succès.");
+            player.sendMessage("§8• §7Entreprise : §e" + business.getName());
+            player.sendMessage("§8• §7Type : " + draft.type.getDisplayName());
+            player.sendMessage("§8• §7Le dossier est transmis à l'entreprise.");
 
             BusinessMessages.footer(player);
         }
