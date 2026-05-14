@@ -21,7 +21,7 @@ import java.util.List;
 public final class RequestListGUI {
 
     public static final String TITLE_PUBLIC =
-            "§6✦ §8Demandes §6✦";
+            "§6✦ §8Demandes publiques §6✦";
 
     public static final String TITLE_MY =
             "§6✦ §8Mes demandes §6✦";
@@ -42,7 +42,8 @@ public final class RequestListGUI {
         open(
                 p,
                 TITLE_PUBLIC,
-                RequestManager.getPublicOpen()
+                RequestManager.getPublicOpen(),
+                false
         );
     }
 
@@ -55,14 +56,16 @@ public final class RequestListGUI {
                 TITLE_MY,
                 RequestManager.getByPlayer(
                         p.getUniqueId()
-                )
+                ),
+                true
         );
     }
 
     private static void open(
             Player p,
             String title,
-            List<BusinessRequest> list
+            List<BusinessRequest> list,
+            boolean ownList
     ) {
 
         Inventory inv =
@@ -77,13 +80,23 @@ public final class RequestListGUI {
         SafeGUI.set(
                 inv,
                 4,
-                new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §fDemandes §6✦")
+                new ItemBuilder(
+                        ownList
+                                ? Material.WRITABLE_BOOK
+                                : Material.BOOK
+                )
+                        .name(
+                                ownList
+                                        ? "§6✦ §fMes demandes §6✦"
+                                        : "§6✦ §fDemandes publiques §6✦"
+                        )
                         .lore(
-                                "§7Total: §e" + list.size(),
-                                "§7Service: §aMood§6Craft",
+                                "§8• §7Total : §e" + list.size(),
+                                "§8• §7Service : §aMood§6Craft",
                                 "",
-                                "§eSélectionnez un dossier"
+                                ownList
+                                        ? "§e➜ §fOuvrez une demande pour l'annuler"
+                                        : "§e➜ §fSélectionnez un dossier"
                         )
                         .build()
         );
@@ -99,17 +112,24 @@ public final class RequestListGUI {
             SafeGUI.set(
                     inv,
                     SLOTS[index],
-                    new ItemBuilder(Material.PAPER)
+                    new ItemBuilder(
+                            request.getStatus().isOpen()
+                                    ? Material.PAPER
+                                    : Material.GRAY_DYE
+                    )
                             .name(shortName(request.getTitle()))
                             .lore(
-                                    "§7Auteur: §e" + shortText(request.getCreatorName(), 14),
-                                    "§7Type: " + request.getCategory().getDisplayName(),
-                                    "§7Budget: §e" + VaultHook.format(request.getBudget()),
-                                    "§7Délai: §b" + request.getDueDays() + "j",
-                                    "§7État: " + request.getStatus().getDisplayName(),
-                                    "§7Fin: §f" + shortDate(request.getExpiresAt()),
+                                    "§8• §7Auteur : §e" + shortText(request.getCreatorName(), 14),
+                                    "§8• §7Type : " + request.getCategory().getDisplayName(),
+                                    "§8• §7Budget : §e" + VaultHook.format(request.getBudget()),
+                                    "§8• §7Délai : §b" + request.getDueDays() + "j",
+                                    "§8• §7État : " + request.getStatus().getDisplayName(),
+                                    "§8• §7Fin : §f" + shortDate(request.getExpiresAt()),
+                                    "§8• §7ID : §8" + request.getId(),
                                     "",
-                                    "§eClique pour ouvrir"
+                                    request.getStatus().isOpen()
+                                            ? "§e➜ §fOuvrir"
+                                            : "§8• §7Dossier fermé"
                             )
                             .action("request_detail")
                             .target(request.getId())
@@ -122,10 +142,10 @@ public final class RequestListGUI {
         SafeGUI.set(
                 inv,
                 49,
-                new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
+                new ItemBuilder(Material.ARROW)
+                        .name("§6✦ §fRetour §6✦")
                         .lore(
-                                "§7Menu demandes"
+                                "§8• §7Menu demandes"
                         )
                         .action("open_requests")
                         .build()
@@ -138,7 +158,7 @@ public final class RequestListGUI {
             String text
     ) {
 
-        return "§6✦ §f" + shortText(text, 22);
+        return "§6✦ §f" + shortText(text, 22) + " §6✦";
     }
 
     private static String shortText(
