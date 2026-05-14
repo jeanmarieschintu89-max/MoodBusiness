@@ -32,10 +32,6 @@ public class RecruitmentChatListener
     private static final Map<UUID, Draft> DRAFTS =
             new HashMap<>();
 
-    //
-    // ⏳ 60 secondes avant annulation auto
-    //
-
     private static final long TIMEOUT_TICKS =
             20L * 60L;
 
@@ -47,10 +43,6 @@ public class RecruitmentChatListener
         if (p == null || business == null) {
             return;
         }
-
-        //
-        // 🔒 Nettoie les autres saisies chat
-        //
 
         BusinessCreationChatListener.cancel(p);
 
@@ -85,11 +77,11 @@ public class RecruitmentChatListener
                 "Employés Entreprise"
         );
 
-        p.sendMessage("§fÉcris le pseudo du joueur connecté.");
+        p.sendMessage("§e➜ §fÉcris le pseudo du joueur connecté.");
         p.sendMessage("");
-        p.sendMessage("§7Entreprise: §e" + business.getName());
+        p.sendMessage("§8• §7Entreprise : §e" + business.getName());
         p.sendMessage("");
-        p.sendMessage("§8• §7Exemple: §eSteven2621");
+        p.sendMessage("§8• §7Exemple : §eSteven2621");
         p.sendMessage("§8• §7Le joueur doit être connecté");
         p.sendMessage("§8• §7Tape §cannuler §7pour quitter");
         p.sendMessage("§8• §7Annulation auto dans §e60 secondes");
@@ -102,10 +94,6 @@ public class RecruitmentChatListener
                 0.8f,
                 1.2f
         );
-
-        //
-        // ⏳ Annulation automatique si le joueur ne répond pas
-        //
 
         Bukkit.getScheduler().runTaskLater(
                 Main.getInstance(),
@@ -189,11 +177,6 @@ public class RecruitmentChatListener
 
         Player p =
                 e.getPlayer();
-
-        //
-        // Si une création d'entreprise est active,
-        // on laisse l'autre listener gérer le message.
-        //
 
         if (BusinessCreationChatListener.isWaiting(p)) {
             return;
@@ -290,10 +273,6 @@ public class RecruitmentChatListener
             return;
         }
 
-        //
-        // ÉTAPE 1 : PSEUDO
-        //
-
         if (draft.step == 0) {
 
             Player target =
@@ -308,9 +287,9 @@ public class RecruitmentChatListener
                         "Employés Entreprise"
                 );
 
-                p.sendMessage("§c✘ §fJoueur introuvable.");
+                p.sendMessage("§c✖ §fJoueur introuvable.");
                 p.sendMessage("");
-                p.sendMessage("§7Ce joueur doit être connecté.");
+                p.sendMessage("§8• §7Ce joueur doit être connecté.");
                 p.sendMessage("");
                 p.sendMessage("§8• §7Écris un autre pseudo");
                 p.sendMessage("§8• §7ou tape §cannuler §7pour quitter");
@@ -336,10 +315,9 @@ public class RecruitmentChatListener
                         "Employés Entreprise"
                 );
 
-                p.sendMessage("§c✘ §fJoueur déjà membre.");
+                p.sendMessage("§c✖ §fJoueur déjà membre.");
                 p.sendMessage("");
-                p.sendMessage("§7Ce joueur fait déjà");
-                p.sendMessage("§7partie de l'entreprise.");
+                p.sendMessage("§8• §7Ce joueur fait déjà partie de l'entreprise.");
                 p.sendMessage("");
                 p.sendMessage("§8• §7Écris un autre pseudo");
                 p.sendMessage("§8• §7ou tape §cannuler §7pour quitter");
@@ -363,9 +341,9 @@ public class RecruitmentChatListener
                     "Employés Entreprise"
             );
 
-            p.sendMessage("§fÉcris le rôle à donner.");
+            p.sendMessage("§e➜ §fÉcris le rôle à donner.");
             p.sendMessage("");
-            p.sendMessage("§7Joueur: §e" + draft.targetName);
+            p.sendMessage("§8• §7Joueur : §e" + draft.targetName);
             p.sendMessage("");
             p.sendMessage("§8• §eStagiaire");
             p.sendMessage("§8• §eApprenti");
@@ -374,16 +352,12 @@ public class RecruitmentChatListener
             p.sendMessage("§8• §eResponsable");
             p.sendMessage("§8• §eGerant §7dirigeant uniquement");
             p.sendMessage("");
-            p.sendMessage("§7Tape §cannuler §7pour quitter.");
+            p.sendMessage("§8• §7Tape §cannuler §7pour quitter.");
 
             BusinessMessages.footer(p);
 
             return;
         }
-
-        //
-        // ÉTAPE 2 : RÔLE
-        //
 
         if (draft.step == 1) {
 
@@ -397,7 +371,7 @@ public class RecruitmentChatListener
                 BusinessMessages.deny(
                         p,
                         "Employés Entreprise",
-                        "Rôle inconnu. Exemple: §eemploye§7."
+                        "Rôle inconnu. Exemple : §eemploye§7."
                 );
 
                 return;
