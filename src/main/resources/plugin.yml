@@ -29,6 +29,8 @@ commands:
       - ebadmin
       - businessadmin
     usage: /entrepriseadmin
+    permission: moodbusiness.staff
+    permission-message: "§c✖ §fAccès réservé à l'administration économique."
 
   businessstaff:
     description: Outils staff avancés MoodBusiness.
@@ -38,6 +40,7 @@ commands:
       - entreprisestaff
     usage: /businessstaff
     permission: moodbusiness.staff
+    permission-message: "§c✖ §fAccès réservé à l'administration économique."
 
   demandes:
     description: Ouvre les demandes du Bureau des Entreprises.
