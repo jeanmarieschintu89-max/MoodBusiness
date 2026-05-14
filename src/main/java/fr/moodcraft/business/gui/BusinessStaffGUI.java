@@ -24,7 +24,7 @@ public final class BusinessStaffGUI {
         Inventory inv =
                 Bukkit.createInventory(
                         null,
-                        54,
+                        45,
                         TITLE
                 );
 
@@ -32,18 +32,15 @@ public final class BusinessStaffGUI {
 
         SafeGUI.set(
                 inv,
-                19,
+                20,
                 new ItemBuilder(Material.LIME_BANNER)
-                        .name("§6✦ §fEntreprises actives §6✦")
+                        .name("§6✦ §fActives §6✦")
                         .lore(
-                                "§7Voir les entreprises",
-                                "§7ouvertes sur le serveur.",
+                                "§8• §7Entreprises ouvertes",
+                                "§8• §7Infos et gestion",
+                                "§8• §7Suspension possible",
                                 "",
-                                "§8• §7Infos",
-                                "§8• §7Gestion",
-                                "§8• §7Suspension",
-                                "",
-                                "§eClique pour ouvrir"
+                                "§e➜ §fOuvrir"
                         )
                         .action("staff_active")
                         .build()
@@ -51,36 +48,15 @@ public final class BusinessStaffGUI {
 
         SafeGUI.set(
                 inv,
-                21,
-                new ItemBuilder(Material.CLOCK)
-                        .name("§6✦ §fEntreprises récentes §6✦")
-                        .lore(
-                                "§7Voir les dernières",
-                                "§7entreprises créées.",
-                                "",
-                                "§8• §7Surveiller les abus",
-                                "§8• §7Vérifier les noms",
-                                "",
-                                "§eClique pour ouvrir"
-                        )
-                        .action("staff_recent")
-                        .build()
-        );
-
-        SafeGUI.set(
-                inv,
-                23,
+                22,
                 new ItemBuilder(Material.RED_BANNER)
-                        .name("§6✦ §fEntreprises suspendues §6✦")
+                        .name("§6✦ §fSuspendues §6✦")
                         .lore(
-                                "§7Voir les entreprises",
-                                "§7bloquées par le staff.",
+                                "§8• §7Entreprises bloquées",
+                                "§8• §7Réactiver ou archiver",
+                                "§8• §7Contrôle staff",
                                 "",
-                                "§8• §7Consulter",
-                                "§8• §7Réactiver",
-                                "§8• §7Archiver",
-                                "",
-                                "§cAccès staff"
+                                "§c✖ §fAccès staff"
                         )
                         .action("staff_suspended")
                         .build()
@@ -88,18 +64,15 @@ public final class BusinessStaffGUI {
 
         SafeGUI.set(
                 inv,
-                25,
+                24,
                 new ItemBuilder(Material.ANVIL)
                         .name("§6✦ §fLitiges §6✦")
                         .lore(
-                                "§7Voir les contrats",
-                                "§7avec un problème.",
-                                "",
+                                "§8• §7Contrats signalés",
                                 "§8• §7Argent bloqué",
-                                "§8• §7Analyse staff",
-                                "§8• §7Décision finale",
+                                "§8• §7Décision administrative",
                                 "",
-                                "§cAccès staff"
+                                "§c✖ §fAccès staff"
                         )
                         .action("contract_litige_list")
                         .build()
@@ -111,14 +84,11 @@ public final class BusinessStaffGUI {
                 new ItemBuilder(Material.WRITABLE_BOOK)
                         .name("§6✦ §fLogs §6✦")
                         .lore(
-                                "§7Voir les dernières",
-                                "§7actions importantes.",
-                                "",
+                                "§8• §7Actions importantes",
                                 "§8• §7Entreprises",
-                                "§8• §7Contrats",
-                                "§8• §7Banque",
+                                "§8• §7Contrats et banque",
                                 "",
-                                "§eClique pour ouvrir"
+                                "§e➜ §fOuvrir les logs"
                         )
                         .action("audit_logs")
                         .build()
@@ -127,10 +97,10 @@ public final class BusinessStaffGUI {
         SafeGUI.set(
                 inv,
                 40,
-                new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
+                new ItemBuilder(Material.ARROW)
+                        .name("§6✦ §fRetour §6✦")
                         .lore(
-                                "§7Bureau des Entreprises"
+                                "§8• §7Bureau des Entreprises"
                         )
                         .action("back_main")
                         .build()
