@@ -52,17 +52,15 @@ public final class BusinessEmployeeManageGUI {
                 new ItemBuilder(Material.PLAYER_HEAD)
                         .name("§6✦ §f" + shortText(name, 18) + " §6✦")
                         .lore(
-                                "§7Fiche du membre.",
-                                "",
-                                "§7Entreprise: §e" + shortText(business.getName(), 18),
-                                "§7Rôle: "
-                                        + (role != null
-                                        ? role.getDisplayName()
-                                        : "§7Aucun"),
-                                "",
+                                "§8• §7Entreprise : §e" + shortText(business.getName(), 18),
+                                "§8• §7Rôle : " + (role != null ? role.getDisplayName() : "§7Aucun"),
                                 owner
                                         ? "§8• §7Dirigeant officiel"
-                                        : "§8• §7Membre de l'entreprise"
+                                        : "§8• §7Membre de l'entreprise",
+                                "",
+                                owner
+                                        ? "§e➜ §fFiche en lecture seule"
+                                        : "§e➜ §fChoisis une action"
                         )
                         .build()
         );
@@ -75,44 +73,32 @@ public final class BusinessEmployeeManageGUI {
                     new ItemBuilder(Material.NAME_TAG)
                             .name("§6✦ §fChanger le rôle §6✦")
                             .lore(
-                                    "§7Modifier le rôle",
-                                    "§7de ce membre.",
-                                    "",
                                     "§8• §7Gérant",
                                     "§8• §7Trésorier",
                                     "§8• §7Employé",
-                                    "§8• §7Apprenti / Stagiaire",
+                                    "§8• §7Apprenti / stagiaire",
                                     "",
-                                    "§eClique pour choisir"
+                                    "§e➜ §fChoisir un rôle"
                             )
                             .action("employee_change_role")
-                            .target(
-                                    business.getId()
-                                            + ":"
-                                            + targetUuid
-                            )
+                            .target(business.getId() + ":" + targetUuid)
                             .build()
             );
 
             SafeGUI.set(
                     inv,
                     15,
-                    new ItemBuilder(Material.BARRIER)
-                            .name("§c✦ Licencier")
+                    new ItemBuilder(Material.REDSTONE_BLOCK)
+                            .name("§c✦ §fLicencier §c✦")
                             .lore(
-                                    "§7Retirer ce membre",
-                                    "§7de l'entreprise.",
+                                    "§8• §7Retire ce membre",
+                                    "§8• §7de l'entreprise",
+                                    "§8• §7Logs gardés",
                                     "",
-                                    "§cAction sensible",
-                                    "",
-                                    "§cClique pour licencier"
+                                    "§c✖ §fAction sensible"
                             )
                             .action("employee_fire")
-                            .target(
-                                    business.getId()
-                                            + ":"
-                                            + targetUuid
-                            )
+                            .target(business.getId() + ":" + targetUuid)
                             .build()
             );
         }
@@ -121,9 +107,9 @@ public final class BusinessEmployeeManageGUI {
                 inv,
                 22,
                 new ItemBuilder(Material.ARROW)
-                        .name("§cRetour")
+                        .name("§6✦ §fRetour §6✦")
                         .lore(
-                                "§7Retour aux employés"
+                                "§8• §7Retour à l'équipe"
                         )
                         .action("open_employees")
                         .target(business.getId())
