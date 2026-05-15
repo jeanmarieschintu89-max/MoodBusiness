@@ -22,14 +22,9 @@ import java.util.List;
 
 public final class ContractListGUI {
 
-    public static final String TITLE_MY =
-            "§6✦ §8Mes Contrats §6✦";
-
-    public static final String TITLE_BUSINESS =
-            "§6✦ §8Contrats Entreprise §6✦";
-
-    public static final String TITLE_LITIGE =
-            "§6✦ §8Litiges §6✦";
+    public static final String TITLE_MY = GuiTitle.of("Mes Contrats");
+    public static final String TITLE_BUSINESS = GuiTitle.of("Contrats Entreprise");
+    public static final String TITLE_LITIGE = GuiTitle.of("Litiges");
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -40,69 +35,35 @@ public final class ContractListGUI {
 
     private ContractListGUI() {}
 
-    public static void openMy(
-            Player p
-    ) {
-
-        open(
-                p,
-                TITLE_MY,
-                ContractManager.getByClient(p)
-        );
+    public static void openMy(Player p) {
+        open(p, TITLE_MY, ContractManager.getByClient(p));
     }
 
-    public static void openBusiness(
-            Player p,
-            String businessId
-    ) {
-
-        Business business =
-                BusinessManager.getById(businessId);
-
-        open(
-                p,
-                TITLE_BUSINESS,
-                ContractManager.getByBusiness(business)
-        );
+    public static void openBusiness(Player p) {
+        Business business = BusinessManager.getMemberBusiness(p.getUniqueId());
+        open(p, TITLE_BUSINESS, ContractManager.getByBusiness(business));
     }
 
-    public static void openLitiges(
-            Player p
-    ) {
-
-        open(
-                p,
-                TITLE_LITIGE,
-                ContractManager.getLitiges()
-        );
+    public static void openLitiges(Player p) {
+        open(p, TITLE_LITIGE, ContractManager.getLitiges());
     }
 
-    private static void open(
-            Player p,
-            String title,
-            List<Contract> list
-    ) {
+    private static void open(Player p, String title, List<Contract> list) {
 
-        Inventory inv =
-                Bukkit.createInventory(
-                        null,
-                        54,
-                        title
-                );
-
+        Inventory inv = Bukkit.createInventory(null, 54, title);
         SafeGUI.fill(inv);
 
         SafeGUI.set(
                 inv,
                 4,
-                new ItemBuilder(Material.BOOK)
+                new ItemBuilder(Material.WRITABLE_BOOK)
                         .name("§6✦ §fContrats §6✦")
                         .lore(
-                                "§7Dossiers affichés: §e" + list.size(),
-                                "",
+                                "§8• §7Total : §e" + list.size(),
                                 "§8• §7Argent bloqué",
-                                "§8• §7Validation",
-                                "§8• §7Litige possible"
+                                "§8• §7Validation ou litige",
+                                "",
+                                "§e➜ §fSélectionnez un contrat"
                         )
                         .build()
         );
@@ -110,38 +71,21 @@ public final class ContractListGUI {
         int index = 0;
 
         for (Contract contract : list) {
-
-            if (index >= SLOTS.length) {
-                break;
-            }
-
-            Material icon =
-                    switch (contract.getStatus()) {
-
-                        case EN_COURS -> Material.LIME_DYE;
-                        case EN_RETARD -> Material.RED_DYE;
-                        case TERMINE -> Material.YELLOW_DYE;
-                        case VALIDE -> Material.GOLD_INGOT;
-                        case LITIGE -> Material.ANVIL;
-                        case ANNULE -> Material.GRAY_DYE;
-                    };
+            if (index >= SLOTS.length) break;
 
             SafeGUI.set(
                     inv,
                     SLOTS[index],
-                    new ItemBuilder(icon)
+                    new ItemBuilder(Material.PAPER)
                             .name("§6✦ §f" + shortText(contract.getTitle(), 22) + " §6✦")
                             .lore(
-                                    "§7Client: §e" + shortText(contract.getClientName(), 14),
-                                    "§7Entreprise: §b" + shortText(contract.getBusinessName(), 14),
-                                    "§7État: " + contract.getStatus().getDisplayName(),
+                                    "§8• §7Client : §e" + shortText(contract.getClientName(), 14),
+                                    "§8• §7Entreprise : §b" + shortText(contract.getBusinessName(), 14),
+                                    "§8• §7État : " + contract.getStatus().getDisplayName(),
+                                    "§8• §7Budget : §e" + VaultHook.format(contract.getGrossAmount()),
+                                    "§8• §7Délai : §f" + shortDate(contract.getDueAt()),
                                     "",
-                                    "§7Bloqué: §e" + VaultHook.format(contract.getEscrowAmount()),
-                                    "§7Brut: §e" + VaultHook.format(contract.getGrossAmount()),
-                                    "§7Net: §a" + VaultHook.format(contract.getNetAmount()),
-                                    "§7Délai: §f" + shortDate(contract.getDueAt()),
-                                    "",
-                                    "§eClique pour ouvrir"
+                                    "§e➜ §fOuvrir"
                             )
                             .action("contract_detail")
                             .target(contract.getId())
@@ -155,10 +99,8 @@ public final class ContractListGUI {
                 inv,
                 49,
                 new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
-                        .lore(
-                                "§7Menu contrats"
-                        )
+                        .name("§6✦ §fRetour §6✦")
+                        .lore("§8• §7Menu contrats")
                         .action("open_contracts")
                         .build()
         );
@@ -166,44 +108,17 @@ public final class ContractListGUI {
         p.openInventory(inv);
     }
 
-    private static String shortText(
-            String text,
-            int max
-    ) {
-
-        if (text == null || text.isBlank()) {
-            return "Inconnu";
-        }
-
-        String clean =
-                text.replaceAll("§.", "")
-                        .trim();
-
-        if (clean.length() <= max) {
-            return clean;
-        }
-
-        return clean.substring(
-                0,
-                Math.max(1, max - 3)
-        ) + "...";
+    private static String shortText(String text, int max) {
+        if (text == null || text.isBlank()) return "Inconnu";
+        String clean = text.replaceAll("§.", "").trim();
+        if (clean.length() <= max) return clean;
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 
-    private static String shortDate(
-            long time
-    ) {
-
-        String date =
-                TimeUtil.formatDate(time);
-
-        if (date == null || date.equalsIgnoreCase("Jamais")) {
-            return "Aucune";
-        }
-
-        if (date.length() <= 10) {
-            return date;
-        }
-
+    private static String shortDate(long time) {
+        String date = TimeUtil.formatDate(time);
+        if (date == null || date.equalsIgnoreCase("Jamais")) return "Aucune";
+        if (date.length() <= 10) return date;
         return date.substring(0, 10);
     }
 }
