@@ -14,23 +14,13 @@ import org.bukkit.inventory.Inventory;
 
 public final class ApplicationTypeGUI {
 
-    public static final String TITLE =
-            "§6✦ §8Type de Candidature §6✦";
+    public static final String TITLE = GuiTitle.of("Type de Candidature");
 
     private ApplicationTypeGUI() {}
 
-    public static void open(
-            Player p,
-            Business business
-    ) {
+    public static void open(Player p, Business business) {
 
-        Inventory inv =
-                Bukkit.createInventory(
-                        null,
-                        54,
-                        TITLE
-                );
-
+        Inventory inv = Bukkit.createInventory(null, 54, TITLE);
         SafeGUI.fill(inv);
 
         SafeGUI.set(
@@ -39,8 +29,7 @@ public final class ApplicationTypeGUI {
                 new ItemBuilder(Material.BOOK)
                         .name("§6✦ §f" + shortText(business.getName(), 20) + " §6✦")
                         .lore(
-                                "§7Choisis comment",
-                                "§7tu veux rejoindre.",
+                                "§8• §7Choisis comment rejoindre",
                                 "",
                                 "§8• §7Stage",
                                 "§8• §7Apprentissage"
@@ -54,12 +43,11 @@ public final class ApplicationTypeGUI {
                 new ItemBuilder(Material.PAPER)
                         .name("§6✦ §fStage §6✦")
                         .lore(
-                                "§7Découvrir l'entreprise.",
-                                "",
+                                "§8• §7Découvrir l'entreprise",
                                 "§8• §7Rôle très limité",
                                 "§8• §7Idéal pour débuter",
                                 "",
-                                "§eClique pour continuer"
+                                "§e➜ §fContinuer"
                         )
                         .action("application_start")
                         .target(business.getId() + ":STAGE")
@@ -72,12 +60,11 @@ public final class ApplicationTypeGUI {
                 new ItemBuilder(Material.COPPER_INGOT)
                         .name("§6✦ §fApprentissage §6✦")
                         .lore(
-                                "§7Participer davantage.",
-                                "",
+                                "§8• §7Participer davantage",
                                 "§8• §7Formation active",
                                 "§8• §7Avec supervision",
                                 "",
-                                "§eClique pour continuer"
+                                "§e➜ §fContinuer"
                         )
                         .action("application_start")
                         .target(business.getId() + ":APPRENTISSAGE")
@@ -88,10 +75,8 @@ public final class ApplicationTypeGUI {
                 inv,
                 49,
                 new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
-                        .lore(
-                                "§7Choisir une entreprise"
-                        )
+                        .name("§6✦ §fRetour §6✦")
+                        .lore("§8• §7Choisir une entreprise")
                         .action("application_choose_business")
                         .build()
         );
@@ -99,26 +84,10 @@ public final class ApplicationTypeGUI {
         p.openInventory(inv);
     }
 
-    private static String shortText(
-            String text,
-            int max
-    ) {
-
-        if (text == null || text.isBlank()) {
-            return "Inconnu";
-        }
-
-        String clean =
-                text.replaceAll("§.", "")
-                        .trim();
-
-        if (clean.length() <= max) {
-            return clean;
-        }
-
-        return clean.substring(
-                0,
-                Math.max(1, max - 3)
-        ) + "...";
+    private static String shortText(String text, int max) {
+        if (text == null || text.isBlank()) return "Inconnu";
+        String clean = text.replaceAll("§.", "").trim();
+        if (clean.length() <= max) return clean;
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 }
