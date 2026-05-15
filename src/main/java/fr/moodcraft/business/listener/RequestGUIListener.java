@@ -30,12 +30,9 @@ import org.bukkit.inventory.ItemStack;
 public class RequestGUIListener implements Listener {
 
     @EventHandler
-    public void onClick(
-            InventoryClickEvent e
-    ) {
+    public void onClick(InventoryClickEvent e) {
 
-        String title =
-                e.getView().getTitle();
+        String title = e.getView().getTitle();
 
         if (!isRequestTitle(title)) {
             return;
@@ -47,14 +44,9 @@ public class RequestGUIListener implements Listener {
             return;
         }
 
-        ItemStack item =
-                e.getCurrentItem();
-
-        String action =
-                ItemBuilder.getAction(item);
-
-        String target =
-                ItemBuilder.getTarget(item);
+        ItemStack item = e.getCurrentItem();
+        String action = ItemBuilder.getAction(item);
+        String target = ItemBuilder.getTarget(item);
 
         if (action == null) {
             return;
@@ -62,116 +54,57 @@ public class RequestGUIListener implements Listener {
 
         switch (action) {
 
-            case "open_requests" ->
-                    RequestMainGUI.open(p);
-
-            case "request_create" ->
-                    RequestCategoryGUI.open(p);
+            case "open_requests" -> RequestMainGUI.open(p);
+            case "request_create" -> RequestCategoryGUI.open(p);
 
             case "request_start" -> {
-
                 RequestCategory category;
-
                 try {
-
-                    category =
-                            RequestCategory.valueOf(target);
-
+                    category = RequestCategory.valueOf(target);
                 } catch (Exception ex) {
-
-                    category =
-                            RequestCategory.AUTRE;
+                    category = RequestCategory.AUTRE;
                 }
-
-                RequestChatListener.startRequest(
-                        p,
-                        category
-                );
+                RequestChatListener.startRequest(p, category);
             }
 
-            case "request_my_list" ->
-                    RequestListGUI.openMy(p);
-
-            case "request_public_list" ->
-                    RequestListGUI.openPublic(p);
+            case "request_my_list" -> RequestListGUI.openMy(p);
+            case "request_public_list" -> RequestListGUI.openPublic(p);
 
             case "request_detail" -> {
-
-                BusinessRequest request =
-                        RequestManager.get(target);
+                BusinessRequest request = RequestManager.get(target);
 
                 if (request == null) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Demandes",
-                            "Demande introuvable."
-                    );
-
+                    BusinessMessages.deny(p, "Demandes", "Demande introuvable.");
                     return;
                 }
 
-                RequestDetailGUI.open(
-                        p,
-                        request
-                );
+                RequestDetailGUI.open(p, request);
             }
 
             case "request_take" -> {
-
-                BusinessRequest request =
-                        RequestManager.get(target);
+                BusinessRequest request = RequestManager.get(target);
 
                 if (request == null) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Demandes",
-                            "Demande introuvable."
-                    );
-
+                    BusinessMessages.deny(p, "Demandes", "Demande introuvable.");
                     return;
                 }
 
-                Business business =
-                        BusinessManager.getMemberBusiness(
-                                p.getUniqueId()
-                        );
+                Business business = BusinessManager.getMemberBusiness(p.getUniqueId());
 
                 if (business == null) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Bureau des Entreprises",
-                            "Vous n'êtes dans aucune entreprise."
-                    );
-
+                    BusinessMessages.deny(p, "Bureau des Entreprises", "Vous n'êtes dans aucune entreprise.");
                     return;
                 }
 
-                ContractManager.ContractResult result =
-                        ContractManager.createFromRequest(
-                                p,
-                                business,
-                                request
-                        );
-
+                ContractManager.ContractResult result = ContractManager.createFromRequest(p, business, request);
                 p.closeInventory();
 
                 if (!result.success()) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Prise en charge",
-                            result.message()
-                    );
-
+                    BusinessMessages.deny(p, "Prise en charge", result.message());
                     return;
                 }
 
-                ContractBookUtil.giveProofBooks(
-                        result.contract()
-                );
+                ContractBookUtil.giveProofBooks(result.contract());
 
                 BusinessMessages.success(
                         p,
@@ -182,62 +115,55 @@ public class RequestGUIListener implements Listener {
             }
 
             case "request_cancel" -> {
-
-                BusinessRequest request =
-                        RequestManager.get(target);
+                BusinessRequest request = RequestManager.get(target);
 
                 if (request == null) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Demandes",
-                            "Demande introuvable."
-                    );
-
+                    BusinessMessages.deny(p, "Demandes", "Demande introuvable.");
                     return;
                 }
 
-                RequestManager.RequestResult result =
-                        RequestManager.cancel(
-                                p,
-                                request
-                        );
+                RequestManager.RequestResult result = RequestManager.cancel(p, request);
 
                 if (!result.success()) {
-
-                    BusinessMessages.deny(
-                            p,
-                            "Demandes",
-                            result.message()
-                    );
-
+                    BusinessMessages.deny(p, "Demandes", result.message());
                     return;
                 }
 
-                BusinessMessages.success(
-                        p,
-                        "Demandes",
-                        result.message()
-                );
-
+                BusinessMessages.success(p, "Demandes", result.message());
                 RequestListGUI.openMy(p);
             }
 
-            case "back_main" ->
-                    BusinessMainGUI.open(p);
+            case "back_main" -> BusinessMainGUI.open(p);
 
             default -> {}
         }
     }
 
-    private boolean isRequestTitle(
-            String title
-    ) {
+    private boolean isRequestTitle(String title) {
+        if (title == null) {
+            return false;
+        }
 
-        return title.equals(RequestMainGUI.TITLE)
-                || title.equals(RequestCategoryGUI.TITLE)
-                || title.equals(RequestListGUI.TITLE_PUBLIC)
-                || title.equals(RequestListGUI.TITLE_MY)
-                || title.equals(RequestDetailGUI.TITLE);
+        String clean = cleanTitle(title);
+
+        return clean.equals("demandes")
+                || clean.equals("categorie demande")
+                || clean.equals("mes demandes")
+                || clean.equals("demandes publiques")
+                || clean.equals("demande");
+    }
+
+    private String cleanTitle(String title) {
+        return title
+                .replaceAll("§.", "")
+                .replace("✦", "")
+                .replace("é", "e")
+                .replace("è", "e")
+                .replace("ê", "e")
+                .replace("à", "a")
+                .replace("ù", "u")
+                .replace("ç", "c")
+                .trim()
+                .toLowerCase();
     }
 }
