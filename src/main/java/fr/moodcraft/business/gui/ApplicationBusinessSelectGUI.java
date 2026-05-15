@@ -19,8 +19,7 @@ import java.util.List;
 
 public final class ApplicationBusinessSelectGUI {
 
-    public static final String TITLE =
-            "§6✦ §8Choisir Entreprise §6✦";
+    public static final String TITLE = GuiTitle.of("Choisir Entreprise");
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -31,23 +30,12 @@ public final class ApplicationBusinessSelectGUI {
 
     private ApplicationBusinessSelectGUI() {}
 
-    public static void open(
-            Player p
-    ) {
+    public static void open(Player p) {
 
-        Inventory inv =
-                Bukkit.createInventory(
-                        null,
-                        54,
-                        TITLE
-                );
-
+        Inventory inv = Bukkit.createInventory(null, 54, TITLE);
         SafeGUI.fill(inv);
 
-        List<Business> businesses =
-                BusinessManager.getByStatus(
-                        BusinessStatus.ACTIVE
-                );
+        List<Business> businesses = BusinessManager.getByStatus(BusinessStatus.ACTIVE);
 
         SafeGUI.set(
                 inv,
@@ -55,8 +43,8 @@ public final class ApplicationBusinessSelectGUI {
                 new ItemBuilder(Material.BOOK)
                         .name("§6✦ §fChoisir une entreprise §6✦")
                         .lore(
-                                "§7Clique une entreprise",
-                                "§7pour envoyer une candidature.",
+                                "§8• §7Clique une entreprise",
+                                "§8• §7pour envoyer une candidature",
                                 "",
                                 "§8• §7Stage",
                                 "§8• §7Apprentissage"
@@ -67,17 +55,8 @@ public final class ApplicationBusinessSelectGUI {
         int index = 0;
 
         for (Business business : businesses) {
-
-            if (index >= SLOTS.length) {
-                break;
-            }
-
-            if (business.isMember(
-                    p.getUniqueId()
-            )) {
-
-                continue;
-            }
+            if (index >= SLOTS.length) break;
+            if (business.isMember(p.getUniqueId())) continue;
 
             SafeGUI.set(
                     inv,
@@ -85,13 +64,13 @@ public final class ApplicationBusinessSelectGUI {
                     new ItemBuilder(Material.LIME_BANNER)
                             .name("§6✦ §f" + shortText(business.getName(), 18) + " §6✦")
                             .lore(
-                                    "§7Dirigeant: §e" + shortText(business.getOwnerName(), 16),
-                                    "§7État: " + business.getStatus().getDisplayName(),
+                                    "§8• §7Dirigeant : §e" + shortText(business.getOwnerName(), 16),
+                                    "§8• §7État : " + business.getStatus().getDisplayName(),
                                     "",
                                     "§8• §7Postuler ici",
                                     "§8• §7Choix du type après",
                                     "",
-                                    "§eClique pour choisir"
+                                    "§e➜ §fChoisir"
                             )
                             .action("application_select_business")
                             .target(business.getId())
@@ -105,10 +84,8 @@ public final class ApplicationBusinessSelectGUI {
                 inv,
                 49,
                 new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
-                        .lore(
-                                "§7Menu candidatures"
-                        )
+                        .name("§6✦ §fRetour §6✦")
+                        .lore("§8• §7Menu candidatures")
                         .action("open_applications")
                         .build()
         );
@@ -116,26 +93,10 @@ public final class ApplicationBusinessSelectGUI {
         p.openInventory(inv);
     }
 
-    private static String shortText(
-            String text,
-            int max
-    ) {
-
-        if (text == null || text.isBlank()) {
-            return "Inconnu";
-        }
-
-        String clean =
-                text.replaceAll("§.", "")
-                        .trim();
-
-        if (clean.length() <= max) {
-            return clean;
-        }
-
-        return clean.substring(
-                0,
-                Math.max(1, max - 3)
-        ) + "...";
+    private static String shortText(String text, int max) {
+        if (text == null || text.isBlank()) return "Inconnu";
+        String clean = text.replaceAll("§.", "").trim();
+        if (clean.length() <= max) return clean;
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 }
