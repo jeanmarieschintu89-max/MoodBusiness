@@ -17,33 +17,17 @@ import org.bukkit.inventory.Inventory;
 
 public final class ApplicationMainGUI {
 
-    public static final String TITLE =
-            "§6✦ §8Candidatures §6✦";
+    public static final String TITLE = GuiTitle.of("Candidatures");
 
     private ApplicationMainGUI() {}
 
-    public static void open(
-            Player p
-    ) {
+    public static void open(Player p) {
 
-        Inventory inv =
-                Bukkit.createInventory(
-                        null,
-                        45,
-                        TITLE
-                );
-
+        Inventory inv = Bukkit.createInventory(null, 45, TITLE);
         SafeGUI.fill(inv);
 
-        int active =
-                ApplicationManager.countActiveByApplicant(
-                        p.getUniqueId()
-                );
-
-        Business business =
-                BusinessManager.getMemberBusiness(
-                        p.getUniqueId()
-                );
+        int active = ApplicationManager.countActiveByApplicant(p.getUniqueId());
+        Business business = BusinessManager.getMemberBusiness(p.getUniqueId());
 
         SafeGUI.set(
                 inv,
@@ -99,8 +83,7 @@ public final class ApplicationMainGUI {
                 inv,
                 24,
                 new ItemBuilder(
-                        business != null
-                                && BusinessManager.canManageRoles(p, business)
+                        business != null && BusinessManager.canManageRoles(p, business)
                                 ? Material.CHEST
                                 : Material.GRAY_DYE
                 )
@@ -113,33 +96,25 @@ public final class ApplicationMainGUI {
                                 "§8• §7Accepter",
                                 "§8• §7Refuser",
                                 "",
-                                business != null
-                                        && BusinessManager.canManageRoles(p, business)
+                                business != null && BusinessManager.canManageRoles(p, business)
                                         ? "§e➜ §fGérer les reçues"
                                         : "§c✖ §fAccès limité"
                         )
                         .action(
-                                business != null
-                                        && BusinessManager.canManageRoles(p, business)
+                                business != null && BusinessManager.canManageRoles(p, business)
                                         ? "application_received_list"
                                         : "coming_soon"
                         )
-                        .target(
-                                business != null
-                                        ? business.getId()
-                                        : ""
-                        )
+                        .target(business != null ? business.getId() : "")
                         .build()
         );
 
         SafeGUI.set(
                 inv,
                 40,
-                new ItemBuilder(Material.ARROW)
+                new ItemBuilder(Material.BARRIER)
                         .name("§6✦ §fRetour §6✦")
-                        .lore(
-                                "§8• §7Bureau des Entreprises"
-                        )
+                        .lore("§8• §7Bureau des Entreprises")
                         .action("back_main")
                         .build()
         );
@@ -147,26 +122,10 @@ public final class ApplicationMainGUI {
         p.openInventory(inv);
     }
 
-    private static String shortText(
-            String text,
-            int max
-    ) {
-
-        if (text == null || text.isBlank()) {
-            return "Inconnu";
-        }
-
-        String clean =
-                text.replaceAll("§.", "")
-                        .trim();
-
-        if (clean.length() <= max) {
-            return clean;
-        }
-
-        return clean.substring(
-                0,
-                Math.max(1, max - 3)
-        ) + "...";
+    private static String shortText(String text, int max) {
+        if (text == null || text.isBlank()) return "Inconnu";
+        String clean = text.replaceAll("§.", "").trim();
+        if (clean.length() <= max) return clean;
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 }
