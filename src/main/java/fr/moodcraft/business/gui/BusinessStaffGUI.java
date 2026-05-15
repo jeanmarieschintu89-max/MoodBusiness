@@ -12,8 +12,7 @@ import org.bukkit.inventory.Inventory;
 
 public final class BusinessStaffGUI {
 
-    public static final String TITLE =
-            "§6✦ §8Gestion Entreprises §6✦";
+    public static final String TITLE = GuiTitle.of("Gestion Entreprises");
 
     private BusinessStaffGUI() {}
 
@@ -97,7 +96,7 @@ public final class BusinessStaffGUI {
         SafeGUI.set(
                 inv,
                 40,
-                new ItemBuilder(Material.ARROW)
+                new ItemBuilder(Material.BARRIER)
                         .name("§6✦ §fRetour §6✦")
                         .lore(
                                 "§8• §7Bureau des Entreprises"
