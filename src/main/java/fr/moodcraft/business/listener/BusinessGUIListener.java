@@ -349,22 +349,24 @@ public class BusinessGUIListener implements Listener {
     }
 
     private boolean isBusinessTitle(String title) {
+        String clean = cleanTitle(title);
 
-        return title.equals(BusinessMainGUI.TITLE)
-                || title.equals(BusinessDashboardGUI.TITLE)
-                || title.equals(BusinessStaffGUI.TITLE)
-                || title.equals(BusinessListGUI.TITLE_ACTIVE)
-                || title.equals(BusinessListGUI.TITLE_RECENT)
-                || title.equals(BusinessListGUI.TITLE_SUSPENDED)
-                || title.equals(BusinessEmployeesGUI.TITLE)
-                || title.equals(BusinessRoleAssignGUI.TITLE)
-                || title.equals(ApplicationMainGUI.TITLE)
-                || title.equals(ApplicationBusinessSelectGUI.TITLE)
-                || title.equals(ApplicationTypeGUI.TITLE)
-                || title.equals(ApplicationListGUI.TITLE_MY)
-                || title.equals(ApplicationListGUI.TITLE_RECEIVED)
-                || title.equals(ApplicationReviewGUI.TITLE)
-                || title.equals(AuditLogGUI.TITLE);
+        return clean.equals("bureau des entreprises")
+                || clean.equals("mon entreprise")
+                || clean.equals("gestion entreprises")
+                || clean.equals("entreprises actives")
+                || clean.equals("entreprises recentes")
+                || clean.equals("entreprises suspendues")
+                || clean.equals("equipe entreprise")
+                || clean.equals("fiche employe")
+                || clean.equals("attribuer un role")
+                || clean.equals("candidatures")
+                || clean.equals("choisir entreprise")
+                || clean.equals("type de candidature")
+                || clean.equals("mes candidatures")
+                || clean.equals("candidatures recues")
+                || clean.equals("dossier candidature")
+                || clean.equals("logs");
     }
 
     private void openRoleManager(Player p, String target) {
@@ -476,5 +478,24 @@ public class BusinessGUIListener implements Listener {
             case "SUSPENDUE" -> BusinessListGUI.openSuspended(p, page);
             default -> {}
         }
+    }
+
+    private String cleanTitle(String title) {
+        if (title == null) {
+            return "";
+        }
+
+        return title
+                .replaceAll("§.", "")
+                .replace("✦", "")
+                .replace("É", "E")
+                .replace("é", "e")
+                .replace("è", "e")
+                .replace("ê", "e")
+                .replace("à", "a")
+                .replace("ù", "u")
+                .replace("ç", "c")
+                .trim()
+                .toLowerCase();
     }
 }
