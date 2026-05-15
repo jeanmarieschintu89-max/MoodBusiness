@@ -22,23 +22,13 @@ import java.util.List;
 
 public final class ContractDetailGUI {
 
-    public static final String TITLE =
-            "§6✦ §8Contrat §6✦";
+    public static final String TITLE = GuiTitle.of("Contrat");
 
     private ContractDetailGUI() {}
 
-    public static void open(
-            Player p,
-            Contract contract
-    ) {
+    public static void open(Player p, Contract contract) {
 
-        Inventory inv =
-                Bukkit.createInventory(
-                        null,
-                        45,
-                        TITLE
-                );
-
+        Inventory inv = Bukkit.createInventory(null, 45, TITLE);
         SafeGUI.fill(inv);
 
         SafeGUI.set(
@@ -65,11 +55,7 @@ public final class ContractDetailGUI {
                         .build()
         );
 
-        if (ContractManager.canBusinessComplete(
-                p,
-                contract
-        )) {
-
+        if (ContractManager.canBusinessComplete(p, contract)) {
             SafeGUI.set(
                     inv,
                     19,
@@ -87,11 +73,7 @@ public final class ContractDetailGUI {
             );
         }
 
-        if (ContractManager.canClientValidate(
-                p,
-                contract
-        )) {
-
+        if (ContractManager.canClientValidate(p, contract)) {
             SafeGUI.set(
                     inv,
                     21,
@@ -113,7 +95,6 @@ public final class ContractDetailGUI {
         }
 
         if (contract.getStatus().isOpen()) {
-
             SafeGUI.set(
                     inv,
                     23,
@@ -134,7 +115,6 @@ public final class ContractDetailGUI {
 
         if (p.hasPermission("moodbusiness.staff.litige")
                 && contract.getStatus() == ContractStatus.LITIGE) {
-
             SafeGUI.set(
                     inv,
                     25,
@@ -157,20 +137,16 @@ public final class ContractDetailGUI {
                 31,
                 new ItemBuilder(Material.PAPER)
                         .name("§6✦ §fHistorique §6✦")
-                        .lore(
-                                historyLore(contract)
-                        )
+                        .lore(historyLore(contract))
                         .build()
         );
 
         SafeGUI.set(
                 inv,
                 40,
-                new ItemBuilder(Material.ARROW)
+                new ItemBuilder(Material.BARRIER)
                         .name("§6✦ §fRetour §6✦")
-                        .lore(
-                                "§8• §7Menu contrats"
-                        )
+                        .lore("§8• §7Menu contrats")
                         .action("open_contracts")
                         .build()
         );
@@ -178,91 +154,39 @@ public final class ContractDetailGUI {
         p.openInventory(inv);
     }
 
-    private static String[] historyLore(
-            Contract contract
-    ) {
-
-        List<String> history =
-                contract.getHistory();
+    private static String[] historyLore(Contract contract) {
+        List<String> history = contract.getHistory();
 
         if (history.isEmpty()) {
-
-            return new String[]{
-                    "§8• §7Aucun historique."
-            };
+            return new String[]{"§8• §7Aucun historique."};
         }
 
-        int start =
-                Math.max(
-                        0,
-                        history.size() - 6
-                );
-
-        List<String> lore =
-                new ArrayList<>();
+        int start = Math.max(0, history.size() - 6);
+        List<String> lore = new ArrayList<>();
 
         for (int i = start; i < history.size(); i++) {
-
-            lore.add(
-                    "§8• §7" + shortText(
-                            history.get(i),
-                            34
-                    )
-            );
+            lore.add("§8• §7" + shortText(history.get(i), 34));
         }
 
-        return lore.toArray(
-                new String[0]
-        );
+        return lore.toArray(new String[0]);
     }
 
-    private static String shortText(
-            String text,
-            int max
-    ) {
-
-        if (text == null || text.isBlank()) {
-            return "Aucun";
-        }
-
-        String clean =
-                text.replaceAll("§.", "")
-                        .trim();
-
-        if (clean.length() <= max) {
-            return clean;
-        }
-
+    private static String shortText(String text, int max) {
+        if (text == null || text.isBlank()) return "Aucun";
+        String clean = text.replaceAll("§.", "").trim();
+        if (clean.length() <= max) return clean;
         return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 
-    private static String shortDate(
-            long time
-    ) {
-
-        String date =
-                TimeUtil.formatDate(time);
-
-        if (date == null || date.equalsIgnoreCase("Jamais")) {
-            return "Aucune";
-        }
-
-        if (date.length() <= 10) {
-            return date;
-        }
-
+    private static String shortDate(long time) {
+        String date = TimeUtil.formatDate(time);
+        if (date == null || date.equalsIgnoreCase("Jamais")) return "Aucune";
+        if (date.length() <= 10) return date;
         return date.substring(0, 10);
     }
 
-    private static String shortPercent(
-            double value
-    ) {
-
-        if (value == Math.rint(value)) {
-            return String.valueOf((int) value);
-        }
-
-        return String.format("%.1f", value)
-                .replace(",", ".");
+    private static String shortPercent(double value) {
+        if (value == Math.rint(value)) return String.valueOf((int) value);
+        return String.format("%.1f", value).replace(",", ".");
     }
 }
