@@ -15,23 +15,13 @@ import org.bukkit.inventory.Inventory;
 
 public final class ApplicationReviewGUI {
 
-    public static final String TITLE =
-            "§6✦ §8Dossier Candidature §6✦";
+    public static final String TITLE = GuiTitle.of("Dossier Candidature");
 
     private ApplicationReviewGUI() {}
 
-    public static void open(
-            Player p,
-            Application application
-    ) {
+    public static void open(Player p, Application application) {
 
-        Inventory inv =
-                Bukkit.createInventory(
-                        null,
-                        54,
-                        TITLE
-                );
-
+        Inventory inv = Bukkit.createInventory(null, 54, TITLE);
         SafeGUI.fill(inv);
 
         SafeGUI.set(
@@ -40,16 +30,16 @@ public final class ApplicationReviewGUI {
                 new ItemBuilder(Material.BOOK)
                         .name("§6✦ §f" + shortText(application.getApplicantName(), 18) + " §6✦")
                         .lore(
-                                "§7Entreprise: §e" + shortText(application.getBusinessName(), 18),
-                                "§7Type: " + application.getType().getDisplayName(),
-                                "§7État: " + application.getStatus().getDisplayName(),
-                                "§7Créée: §f" + shortDate(application.getCreatedAt()),
+                                "§8• §7Entreprise : §e" + shortText(application.getBusinessName(), 18),
+                                "§8• §7Type : " + application.getType().getDisplayName(),
+                                "§8• §7État : " + application.getStatus().getDisplayName(),
+                                "§8• §7Créée : §f" + shortDate(application.getCreatedAt()),
                                 "",
-                                "§6✦ §fPrésentation",
-                                "§7" + shortText(application.getPresentation(), 32),
+                                "§6✦ §fPrésentation §6✦",
+                                "§8• §7" + shortText(application.getPresentation(), 32),
                                 "",
-                                "§6✦ §fDisponibilités",
-                                "§7" + shortText(application.getAvailability(), 32)
+                                "§6✦ §fDisponibilités §6✦",
+                                "§8• §7" + shortText(application.getAvailability(), 32)
                         )
                         .build()
         );
@@ -60,13 +50,11 @@ public final class ApplicationReviewGUI {
                 new ItemBuilder(Material.PAPER)
                         .name("§6✦ §fAccepter stage §6✦")
                         .lore(
-                                "§7Le joueur rejoint",
-                                "§7comme stagiaire.",
-                                "",
+                                "§8• §7Le joueur rejoint comme stagiaire",
                                 "§8• §7Accès limité",
                                 "§8• §7Découverte",
                                 "",
-                                "§bClique pour accepter"
+                                "§e➜ §fAccepter"
                         )
                         .action("application_accept_stage")
                         .target(application.getId())
@@ -79,13 +67,11 @@ public final class ApplicationReviewGUI {
                 new ItemBuilder(Material.COPPER_INGOT)
                         .name("§6✦ §fAccepter apprentissage §6✦")
                         .lore(
-                                "§7Le joueur rejoint",
-                                "§7comme apprenti.",
-                                "",
+                                "§8• §7Le joueur rejoint comme apprenti",
                                 "§8• §7Formation",
                                 "§8• §7Participation",
                                 "",
-                                "§eClique pour accepter"
+                                "§e➜ §fAccepter"
                         )
                         .action("application_accept_apprentice")
                         .target(application.getId())
@@ -98,12 +84,10 @@ public final class ApplicationReviewGUI {
                 new ItemBuilder(Material.NAME_TAG)
                         .name("§6✦ §fDemander entretien §6✦")
                         .lore(
-                                "§7Marque le dossier",
-                                "§7comme entretien.",
-                                "",
+                                "§8• §7Marque le dossier en entretien",
                                 "§8• §7À discuter avec le joueur",
                                 "",
-                                "§bClique pour demander"
+                                "§e➜ §fDemander"
                         )
                         .action("application_interview")
                         .target(application.getId())
@@ -114,13 +98,12 @@ public final class ApplicationReviewGUI {
                 inv,
                 31,
                 new ItemBuilder(Material.RED_DYE)
-                        .name("§cRefuser")
+                        .name("§c✦ §fRefuser §c✦")
                         .lore(
-                                "§7Refuse cette candidature.",
-                                "",
+                                "§8• §7Refuse cette candidature",
                                 "§8• §7Le joueur sera prévenu",
                                 "",
-                                "§cClique pour refuser"
+                                "§c✖ §fRefuser"
                         )
                         .action("application_refuse")
                         .target(application.getId())
@@ -131,10 +114,8 @@ public final class ApplicationReviewGUI {
                 inv,
                 49,
                 new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
-                        .lore(
-                                "§7Candidatures reçues"
-                        )
+                        .name("§6✦ §fRetour §6✦")
+                        .lore("§8• §7Candidatures reçues")
                         .action("application_received_list")
                         .target(application.getBusinessId())
                         .build()
@@ -143,44 +124,17 @@ public final class ApplicationReviewGUI {
         p.openInventory(inv);
     }
 
-    private static String shortText(
-            String text,
-            int max
-    ) {
-
-        if (text == null || text.isBlank()) {
-            return "Non renseigné";
-        }
-
-        String clean =
-                text.replaceAll("§.", "")
-                        .trim();
-
-        if (clean.length() <= max) {
-            return clean;
-        }
-
-        return clean.substring(
-                0,
-                Math.max(1, max - 3)
-        ) + "...";
+    private static String shortText(String text, int max) {
+        if (text == null || text.isBlank()) return "Non renseigné";
+        String clean = text.replaceAll("§.", "").trim();
+        if (clean.length() <= max) return clean;
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 
-    private static String shortDate(
-            long time
-    ) {
-
-        String date =
-                TimeUtil.formatDate(time);
-
-        if (date == null || date.equalsIgnoreCase("Jamais")) {
-            return "Aucune";
-        }
-
-        if (date.length() <= 10) {
-            return date;
-        }
-
+    private static String shortDate(long time) {
+        String date = TimeUtil.formatDate(time);
+        if (date == null || date.equalsIgnoreCase("Jamais")) return "Aucune";
+        if (date.length() <= 10) return date;
         return date.substring(0, 10);
     }
 }
