@@ -21,14 +21,9 @@ import java.util.List;
 
 public final class BusinessListGUI {
 
-    public static final String TITLE_ACTIVE =
-            "§6✦ §8Entreprises Actives §6✦";
-
-    public static final String TITLE_RECENT =
-            "§6✦ §8Entreprises Récentes §6✦";
-
-    public static final String TITLE_SUSPENDED =
-            "§6✦ §8Entreprises Suspendues §6✦";
+    public static final String TITLE_ACTIVE = GuiTitle.of("Entreprises Actives");
+    public static final String TITLE_RECENT = GuiTitle.of("Entreprises Récentes");
+    public static final String TITLE_SUSPENDED = GuiTitle.of("Entreprises Suspendues");
 
     private static final int PAGE_SIZE = 28;
 
@@ -41,224 +36,107 @@ public final class BusinessListGUI {
 
     private BusinessListGUI() {}
 
-    public static void openActive(
-            Player p,
-            int page
-    ) {
-
-        open(
-                p,
-                TITLE_ACTIVE,
-                BusinessManager.getByStatus(
-                        BusinessStatus.ACTIVE
-                ),
-                page,
-                "ACTIVE"
-        );
+    public static void openActive(Player p, int page) {
+        open(p, TITLE_ACTIVE, BusinessManager.getByStatus(BusinessStatus.ACTIVE), page, "ACTIVE");
     }
 
-    public static void openRecent(
-            Player p,
-            int page
-    ) {
-
-        open(
-                p,
-                TITLE_RECENT,
-                BusinessManager.getRecent(),
-                page,
-                "RECENT"
-        );
+    public static void openRecent(Player p, int page) {
+        open(p, TITLE_RECENT, BusinessManager.getRecent(), page, "RECENT");
     }
 
-    public static void openSuspended(
-            Player p,
-            int page
-    ) {
-
-        open(
-                p,
-                TITLE_SUSPENDED,
-                BusinessManager.getByStatus(
-                        BusinessStatus.SUSPENDUE
-                ),
-                page,
-                "SUSPENDUE"
-        );
+    public static void openSuspended(Player p, int page) {
+        open(p, TITLE_SUSPENDED, BusinessManager.getByStatus(BusinessStatus.SUSPENDUE), page, "SUSPENDUE");
     }
 
-    private static void open(
-            Player p,
-            String title,
-            List<Business> list,
-            int page,
-            String type
-    ) {
+    private static void open(Player p, String title, List<Business> list, int page, String type) {
 
         if (page < 1) {
             page = 1;
         }
 
-        Inventory inv =
-                Bukkit.createInventory(
-                        null,
-                        54,
-                        title
-                );
-
+        Inventory inv = Bukkit.createInventory(null, 54, title);
         SafeGUI.fill(inv);
 
-        int maxPage =
-                Math.max(
-                        1,
-                        (int) Math.ceil(
-                                list.size() / (double) PAGE_SIZE
-                        )
-                );
+        int maxPage = Math.max(1, (int) Math.ceil(list.size() / (double) PAGE_SIZE));
 
         if (page > maxPage) {
             page = maxPage;
         }
 
-        int start =
-                (page - 1) * PAGE_SIZE;
-
-        int end =
-                Math.min(
-                        start + PAGE_SIZE,
-                        list.size()
-                );
-
-        boolean staff =
-                p.hasPermission("moodbusiness.staff");
-
+        int start = (page - 1) * PAGE_SIZE;
+        int end = Math.min(start + PAGE_SIZE, list.size());
+        boolean staff = p.hasPermission("moodbusiness.staff");
         int slotIndex = 0;
 
         for (int i = start; i < end; i++) {
+            Business business = list.get(i);
 
-            Business business =
-                    list.get(i);
+            Material material = switch (business.getStatus()) {
+                case ACTIVE -> Material.LIME_BANNER;
+                case SUSPENDUE -> Material.RED_BANNER;
+                case ARCHIVEE -> Material.GRAY_BANNER;
+            };
 
-            Material material =
-                    switch (business.getStatus()) {
-
-                        case ACTIVE -> Material.LIME_BANNER;
-                        case SUSPENDUE -> Material.RED_BANNER;
-                        case ARCHIVEE -> Material.GRAY_BANNER;
-                    };
-
-            SafeGUI.set(
-                    inv,
-                    SLOTS[slotIndex],
-                    new ItemBuilder(material)
-                            .name("§6✦ §f" + shortText(business.getName(), 18) + " §6✦")
-                            .lore(
-                                    "§7Dirigeant: §e" + shortText(business.getOwnerName(), 16),
-                                    "§7État: " + business.getStatus().getDisplayName(),
-                                    "§7Banque: §e" + VaultHook.format(business.getBalance()),
-                                    "§7Créée: §f" + shortDate(business.getCreatedAt()),
-                                    "",
-                                    staff
-                                            ? "§cClique pour administrer"
-                                            : "§eClique pour consulter"
-                            )
-                            .action(
-                                    staff
-                                            ? "admin_manage_business"
-                                            : "business_info"
-                            )
-                            .target(business.getId())
-                            .build()
-            );
+            SafeGUI.set(inv, SLOTS[slotIndex], new ItemBuilder(material)
+                    .name("§6✦ §f" + shortText(business.getName(), 18) + " §6✦")
+                    .lore(
+                            "§8• §7Dirigeant : §e" + shortText(business.getOwnerName(), 16),
+                            "§8• §7État : " + business.getStatus().getDisplayName(),
+                            "§8• §7Banque : §e" + VaultHook.format(business.getBalance()),
+                            "§8• §7Créée : §f" + shortDate(business.getCreatedAt()),
+                            "",
+                            staff ? "§c✖ §fAdministrer" : "§e➜ §fConsulter"
+                    )
+                    .action(staff ? "admin_manage_business" : "business_info")
+                    .target(business.getId())
+                    .build());
 
             slotIndex++;
         }
 
-        SafeGUI.set(
-                inv,
-                4,
-                new ItemBuilder(Material.BOOK)
-                        .name("§6✦ §fPage " + page + "/" + maxPage + " §6✦")
-                        .lore(
-                                "§7Entreprises: §e" + list.size()
-                        )
-                        .build()
-        );
+        SafeGUI.set(inv, 4, new ItemBuilder(Material.BOOK)
+                .name("§6✦ §fPage " + page + "/" + maxPage + " §6✦")
+                .lore("§8• §7Entreprises : §e" + list.size())
+                .build());
 
         if (page > 1) {
-
-            SafeGUI.set(
-                    inv,
-                    45,
-                    new ItemBuilder(Material.ARROW)
-                            .name("§ePage précédente")
-                            .lore(
-                                    "§7Page " + (page - 1)
-                            )
-                            .action("list_prev")
-                            .target(type + ":" + (page - 1))
-                            .build()
-            );
+            SafeGUI.set(inv, 45, new ItemBuilder(Material.SPECTRAL_ARROW)
+                    .name("§6✦ §fPage précédente §6✦")
+                    .lore("§8• §7Page " + (page - 1))
+                    .action("list_prev")
+                    .target(type + ":" + (page - 1))
+                    .build());
         }
 
         if (page < maxPage) {
-
-            SafeGUI.set(
-                    inv,
-                    53,
-                    new ItemBuilder(Material.ARROW)
-                            .name("§ePage suivante")
-                            .lore(
-                                    "§7Page " + (page + 1)
-                            )
-                            .action("list_next")
-                            .target(type + ":" + (page + 1))
-                            .build()
-            );
+            SafeGUI.set(inv, 53, new ItemBuilder(Material.SPECTRAL_ARROW)
+                    .name("§6✦ §fPage suivante §6✦")
+                    .lore("§8• §7Page " + (page + 1))
+                    .action("list_next")
+                    .target(type + ":" + (page + 1))
+                    .build());
         }
 
-        SafeGUI.set(
-                inv,
-                49,
-                new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
-                        .lore(
-                                "§7Bureau des Entreprises"
-                        )
-                        .action("back_main")
-                        .build()
-        );
+        SafeGUI.set(inv, 49, new ItemBuilder(Material.BARRIER)
+                .name("§6✦ §fRetour §6✦")
+                .lore("§8• §7Bureau des Entreprises")
+                .action("back_main")
+                .build());
 
         p.openInventory(inv);
     }
 
     private static String shortText(String text, int max) {
-
-        if (text == null || text.isBlank()) {
-            return "Inconnu";
-        }
-
+        if (text == null || text.isBlank()) return "Inconnu";
         String clean = text.replaceAll("§.", "").trim();
-
-        if (clean.length() <= max) {
-            return clean;
-        }
-
+        if (clean.length() <= max) return clean;
         return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 
     private static String shortDate(long time) {
-
         String date = TimeUtil.formatDate(time);
-
-        if (date == null || date.equalsIgnoreCase("Jamais")) {
-            return "Aucune";
-        }
-
-        if (date.length() <= 10) {
-            return date;
-        }
-
+        if (date == null || date.equalsIgnoreCase("Jamais")) return "Aucune";
+        if (date.length() <= 10) return date;
         return date.substring(0, 10);
     }
 }
