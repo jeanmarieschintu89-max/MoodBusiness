@@ -19,23 +19,13 @@ import org.bukkit.inventory.Inventory;
 
 public final class RequestDetailGUI {
 
-    public static final String TITLE =
-            "§6✦ §8Demande §6✦";
+    public static final String TITLE = GuiTitle.of("Demande");
 
     private RequestDetailGUI() {}
 
-    public static void open(
-            Player p,
-            BusinessRequest request
-    ) {
+    public static void open(Player p, BusinessRequest request) {
 
-        Inventory inv =
-                Bukkit.createInventory(
-                        null,
-                        45,
-                        TITLE
-                );
-
+        Inventory inv = Bukkit.createInventory(null, 45, TITLE);
         SafeGUI.fill(inv);
 
         SafeGUI.set(
@@ -57,20 +47,12 @@ public final class RequestDetailGUI {
                         .build()
         );
 
-        Business business =
-                BusinessManager.getMemberBusiness(
-                        p.getUniqueId()
-                );
+        Business business = BusinessManager.getMemberBusiness(p.getUniqueId());
 
         if (business != null
-                && BusinessManager.canManageContracts(
-                p,
-                business
-        )
+                && BusinessManager.canManageContracts(p, business)
                 && request.getStatus().isOpen()
-                && !request.getCreatorUuid().equals(
-                p.getUniqueId()
-        )) {
+                && !request.getCreatorUuid().equals(p.getUniqueId())) {
 
             SafeGUI.set(
                     inv,
@@ -91,9 +73,7 @@ public final class RequestDetailGUI {
             );
         }
 
-        if (request.getCreatorUuid().equals(
-                p.getUniqueId()
-        )) {
+        if (request.getCreatorUuid().equals(p.getUniqueId())) {
 
             SafeGUI.set(
                     inv,
@@ -111,7 +91,6 @@ public final class RequestDetailGUI {
             );
 
             if (request.getStatus().isOpen()) {
-
                 SafeGUI.set(
                         inv,
                         24,
@@ -133,11 +112,9 @@ public final class RequestDetailGUI {
         SafeGUI.set(
                 inv,
                 40,
-                new ItemBuilder(Material.ARROW)
+                new ItemBuilder(Material.BARRIER)
                         .name("§6✦ §fRetour §6✦")
-                        .lore(
-                                "§8• §7Menu demandes"
-                        )
+                        .lore("§8• §7Menu demandes")
                         .action("open_requests")
                         .build()
         );
@@ -145,41 +122,17 @@ public final class RequestDetailGUI {
         p.openInventory(inv);
     }
 
-    private static String shortText(
-            String text,
-            int max
-    ) {
-
-        if (text == null || text.isBlank()) {
-            return "Non renseigné";
-        }
-
-        String clean =
-                text.replaceAll("§.", "")
-                        .trim();
-
-        if (clean.length() <= max) {
-            return clean;
-        }
-
+    private static String shortText(String text, int max) {
+        if (text == null || text.isBlank()) return "Non renseigné";
+        String clean = text.replaceAll("§.", "").trim();
+        if (clean.length() <= max) return clean;
         return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 
-    private static String shortDate(
-            long time
-    ) {
-
-        String date =
-                TimeUtil.formatDate(time);
-
-        if (date == null || date.equalsIgnoreCase("Jamais")) {
-            return "Aucune";
-        }
-
-        if (date.length() <= 10) {
-            return date;
-        }
-
+    private static String shortDate(long time) {
+        String date = TimeUtil.formatDate(time);
+        if (date == null || date.equalsIgnoreCase("Jamais")) return "Aucune";
+        if (date.length() <= 10) return date;
         return date.substring(0, 10);
     }
 }
