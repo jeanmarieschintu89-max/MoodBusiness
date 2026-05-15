@@ -44,6 +44,10 @@ public final class ContractListGUI {
         open(p, TITLE_BUSINESS, ContractManager.getByBusiness(business));
     }
 
+    public static void openBusiness(Player p, String ignoredBusinessId) {
+        openBusiness(p);
+    }
+
     public static void openLitiges(Player p) {
         open(p, TITLE_LITIGE, ContractManager.getLitiges());
     }
