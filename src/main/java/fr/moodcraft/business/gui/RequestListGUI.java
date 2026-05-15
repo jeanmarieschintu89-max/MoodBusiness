@@ -21,10 +21,10 @@ import java.util.List;
 public final class RequestListGUI {
 
     public static final String TITLE_PUBLIC =
-            "§6✦ §8Demandes publiques §6✦";
+            GuiTitle.of("Demandes publiques");
 
     public static final String TITLE_MY =
-            "§6✦ §8Mes demandes §6✦";
+            GuiTitle.of("Mes demandes");
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -35,61 +35,24 @@ public final class RequestListGUI {
 
     private RequestListGUI() {}
 
-    public static void openPublic(
-            Player p
-    ) {
-
-        open(
-                p,
-                TITLE_PUBLIC,
-                RequestManager.getPublicOpen(),
-                false
-        );
+    public static void openPublic(Player p) {
+        open(p, TITLE_PUBLIC, RequestManager.getPublicOpen(), false);
     }
 
-    public static void openMy(
-            Player p
-    ) {
-
-        open(
-                p,
-                TITLE_MY,
-                RequestManager.getByPlayer(
-                        p.getUniqueId()
-                ),
-                true
-        );
+    public static void openMy(Player p) {
+        open(p, TITLE_MY, RequestManager.getByPlayer(p.getUniqueId()), true);
     }
 
-    private static void open(
-            Player p,
-            String title,
-            List<BusinessRequest> list,
-            boolean ownList
-    ) {
+    private static void open(Player p, String title, List<BusinessRequest> list, boolean ownList) {
 
-        Inventory inv =
-                Bukkit.createInventory(
-                        null,
-                        54,
-                        title
-                );
-
+        Inventory inv = Bukkit.createInventory(null, 54, title);
         SafeGUI.fill(inv);
 
         SafeGUI.set(
                 inv,
                 4,
-                new ItemBuilder(
-                        ownList
-                                ? Material.WRITABLE_BOOK
-                                : Material.BOOK
-                )
-                        .name(
-                                ownList
-                                        ? "§6✦ §fMes demandes §6✦"
-                                        : "§6✦ §fDemandes publiques §6✦"
-                        )
+                new ItemBuilder(ownList ? Material.WRITABLE_BOOK : Material.BOOK)
+                        .name(ownList ? "§6✦ §fMes demandes §6✦" : "§6✦ §fDemandes publiques §6✦")
                         .lore(
                                 "§8• §7Total : §e" + list.size(),
                                 "§8• §7Service : §aMood§6Craft",
@@ -112,11 +75,7 @@ public final class RequestListGUI {
             SafeGUI.set(
                     inv,
                     SLOTS[index],
-                    new ItemBuilder(
-                            request.getStatus().isOpen()
-                                    ? Material.PAPER
-                                    : Material.GRAY_DYE
-                    )
+                    new ItemBuilder(request.getStatus().isOpen() ? Material.PAPER : Material.GRAY_DYE)
                             .name(shortName(request.getTitle()))
                             .lore(
                                     "§8• §7Auteur : §e" + shortText(request.getCreatorName(), 14),
@@ -142,11 +101,9 @@ public final class RequestListGUI {
         SafeGUI.set(
                 inv,
                 49,
-                new ItemBuilder(Material.ARROW)
+                new ItemBuilder(Material.BARRIER)
                         .name("§6✦ §fRetour §6✦")
-                        .lore(
-                                "§8• §7Menu demandes"
-                        )
+                        .lore("§8• §7Menu demandes")
                         .action("open_requests")
                         .build()
         );
@@ -154,25 +111,17 @@ public final class RequestListGUI {
         p.openInventory(inv);
     }
 
-    private static String shortName(
-            String text
-    ) {
-
+    private static String shortName(String text) {
         return "§6✦ §f" + shortText(text, 22) + " §6✦";
     }
 
-    private static String shortText(
-            String text,
-            int max
-    ) {
+    private static String shortText(String text, int max) {
 
         if (text == null || text.isBlank()) {
             return "Sans nom";
         }
 
-        String clean =
-                text.replaceAll("§.", "")
-                        .trim();
+        String clean = text.replaceAll("§.", "").trim();
 
         if (clean.length() <= max) {
             return clean;
@@ -181,12 +130,9 @@ public final class RequestListGUI {
         return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 
-    private static String shortDate(
-            long time
-    ) {
+    private static String shortDate(long time) {
 
-        String date =
-                TimeUtil.formatDate(time);
+        String date = TimeUtil.formatDate(time);
 
         if (date == null || date.equalsIgnoreCase("Jamais")) {
             return "Aucune";
