@@ -19,11 +19,8 @@ import java.util.List;
 
 public final class ApplicationListGUI {
 
-    public static final String TITLE_MY =
-            "§6✦ §8Mes Candidatures §6✦";
-
-    public static final String TITLE_RECEIVED =
-            "§6✦ §8Candidatures Reçues §6✦";
+    public static final String TITLE_MY = GuiTitle.of("Mes Candidatures");
+    public static final String TITLE_RECEIVED = GuiTitle.of("Candidatures Reçues");
 
     private static final int[] SLOTS = {
             10, 11, 12, 13, 14, 15, 16,
@@ -34,49 +31,17 @@ public final class ApplicationListGUI {
 
     private ApplicationListGUI() {}
 
-    public static void openMy(
-            Player p
-    ) {
-
-        open(
-                p,
-                TITLE_MY,
-                ApplicationManager.getByApplicant(
-                        p.getUniqueId()
-                ),
-                false
-        );
+    public static void openMy(Player p) {
+        open(p, TITLE_MY, ApplicationManager.getByApplicant(p.getUniqueId()), false);
     }
 
-    public static void openReceived(
-            Player p,
-            String businessId
-    ) {
-
-        open(
-                p,
-                TITLE_RECEIVED,
-                ApplicationManager.getPendingByBusiness(
-                        businessId
-                ),
-                true
-        );
+    public static void openReceived(Player p, String businessId) {
+        open(p, TITLE_RECEIVED, ApplicationManager.getPendingByBusiness(businessId), true);
     }
 
-    private static void open(
-            Player p,
-            String title,
-            List<Application> list,
-            boolean manage
-    ) {
+    private static void open(Player p, String title, List<Application> list, boolean manage) {
 
-        Inventory inv =
-                Bukkit.createInventory(
-                        null,
-                        54,
-                        title
-                );
-
+        Inventory inv = Bukkit.createInventory(null, 54, title);
         SafeGUI.fill(inv);
 
         SafeGUI.set(
@@ -85,11 +50,11 @@ public final class ApplicationListGUI {
                 new ItemBuilder(Material.BOOK)
                         .name("§6✦ §fCandidatures §6✦")
                         .lore(
-                                "§7Dossiers: §e" + list.size(),
+                                "§8• §7Dossiers : §e" + list.size(),
                                 "",
                                 manage
-                                        ? "§aGestion autorisée"
-                                        : "§7Lecture personnelle",
+                                        ? "§a✔ §fGestion autorisée"
+                                        : "§8• §7Lecture personnelle",
                                 "",
                                 "§8• §7Stage",
                                 "§8• §7Apprentissage",
@@ -101,51 +66,36 @@ public final class ApplicationListGUI {
         int index = 0;
 
         for (Application application : list) {
+            if (index >= SLOTS.length) break;
 
-            if (index >= SLOTS.length) {
-                break;
-            }
-
-            Material icon =
-                    switch (application.getStatus()) {
-
-                        case EN_ATTENTE -> Material.PAPER;
-                        case ENTRETIEN -> Material.NAME_TAG;
-                        case ACCEPTEE_STAGE, ACCEPTEE_APPRENTISSAGE -> Material.LIME_DYE;
-                        case REFUSEE -> Material.RED_DYE;
-                        case ANNULEE, EXPIREE -> Material.GRAY_DYE;
-                    };
+            Material icon = switch (application.getStatus()) {
+                case EN_ATTENTE -> Material.PAPER;
+                case ENTRETIEN -> Material.NAME_TAG;
+                case ACCEPTEE_STAGE, ACCEPTEE_APPRENTISSAGE -> Material.LIME_DYE;
+                case REFUSEE -> Material.RED_DYE;
+                case ANNULEE, EXPIREE -> Material.GRAY_DYE;
+            };
 
             SafeGUI.set(
                     inv,
                     SLOTS[index],
                     new ItemBuilder(icon)
-                            .name(
-                                    "§6✦ §f"
-                                            + shortText(
-                                            manage
-                                                    ? application.getApplicantName()
-                                                    : application.getBusinessName(),
-                                            18
-                                    )
-                                            + " §6✦"
-                            )
+                            .name("§6✦ §f" + shortText(
+                                    manage ? application.getApplicantName() : application.getBusinessName(),
+                                    18
+                            ) + " §6✦")
                             .lore(
-                                    "§7Entreprise: §e" + shortText(application.getBusinessName(), 16),
-                                    "§7Joueur: §e" + shortText(application.getApplicantName(), 16),
-                                    "§7Type: " + application.getType().getDisplayName(),
-                                    "§7État: " + application.getStatus().getDisplayName(),
-                                    "§7Créée: §f" + shortDate(application.getCreatedAt()),
+                                    "§8• §7Entreprise : §e" + shortText(application.getBusinessName(), 16),
+                                    "§8• §7Joueur : §e" + shortText(application.getApplicantName(), 16),
+                                    "§8• §7Type : " + application.getType().getDisplayName(),
+                                    "§8• §7État : " + application.getStatus().getDisplayName(),
+                                    "§8• §7Créée : §f" + shortDate(application.getCreatedAt()),
                                     "",
                                     manage
-                                            ? "§eClique pour examiner"
+                                            ? "§e➜ §fExaminer"
                                             : "§8• §7Dossier personnel"
                             )
-                            .action(
-                                    manage
-                                            ? "application_review"
-                                            : "coming_soon"
-                            )
+                            .action(manage ? "application_review" : "coming_soon")
                             .target(application.getId())
                             .build()
             );
@@ -157,10 +107,8 @@ public final class ApplicationListGUI {
                 inv,
                 49,
                 new ItemBuilder(Material.BARRIER)
-                        .name("§cRetour")
-                        .lore(
-                                "§7Menu candidatures"
-                        )
+                        .name("§6✦ §fRetour §6✦")
+                        .lore("§8• §7Menu candidatures")
                         .action("open_applications")
                         .build()
         );
@@ -168,44 +116,17 @@ public final class ApplicationListGUI {
         p.openInventory(inv);
     }
 
-    private static String shortText(
-            String text,
-            int max
-    ) {
-
-        if (text == null || text.isBlank()) {
-            return "Inconnu";
-        }
-
-        String clean =
-                text.replaceAll("§.", "")
-                        .trim();
-
-        if (clean.length() <= max) {
-            return clean;
-        }
-
-        return clean.substring(
-                0,
-                Math.max(1, max - 3)
-        ) + "...";
+    private static String shortText(String text, int max) {
+        if (text == null || text.isBlank()) return "Inconnu";
+        String clean = text.replaceAll("§.", "").trim();
+        if (clean.length() <= max) return clean;
+        return clean.substring(0, Math.max(1, max - 3)) + "...";
     }
 
-    private static String shortDate(
-            long time
-    ) {
-
-        String date =
-                TimeUtil.formatDate(time);
-
-        if (date == null || date.equalsIgnoreCase("Jamais")) {
-            return "Aucune";
-        }
-
-        if (date.length() <= 10) {
-            return date;
-        }
-
+    private static String shortDate(long time) {
+        String date = TimeUtil.formatDate(time);
+        if (date == null || date.equalsIgnoreCase("Jamais")) return "Aucune";
+        if (date.length() <= 10) return date;
         return date.substring(0, 10);
     }
 }
