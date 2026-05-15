@@ -35,6 +35,10 @@ public final class BusinessDashboardGUI {
         int contracts = ContractManager.getByBusiness(business).size();
         int requests = RequestManager.getPublicOpen().size();
 
+        boolean canClose = business.isOwner(p.getUniqueId())
+                || role == BusinessRole.GERANT
+                || p.hasPermission("moodbusiness.staff.suspend");
+
         SafeGUI.set(
                 inv,
                 4,
@@ -104,6 +108,22 @@ public final class BusinessDashboardGUI {
                         "§e➜ §fChercher une mission"
                 )
                 .action("dashboard_requests")
+                .target(business.getId())
+                .build());
+
+        SafeGUI.set(inv, 31, new ItemBuilder(canClose ? Material.LAVA_BUCKET : Material.GRAY_DYE)
+                .name("§c✦ §fFermer l’entreprise §c✦")
+                .lore(
+                        "§8• §7Archive cette entreprise",
+                        "§8• §7Banque vide requise",
+                        "§8• §7Aucun contrat ouvert",
+                        "§8• §7Logs conservés",
+                        "",
+                        canClose
+                                ? "§c✖ §fOuvrir la confirmation"
+                                : "§8• §7Réservé au dirigeant ou gérant"
+                )
+                .action("dashboard_dissolve")
                 .target(business.getId())
                 .build());
 
