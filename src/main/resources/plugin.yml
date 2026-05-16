@@ -50,6 +50,16 @@ commands:
       - request
     usage: /demandes
 
+  demandesadmin:
+    description: Gestion admin des demandes joueurs.
+    aliases:
+      - demandeadmin
+      - requestadmin
+      - reqadmin
+    usage: /demandesadmin <list|clear> <joueur>
+    permission: moodbusiness.staff
+    permission-message: "§c✖ §fAccès réservé à l'administration économique."
+
   contrat:
     description: Ouvre les contrats du Bureau des Entreprises.
     aliases:
