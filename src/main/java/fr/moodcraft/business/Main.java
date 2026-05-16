@@ -4,6 +4,7 @@ import fr.moodcraft.business.command.BusinessAdminCommand;
 import fr.moodcraft.business.command.BusinessCommand;
 import fr.moodcraft.business.command.BusinessStaffCommand;
 import fr.moodcraft.business.command.ContractCommand;
+import fr.moodcraft.business.command.RequestAdminCommand;
 import fr.moodcraft.business.command.RequestsCommand;
 
 import fr.moodcraft.business.listener.AlertJoinListener;
@@ -40,9 +41,7 @@ import fr.moodcraft.business.storage.RequestStorage;
 import fr.moodcraft.business.util.VaultHook;
 
 import org.bukkit.Bukkit;
-
 import org.bukkit.command.PluginCommand;
-
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
@@ -55,11 +54,8 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
         instance = this;
-
         saveDefaultConfig();
-
         VaultHook.setup();
 
         BusinessStorage.init();
@@ -73,12 +69,9 @@ public class Main extends JavaPlugin {
         AlertStorage.init();
 
         BusinessManager.init();
-
         registerCommands();
         registerListeners();
-
         PayrollManager.startTask();
-
         AuditLogManager.system("MoodBusiness chargé.");
 
         Bukkit.getConsoleSender().sendMessage("");
@@ -90,7 +83,6 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
         AuditLogManager.system("MoodBusiness arrêté.");
 
         BusinessStorage.save();
@@ -114,23 +106,18 @@ public class Main extends JavaPlugin {
         registerCommand("entrepriseadmin", new BusinessAdminCommand());
         registerCommand("businessstaff", new BusinessStaffCommand());
         registerCommand("demandes", new RequestsCommand());
+        registerCommand("demandesadmin", new RequestAdminCommand());
         registerCommand("contrat", new ContractCommand());
     }
 
-    private void registerCommand(
-            String name,
-            org.bukkit.command.CommandExecutor executor
-    ) {
-
+    private void registerCommand(String name, org.bukkit.command.CommandExecutor executor) {
         PluginCommand command = getCommand(name);
-
         if (command != null) {
             command.setExecutor(executor);
         }
     }
 
     private void registerListeners() {
-
         Bukkit.getPluginManager().registerEvents(new BusinessInventoryGuardListener(), this);
         Bukkit.getPluginManager().registerEvents(new BusinessGUIListener(), this);
         Bukkit.getPluginManager().registerEvents(new BusinessCreationChatListener(), this);
