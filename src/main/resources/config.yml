@@ -101,7 +101,7 @@ bank:
   max-withdraw-without-confirmation: 10000
 
 payroll:
-  enabled: true
+  enabled: false
   interval: MONTHLY
   default-payday: 1
 
