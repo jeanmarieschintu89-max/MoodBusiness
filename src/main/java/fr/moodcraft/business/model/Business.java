@@ -22,11 +22,9 @@ public class Business {
     private final long createdAt;
     private long updatedAt;
 
-    private final Map<UUID, BusinessRole> members =
-            new LinkedHashMap<>();
-
-    private final Map<UUID, String> memberNames =
-            new LinkedHashMap<>();
+    private final Map<UUID, BusinessRole> members = new LinkedHashMap<>();
+    private final Map<UUID, String> memberNames = new LinkedHashMap<>();
+    private final Map<UUID, Double> memberPays = new LinkedHashMap<>();
 
     public Business(
             String id,
@@ -39,7 +37,6 @@ public class Business {
             double creationFee,
             long createdAt
     ) {
-
         this.id = id;
         this.name = name;
         this.ownerUuid = ownerUuid;
@@ -51,217 +48,90 @@ public class Business {
         this.createdAt = createdAt;
         this.updatedAt = createdAt;
 
-        addMember(
-                ownerUuid,
-                ownerName,
-                BusinessRole.DIRIGEANT
-        );
+        addMember(ownerUuid, ownerName, BusinessRole.DIRIGEANT);
     }
 
-    public String getId() {
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public UUID getOwnerUuid() { return ownerUuid; }
+    public String getOwnerName() { return ownerName; }
 
-        return id;
-    }
-
-    public String getName() {
-
-        return name;
-    }
-
-    public UUID getOwnerUuid() {
-
-        return ownerUuid;
-    }
-
-    public String getOwnerName() {
-
-        return ownerName;
-    }
-
-    public void setOwnerName(
-            String ownerName
-    ) {
-
+    public void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
-
-        setMemberName(
-                ownerUuid,
-                ownerName
-        );
-
+        setMemberName(ownerUuid, ownerName);
         touch();
     }
 
-    public BusinessStatus getStatus() {
+    public BusinessStatus getStatus() { return status; }
 
-        return status;
-    }
-
-    public void setStatus(
-            BusinessStatus status
-    ) {
-
+    public void setStatus(BusinessStatus status) {
         this.status = status;
         touch();
     }
 
-    public double getBalance() {
+    public double getBalance() { return balance; }
 
-        return balance;
-    }
-
-    public void setBalance(
-            double balance
-    ) {
-
-        this.balance =
-                Math.max(
-                        0,
-                        balance
-                );
-
+    public void setBalance(double balance) {
+        this.balance = Math.max(0, balance);
         touch();
     }
 
-    public int getCreationIndex() {
+    public int getCreationIndex() { return creationIndex; }
+    public double getCreationFee() { return creationFee; }
+    public long getCreatedAt() { return createdAt; }
+    public long getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(long updatedAt) { this.updatedAt = updatedAt; }
+    public Map<UUID, BusinessRole> getMembers() { return members; }
+    public Map<UUID, String> getMemberNames() { return memberNames; }
+    public Map<UUID, Double> getMemberPays() { return memberPays; }
 
-        return creationIndex;
+    public BusinessRole getRole(UUID uuid) { return members.get(uuid); }
+
+    public String getMemberName(UUID uuid) {
+        return memberNames.getOrDefault(uuid, "Inconnu");
     }
 
-    public double getCreationFee() {
-
-        return creationFee;
-    }
-
-    public long getCreatedAt() {
-
-        return createdAt;
-    }
-
-    public long getUpdatedAt() {
-
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(
-            long updatedAt
-    ) {
-
-        this.updatedAt = updatedAt;
-    }
-
-    public Map<UUID, BusinessRole> getMembers() {
-
-        return members;
-    }
-
-    public Map<UUID, String> getMemberNames() {
-
-        return memberNames;
-    }
-
-    public BusinessRole getRole(
-            UUID uuid
-    ) {
-
-        return members.get(uuid);
-    }
-
-    public String getMemberName(
-            UUID uuid
-    ) {
-
-        return memberNames.getOrDefault(
-                uuid,
-                "Inconnu"
-        );
-    }
-
-    public void setMemberName(
-            UUID uuid,
-            String name
-    ) {
-
-        memberNames.put(
-                uuid,
-                name != null
-                        ? name
-                        : "Inconnu"
-        );
-
+    public void setMemberName(UUID uuid, String name) {
+        memberNames.put(uuid, name != null ? name : "Inconnu");
         touch();
     }
 
-    public void addMember(
-            UUID uuid,
-            String name,
-            BusinessRole role
-    ) {
-
-        members.put(
-                uuid,
-                role
-        );
-
-        memberNames.put(
-                uuid,
-                name != null
-                        ? name
-                        : "Inconnu"
-        );
-
+    public void addMember(UUID uuid, String name, BusinessRole role) {
+        members.put(uuid, role);
+        memberNames.put(uuid, name != null ? name : "Inconnu");
+        memberPays.putIfAbsent(uuid, 0.0);
         touch();
     }
 
-    public void setRole(
-            UUID uuid,
-            BusinessRole role
-    ) {
-
-        members.put(
-                uuid,
-                role
-        );
-
+    public void setRole(UUID uuid, BusinessRole role) {
+        members.put(uuid, role);
+        memberPays.putIfAbsent(uuid, 0.0);
         touch();
     }
 
-    public void removeMember(
-            UUID uuid
-    ) {
-
-        if (uuid.equals(ownerUuid)) {
-            return;
-        }
-
+    public void removeMember(UUID uuid) {
+        if (uuid.equals(ownerUuid)) return;
         members.remove(uuid);
         memberNames.remove(uuid);
-
+        memberPays.remove(uuid);
         touch();
     }
 
-    public boolean isOwner(
-            UUID uuid
-    ) {
-
-        return ownerUuid.equals(uuid);
+    public double getMemberPay(UUID uuid) {
+        return memberPays.getOrDefault(uuid, 0.0);
     }
 
-    public boolean isMember(
-            UUID uuid
-    ) {
-
-        return members.containsKey(uuid);
+    public void setMemberPay(UUID uuid, double amount) {
+        if (uuid == null) return;
+        memberPays.put(uuid, Math.max(0, amount));
+        touch();
     }
 
-    public boolean isActive() {
-
-        return status == BusinessStatus.ACTIVE;
-    }
+    public boolean isOwner(UUID uuid) { return ownerUuid.equals(uuid); }
+    public boolean isMember(UUID uuid) { return members.containsKey(uuid); }
+    public boolean isActive() { return status == BusinessStatus.ACTIVE; }
 
     private void touch() {
-
-        updatedAt =
-                System.currentTimeMillis();
+        updatedAt = System.currentTimeMillis();
     }
 }
