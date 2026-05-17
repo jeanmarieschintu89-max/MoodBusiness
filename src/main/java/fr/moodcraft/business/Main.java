@@ -8,7 +8,6 @@ import fr.moodcraft.business.command.RequestAdminCommand;
 import fr.moodcraft.business.command.RequestsCommand;
 
 import fr.moodcraft.business.listener.AlertJoinListener;
-import fr.moodcraft.business.listener.ApplicationChatListener;
 import fr.moodcraft.business.listener.BankChatListener;
 import fr.moodcraft.business.listener.BankGUIListener;
 import fr.moodcraft.business.listener.BusinessAdminGUIListener;
@@ -19,23 +18,17 @@ import fr.moodcraft.business.listener.BusinessGUIListener;
 import fr.moodcraft.business.listener.BusinessInventoryGuardListener;
 import fr.moodcraft.business.listener.ContractChatListener;
 import fr.moodcraft.business.listener.ContractGUIListener;
-import fr.moodcraft.business.listener.PayrollChatListener;
-import fr.moodcraft.business.listener.RecruitmentChatListener;
 import fr.moodcraft.business.listener.RequestChatListener;
 import fr.moodcraft.business.listener.RequestGUIListener;
 
 import fr.moodcraft.business.manager.AuditLogManager;
 import fr.moodcraft.business.manager.BusinessManager;
-import fr.moodcraft.business.manager.PayrollManager;
 
 import fr.moodcraft.business.storage.AlertStorage;
-import fr.moodcraft.business.storage.ApplicationStorage;
 import fr.moodcraft.business.storage.AuditLogStorage;
 import fr.moodcraft.business.storage.BusinessStorage;
 import fr.moodcraft.business.storage.ContractStorage;
 import fr.moodcraft.business.storage.FinanceStorage;
-import fr.moodcraft.business.storage.OfferStorage;
-import fr.moodcraft.business.storage.PayrollStorage;
 import fr.moodcraft.business.storage.RequestStorage;
 
 import fr.moodcraft.business.util.VaultHook;
@@ -59,19 +52,15 @@ public class Main extends JavaPlugin {
         VaultHook.setup();
 
         BusinessStorage.init();
-        ApplicationStorage.init();
         RequestStorage.init();
-        OfferStorage.init();
         ContractStorage.init();
         FinanceStorage.init();
-        PayrollStorage.init();
         AuditLogStorage.init();
         AlertStorage.init();
 
         BusinessManager.init();
         registerCommands();
         registerListeners();
-        PayrollManager.startTask();
         AuditLogManager.system("MoodBusiness chargé.");
 
         Bukkit.getConsoleSender().sendMessage("");
@@ -86,12 +75,9 @@ public class Main extends JavaPlugin {
         AuditLogManager.system("MoodBusiness arrêté.");
 
         BusinessStorage.save();
-        ApplicationStorage.save();
         RequestStorage.save();
-        OfferStorage.save();
         ContractStorage.save();
         FinanceStorage.save();
-        PayrollStorage.save();
         AuditLogStorage.save();
         AlertStorage.save();
 
@@ -124,15 +110,12 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BusinessDissolveGUIListener(), this);
         Bukkit.getPluginManager().registerEvents(new BusinessAdminGUIListener(), this);
         Bukkit.getPluginManager().registerEvents(new BusinessEmployeeManageListener(), this);
-        Bukkit.getPluginManager().registerEvents(new RecruitmentChatListener(), this);
-        Bukkit.getPluginManager().registerEvents(new ApplicationChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new RequestGUIListener(), this);
         Bukkit.getPluginManager().registerEvents(new RequestChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new ContractGUIListener(), this);
         Bukkit.getPluginManager().registerEvents(new ContractChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new BankGUIListener(), this);
         Bukkit.getPluginManager().registerEvents(new BankChatListener(), this);
-        Bukkit.getPluginManager().registerEvents(new PayrollChatListener(), this);
         Bukkit.getPluginManager().registerEvents(new AlertJoinListener(), this);
     }
 }
