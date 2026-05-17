@@ -2,15 +2,12 @@ package fr.moodcraft.business.gui;
 
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRole;
-
 import fr.moodcraft.business.util.ItemBuilder;
 import fr.moodcraft.business.util.SafeGUI;
-
+import fr.moodcraft.business.util.VaultHook;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-
 import org.bukkit.entity.Player;
-
 import org.bukkit.inventory.Inventory;
 
 import java.util.UUID;
@@ -22,7 +19,6 @@ public final class BusinessEmployeeManageGUI {
     private BusinessEmployeeManageGUI() {}
 
     public static void open(Player p, Business business, UUID targetUuid) {
-
         Inventory inv = Bukkit.createInventory(null, 27, TITLE);
         SafeGUI.fill(inv);
 
@@ -35,20 +31,18 @@ public final class BusinessEmployeeManageGUI {
                 .lore(
                         "§8• §7Entreprise : §e" + shortText(business.getName(), 18),
                         "§8• §7Rôle : " + (role != null ? role.getDisplayName() : "§7Aucun"),
-                        owner ? "§8• §7Dirigeant officiel" : "§8• §7Membre de l'entreprise",
+                        owner ? "§8• §7Dirigeant officiel" : "§8• §7Paye prévue : §e" + VaultHook.format(business.getMemberPay(targetUuid)),
                         "",
                         owner ? "§e➜ §fFiche en lecture seule" : "§e➜ §fChoisis une action"
                 )
                 .build());
 
         if (!owner) {
-            SafeGUI.set(inv, 11, new ItemBuilder(Material.NAME_TAG)
+            SafeGUI.set(inv, 10, new ItemBuilder(Material.NAME_TAG)
                     .name("§6✦ §fChanger le rôle §6✦")
                     .lore(
-                            "§8• §7Gérant",
-                            "§8• §7Trésorier",
                             "§8• §7Employé",
-                            "§8• §7Apprenti / stagiaire",
+                            "§8• §7Gérant",
                             "",
                             "§e➜ §fChoisir un rôle"
                     )
@@ -56,7 +50,20 @@ public final class BusinessEmployeeManageGUI {
                     .target(business.getId() + ":" + targetUuid)
                     .build());
 
-            SafeGUI.set(inv, 15, new ItemBuilder(Material.REDSTONE_BLOCK)
+            SafeGUI.set(inv, 13, new ItemBuilder(Material.GOLD_INGOT)
+                    .name("§6✦ §fModifier la paye §6✦")
+                    .lore(
+                            "§8• §7Paye actuelle : §e" + VaultHook.format(business.getMemberPay(targetUuid)),
+                            "§8• §7Modifie le montant prévu",
+                            "§8• §7Commande guidée dans le chat",
+                            "",
+                            "§e➜ §fVoir la commande"
+                    )
+                    .action("employee_pay_help")
+                    .target(business.getId() + ":" + targetUuid)
+                    .build());
+
+            SafeGUI.set(inv, 16, new ItemBuilder(Material.REDSTONE_BLOCK)
                     .name("§c✦ §fLicencier §c✦")
                     .lore(
                             "§8• §7Retire ce membre",
