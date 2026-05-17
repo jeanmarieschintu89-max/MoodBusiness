@@ -73,28 +73,14 @@ public final class BusinessMainGUI {
         }
 
         SafeGUI.set(inv, 22,
-                new ItemBuilder(Material.COMPASS)
-                        .name("§6✦ §fTrouver une mission §6✦")
-                        .lore(
-                                "§8• §7Voir les missions publiées.",
-                                "§8• §7Une entreprise peut les prendre.",
-                                "§8• §7Contrat créé automatiquement.",
-                                "",
-                                "§e➜ §fOuvrir les missions"
-                        )
-                        .action("open_requests")
-                        .build()
-        );
-
-        SafeGUI.set(inv, 24,
                 new ItemBuilder(Material.WRITABLE_BOOK)
-                        .name("§6✦ §fPublier une mission §6✦")
+                        .name("§6✦ §fMissions §6✦")
                         .lore(
-                                "§8• §7Demander un travail à une entreprise.",
-                                "§8• §7Titre, description, prix, délai.",
-                                "§8• §7L'argent sera sécurisé au contrat.",
+                                "§8• §7Publier une mission.",
+                                "§8• §7Voir mes missions.",
+                                "§8• §7Prendre une mission disponible.",
                                 "",
-                                "§e➜ §fCréer une mission"
+                                "§e➜ §fOuvrir le bureau des missions"
                         )
                         .action("open_requests")
                         .build()
