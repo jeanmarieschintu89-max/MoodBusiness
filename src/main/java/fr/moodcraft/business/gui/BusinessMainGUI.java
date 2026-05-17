@@ -32,7 +32,7 @@ public final class BusinessMainGUI {
                         .name("§6✦ §fBureau des Entreprises §6✦")
                         .lore(
                                 "§8• §7Créer une entreprise.",
-                                "§8• §7Publier une mission.",
+                                "§8• §7Demander un service.",
                                 "§8• §7Les entreprises prennent les missions.",
                                 "",
                                 "§e➜ §fSimple, direct, utile"
@@ -74,13 +74,14 @@ public final class BusinessMainGUI {
 
         SafeGUI.set(inv, 22,
                 new ItemBuilder(Material.WRITABLE_BOOK)
-                        .name("§6✦ §fPublier une mission §6✦")
+                        .name("§6✦ §fDemander un service §6✦")
                         .lore(
-                                "§8• §7Demander un travail à une entreprise.",
-                                "§8• §7Titre, description, prix, délai.",
+                                "§8• §7Créer une demande à une entreprise.",
+                                "§8• §7Construction, ressources, aide ou autre.",
+                                "§8• §7Prix et délai choisis par le joueur.",
                                 "§8• §7L'argent sera sécurisé au contrat.",
                                 "",
-                                "§e➜ §fCréer une mission"
+                                "§e➜ §fPublier la mission"
                         )
                         .action("request_create")
                         .build()
