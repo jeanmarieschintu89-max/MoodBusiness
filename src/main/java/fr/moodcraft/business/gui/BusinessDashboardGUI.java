@@ -61,16 +61,16 @@ public final class BusinessDashboardGUI {
                 .target(business.getId())
                 .build());
 
-        SafeGUI.set(inv, 22, new ItemBuilder(Material.WRITABLE_BOOK)
-                .name("§6✦ §fMissions §6✦")
+        SafeGUI.set(inv, 22, new ItemBuilder(Material.COMPASS)
+                .name("§6✦ §fPrendre une mission §6✦")
                 .lore(
-                        "§8• §7Missions en cours : §e" + contracts,
                         "§8• §7Missions disponibles : §e" + missions,
-                        "§8• §7Prendre, terminer, suivre",
+                        "§8• §7Choisir une mission ouverte",
+                        "§8• §7Contrat créé automatiquement",
                         "",
-                        "§e➜ §fOuvrir les missions"
+                        "§e➜ §fVoir les missions disponibles"
                 )
-                .action("dashboard_requests")
+                .action("request_public_list")
                 .target(business.getId())
                 .build());
 
@@ -87,7 +87,20 @@ public final class BusinessDashboardGUI {
                 .target(business.getId())
                 .build());
 
-        SafeGUI.set(inv, 31, new ItemBuilder(canClose ? Material.LAVA_BUCKET : Material.GRAY_DYE)
+        SafeGUI.set(inv, 30, new ItemBuilder(Material.WRITABLE_BOOK)
+                .name("§6✦ §fMissions en cours §6✦")
+                .lore(
+                        "§8• §7Missions de l'entreprise : §e" + contracts,
+                        "§8• §7Suivre ou terminer une mission",
+                        "§8• §7Voir les missions déjà prises",
+                        "",
+                        "§e➜ §fVoir les missions en cours"
+                )
+                .action("dashboard_contracts")
+                .target(business.getId())
+                .build());
+
+        SafeGUI.set(inv, 32, new ItemBuilder(canClose ? Material.LAVA_BUCKET : Material.GRAY_DYE)
                 .name("§c✦ §fFermer l’entreprise §c✦")
                 .lore(
                         "§8• §7Archive cette entreprise",
