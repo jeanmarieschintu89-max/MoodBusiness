@@ -43,15 +43,17 @@ commands:
     permission-message: "§c✖ §fAccès réservé à l'administration économique."
 
   demandes:
-    description: Ouvre les demandes du Bureau des Entreprises.
+    description: Ouvre les missions du Bureau des Entreprises.
     aliases:
       - demande
+      - missions
+      - mission
       - requests
       - request
     usage: /demandes
 
   demandesadmin:
-    description: Gestion admin des demandes joueurs.
+    description: Gestion admin des missions joueurs.
     aliases:
       - demandeadmin
       - requestadmin
@@ -61,12 +63,20 @@ commands:
     permission-message: "§c✖ §fAccès réservé à l'administration économique."
 
   contrat:
-    description: Ouvre les contrats du Bureau des Entreprises.
+    description: Ouvre les missions en cours du Bureau des Entreprises.
     aliases:
       - contrats
       - contract
       - contracts
     usage: /contrat
+
+  valider:
+    description: Valider une mission terminée.
+    usage: /valider <idMission>
+
+  refuser:
+    description: Refuser une mission terminée et ouvrir un litige.
+    usage: /refuser <idMission> [raison]
 
 permissions:
   moodbusiness.create:
