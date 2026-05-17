@@ -93,7 +93,11 @@ public class Main extends JavaPlugin {
         registerCommand("businessstaff", new BusinessStaffCommand());
         registerCommand("demandes", new RequestsCommand());
         registerCommand("demandesadmin", new RequestAdminCommand());
-        registerCommand("contrat", new ContractCommand());
+        ContractCommand contractCommand = new ContractCommand();
+        registerCommand("contrat", contractCommand);
+        registerCommand("valider", contractCommand);
+        registerCommand("refuser", contractCommand);
+        registerCommand("litige", contractCommand);
     }
 
     private void registerCommand(String name, org.bukkit.command.CommandExecutor executor) {
