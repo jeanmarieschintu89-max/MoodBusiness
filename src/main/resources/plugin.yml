@@ -78,6 +78,10 @@ commands:
     description: Refuser une mission terminée et ouvrir un litige.
     usage: /refuser <idMission> [raison]
 
+  litige:
+    description: Signaler un problème sur une mission et ouvrir un litige.
+    usage: /litige <idMission> [raison]
+
 permissions:
   moodbusiness.create:
     description: Permet de créer une entreprise.
