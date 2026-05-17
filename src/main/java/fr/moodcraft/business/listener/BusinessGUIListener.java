@@ -10,6 +10,8 @@ import fr.moodcraft.business.gui.BusinessRoleAssignGUI;
 import fr.moodcraft.business.gui.BusinessStaffGUI;
 import fr.moodcraft.business.gui.ContractListGUI;
 import fr.moodcraft.business.gui.ContractMainGUI;
+import fr.moodcraft.business.gui.RequestCategoryGUI;
+import fr.moodcraft.business.gui.RequestListGUI;
 import fr.moodcraft.business.gui.RequestMainGUI;
 
 import fr.moodcraft.business.manager.BusinessManager;
@@ -49,6 +51,10 @@ public class BusinessGUIListener implements Listener {
 
         switch (action) {
             case "business_creation_chat", "main_create" -> BusinessCreationChatListener.start(p);
+
+            case "request_create" -> RequestCategoryGUI.open(p);
+
+            case "request_public_list" -> RequestListGUI.openPublic(p);
 
             case "open_business_dashboard", "owned_info" -> {
                 Business business = BusinessManager.getByName(target);
