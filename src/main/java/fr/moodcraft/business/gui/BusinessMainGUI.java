@@ -33,7 +33,7 @@ public final class BusinessMainGUI {
                         .lore(
                                 "§8• §7Créer une entreprise.",
                                 "§8• §7Publier une mission.",
-                                "§8• §7Prendre une mission.",
+                                "§8• §7Les entreprises prennent les missions.",
                                 "",
                                 "§e➜ §fSimple, direct, utile"
                         )
@@ -83,20 +83,6 @@ public final class BusinessMainGUI {
                                 "§e➜ §fCréer une mission"
                         )
                         .action("request_create")
-                        .build()
-        );
-
-        SafeGUI.set(inv, 24,
-                new ItemBuilder(Material.COMPASS)
-                        .name("§6✦ §fMissions disponibles §6✦")
-                        .lore(
-                                "§8• §7Voir les missions ouvertes.",
-                                "§8• §7Une entreprise peut les prendre.",
-                                "§8• §7Contrat créé automatiquement.",
-                                "",
-                                "§e➜ §fVoir les missions"
-                        )
-                        .action("request_public_list")
                         .build()
         );
 
