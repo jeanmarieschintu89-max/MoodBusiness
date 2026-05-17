@@ -19,41 +19,29 @@ import fr.moodcraft.business.util.ContractBookUtil;
 import fr.moodcraft.business.util.ItemBuilder;
 
 import org.bukkit.entity.Player;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-
 import org.bukkit.event.inventory.InventoryClickEvent;
-
 import org.bukkit.inventory.ItemStack;
 
 public class RequestGUIListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
-
         String title = e.getView().getTitle();
-
-        if (!isRequestTitle(title)) {
-            return;
-        }
+        if (!isRequestTitle(title)) return;
 
         e.setCancelled(true);
 
-        if (!(e.getWhoClicked() instanceof Player p)) {
-            return;
-        }
+        if (!(e.getWhoClicked() instanceof Player p)) return;
 
         ItemStack item = e.getCurrentItem();
         String action = ItemBuilder.getAction(item);
         String target = ItemBuilder.getTarget(item);
 
-        if (action == null) {
-            return;
-        }
+        if (action == null) return;
 
         switch (action) {
-
             case "open_requests" -> RequestMainGUI.open(p);
             case "request_create" -> RequestCategoryGUI.open(p);
 
@@ -72,25 +60,21 @@ public class RequestGUIListener implements Listener {
 
             case "request_detail" -> {
                 BusinessRequest request = RequestManager.get(target);
-
                 if (request == null) {
-                    BusinessMessages.deny(p, "Demandes", "Demande introuvable.");
+                    BusinessMessages.deny(p, "Missions", "Mission introuvable.");
                     return;
                 }
-
                 RequestDetailGUI.open(p, request);
             }
 
             case "request_take" -> {
                 BusinessRequest request = RequestManager.get(target);
-
                 if (request == null) {
-                    BusinessMessages.deny(p, "Demandes", "Demande introuvable.");
+                    BusinessMessages.deny(p, "Missions", "Mission introuvable.");
                     return;
                 }
 
                 Business business = BusinessManager.getMemberBusiness(p.getUniqueId());
-
                 if (business == null) {
                     BusinessMessages.deny(p, "Bureau des Entreprises", "Vous n'êtes dans aucune entreprise.");
                     return;
@@ -100,7 +84,7 @@ public class RequestGUIListener implements Listener {
                 p.closeInventory();
 
                 if (!result.success()) {
-                    BusinessMessages.deny(p, "Prise en charge", result.message());
+                    BusinessMessages.deny(p, "Prise de mission", result.message());
                     return;
                 }
 
@@ -108,7 +92,7 @@ public class RequestGUIListener implements Listener {
 
                 BusinessMessages.success(
                         p,
-                        "Prise en charge",
+                        "Prise de mission",
                         result.message(),
                         "§8• §7Deux livres de preuve ont été générés."
                 );
@@ -116,20 +100,18 @@ public class RequestGUIListener implements Listener {
 
             case "request_cancel" -> {
                 BusinessRequest request = RequestManager.get(target);
-
                 if (request == null) {
-                    BusinessMessages.deny(p, "Demandes", "Demande introuvable.");
+                    BusinessMessages.deny(p, "Missions", "Mission introuvable.");
                     return;
                 }
 
                 RequestManager.RequestResult result = RequestManager.cancel(p, request);
-
                 if (!result.success()) {
-                    BusinessMessages.deny(p, "Demandes", result.message());
+                    BusinessMessages.deny(p, "Missions", result.message());
                     return;
                 }
 
-                BusinessMessages.success(p, "Demandes", result.message());
+                BusinessMessages.success(p, "Missions", result.message());
                 RequestListGUI.openMy(p);
             }
 
@@ -140,13 +122,15 @@ public class RequestGUIListener implements Listener {
     }
 
     private boolean isRequestTitle(String title) {
-        if (title == null) {
-            return false;
-        }
-
+        if (title == null) return false;
         String clean = cleanTitle(title);
 
-        return clean.equals("demandes")
+        return clean.equals("missions")
+                || clean.equals("type de mission")
+                || clean.equals("mes missions")
+                || clean.equals("missions disponibles")
+                || clean.equals("mission")
+                || clean.equals("demandes")
                 || clean.equals("categorie demande")
                 || clean.equals("mes demandes")
                 || clean.equals("demandes publiques")
