@@ -1,18 +1,14 @@
 package fr.moodcraft.business.gui;
 
 import fr.moodcraft.business.manager.BusinessManager;
-
 import fr.moodcraft.business.model.Business;
 import fr.moodcraft.business.model.BusinessRole;
-
 import fr.moodcraft.business.util.ItemBuilder;
 import fr.moodcraft.business.util.SafeGUI;
-
+import fr.moodcraft.business.util.VaultHook;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-
 import org.bukkit.entity.Player;
-
 import org.bukkit.inventory.Inventory;
 
 import java.util.ArrayList;
@@ -33,7 +29,6 @@ public final class BusinessEmployeesGUI {
     private BusinessEmployeesGUI() {}
 
     public static void open(Player p, Business business) {
-
         Inventory inv = Bukkit.createInventory(null, 45, TITLE);
         SafeGUI.fill(inv);
 
@@ -73,6 +68,7 @@ public final class BusinessEmployeesGUI {
 
             List<String> lore = new ArrayList<>();
             lore.add("§8• §7Rôle : " + role.getDisplayName());
+            if (!business.isOwner(uuid)) lore.add("§8• §7Paye prévue : §e" + VaultHook.format(business.getMemberPay(uuid)));
 
             if (business.isOwner(uuid)) {
                 lore.add("§8• §7Dirigeant officiel");
@@ -96,8 +92,8 @@ public final class BusinessEmployeesGUI {
                 .name("§6✦ §fRecruter §6✦")
                 .lore(
                         "§8• §7Ajouter un joueur",
-                        "§8• §7Pseudo dans le chat",
-                        "§8• §7Rôle dans le chat",
+                        "§8• §7Le joueur doit accepter",
+                        "§8• §7Rôle et paye proposés",
                         "",
                         canManage ? "§e➜ §fCommencer le recrutement" : "§c✖ §fAccès limité"
                 )
