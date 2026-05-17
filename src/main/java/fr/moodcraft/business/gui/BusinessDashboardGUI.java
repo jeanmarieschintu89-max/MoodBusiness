@@ -1,6 +1,5 @@
 package fr.moodcraft.business.gui;
 
-import fr.moodcraft.business.manager.ApplicationManager;
 import fr.moodcraft.business.manager.ContractManager;
 import fr.moodcraft.business.manager.RequestManager;
 
@@ -13,9 +12,7 @@ import fr.moodcraft.business.util.VaultHook;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-
 import org.bukkit.entity.Player;
-
 import org.bukkit.inventory.Inventory;
 
 public final class BusinessDashboardGUI {
@@ -25,89 +22,68 @@ public final class BusinessDashboardGUI {
     private BusinessDashboardGUI() {}
 
     public static void open(Player p, Business business) {
-
         Inventory inv = Bukkit.createInventory(null, 45, TITLE);
         SafeGUI.fill(inv);
 
         BusinessRole role = business.getRole(p.getUniqueId());
         int employees = Math.max(0, business.getMembers().size() - 1);
-        int applications = ApplicationManager.getPendingByBusiness(business.getId()).size();
         int contracts = ContractManager.getByBusiness(business).size();
-        int requests = RequestManager.getPublicOpen().size();
+        int missions = RequestManager.getPublicOpen().size();
 
         boolean canClose = business.isOwner(p.getUniqueId())
                 || role == BusinessRole.GERANT
                 || p.hasPermission("moodbusiness.staff.suspend");
 
-        SafeGUI.set(
-                inv,
-                4,
+        SafeGUI.set(inv, 4,
                 new ItemBuilder(Material.LECTERN)
                         .name("§6✦ §f" + shortText(business.getName(), 22) + " §6✦")
                         .lore(
-                                "§8• §7Dirigeant : §e" + shortText(business.getOwnerName(), 18),
+                                "§8• §7Patron : §e" + shortText(business.getOwnerName(), 18),
                                 "§8• §7Ton rôle : " + (role != null ? role.getDisplayName() : "§7Membre"),
                                 "§8• §7État : " + business.getStatus().getDisplayName(),
-                                "§8• §7Banque : §e" + VaultHook.format(business.getBalance()),
+                                "§8• §7Argent : §e" + VaultHook.format(business.getBalance()),
                                 "",
-                                "§e➜ §fTableau de bord simplifié"
+                                "§e➜ §fTableau de bord simple"
                         )
                         .build()
         );
 
-        SafeGUI.set(inv, 19, new ItemBuilder(Material.PLAYER_HEAD)
+        SafeGUI.set(inv, 20, new ItemBuilder(Material.PLAYER_HEAD)
                 .name("§6✦ §fÉquipe §6✦")
                 .lore(
                         "§8• §7Employés : §e" + employees,
-                        "§8• §7Candidatures : §e" + applications,
-                        "§8• §7Rôles et recrutement",
-                        "§8• §7Gestion des membres",
+                        "§8• §7Recruter ou retirer un membre",
+                        "§8• §7Rôles simplifiés côté joueur",
                         "",
-                        "§e➜ §fOuvrir l'équipe"
+                        "§e➜ §fGérer l'équipe"
                 )
                 .action("dashboard_employees")
                 .target(business.getId())
                 .build());
 
-        SafeGUI.set(inv, 21, new ItemBuilder(Material.GOLD_INGOT)
+        SafeGUI.set(inv, 22, new ItemBuilder(Material.WRITABLE_BOOK)
+                .name("§6✦ §fMissions §6✦")
+                .lore(
+                        "§8• §7Missions en cours : §e" + contracts,
+                        "§8• §7Missions disponibles : §e" + missions,
+                        "§8• §7Prendre, terminer, suivre",
+                        "",
+                        "§e➜ §fOuvrir les missions"
+                )
+                .action("dashboard_requests")
+                .target(business.getId())
+                .build());
+
+        SafeGUI.set(inv, 24, new ItemBuilder(Material.GOLD_INGOT)
                 .name("§6✦ §fArgent §6✦")
                 .lore(
                         "§8• §7Solde : §e" + VaultHook.format(business.getBalance()),
-                        "§8• §7Dépôts et retraits",
-                        "§8• §7Primes",
-                        "§8• §7Salaires mensuels",
+                        "§8• §7Déposer ou retirer",
+                        "§8• §7Paiements de missions validées",
                         "",
-                        "§e➜ §fOuvrir la banque"
+                        "§e➜ §fOuvrir l'argent"
                 )
                 .action("dashboard_bank")
-                .target(business.getId())
-                .build());
-
-        SafeGUI.set(inv, 23, new ItemBuilder(Material.WRITABLE_BOOK)
-                .name("§6✦ §fContrats §6✦")
-                .lore(
-                        "§8• §7Contrats : §e" + contracts,
-                        "§8• §7Missions acceptées",
-                        "§8• §7Argent bloqué",
-                        "§8• §7Litiges",
-                        "",
-                        "§e➜ §fOuvrir les contrats"
-                )
-                .action("dashboard_contracts")
-                .target(business.getId())
-                .build());
-
-        SafeGUI.set(inv, 25, new ItemBuilder(Material.PAPER)
-                .name("§6✦ §fMissions publiques §6✦")
-                .lore(
-                        "§8• §7Demandes ouvertes : §e" + requests,
-                        "§8• §7Besoins des joueurs",
-                        "§8• §7Prise en charge directe",
-                        "§8• §7Contrat automatique",
-                        "",
-                        "§e➜ §fChercher une mission"
-                )
-                .action("dashboard_requests")
                 .target(business.getId())
                 .build());
 
@@ -115,13 +91,12 @@ public final class BusinessDashboardGUI {
                 .name("§c✦ §fFermer l’entreprise §c✦")
                 .lore(
                         "§8• §7Archive cette entreprise",
-                        "§8• §7Banque vide requise",
-                        "§8• §7Aucun contrat ouvert",
-                        "§8• §7Logs conservés",
+                        "§8• §7Argent vide requis",
+                        "§8• §7Aucune mission ouverte",
                         "",
                         canClose
                                 ? "§c✖ §fOuvrir la confirmation"
-                                : "§8• §7Réservé au dirigeant ou gérant"
+                                : "§8• §7Réservé au patron ou manager"
                 )
                 .action("dashboard_dissolve")
                 .target(business.getId())
