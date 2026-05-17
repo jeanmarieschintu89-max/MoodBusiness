@@ -12,31 +12,26 @@ import fr.moodcraft.business.util.VaultHook;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-
 import org.bukkit.entity.Player;
-
 import org.bukkit.inventory.Inventory;
 
 public final class RequestDetailGUI {
 
-    public static final String TITLE = GuiTitle.of("Demande");
+    public static final String TITLE = GuiTitle.of("Mission");
 
     private RequestDetailGUI() {}
 
     public static void open(Player p, BusinessRequest request) {
-
         Inventory inv = Bukkit.createInventory(null, 45, TITLE);
         SafeGUI.fill(inv);
 
-        SafeGUI.set(
-                inv,
-                4,
+        SafeGUI.set(inv, 4,
                 new ItemBuilder(Material.BOOK)
                         .name("§6✦ §f" + shortText(request.getTitle(), 24) + " §6✦")
                         .lore(
-                                "§8• §7Auteur : §e" + shortText(request.getCreatorName(), 14),
+                                "§8• §7Client : §e" + shortText(request.getCreatorName(), 14),
                                 "§8• §7Type : " + request.getCategory().getDisplayName(),
-                                "§8• §7Budget : §e" + VaultHook.format(request.getBudget()),
+                                "§8• §7Prix : §e" + VaultHook.format(request.getBudget()),
                                 "§8• §7Délai : §b" + request.getDueDays() + "j",
                                 "§8• §7État : " + request.getStatus().getDisplayName(),
                                 "§8• §7Créée : §f" + shortDate(request.getCreatedAt()),
@@ -53,19 +48,16 @@ public final class RequestDetailGUI {
                 && BusinessManager.canManageContracts(p, business)
                 && request.getStatus().isOpen()
                 && !request.getCreatorUuid().equals(p.getUniqueId())) {
-
-            SafeGUI.set(
-                    inv,
-                    20,
+            SafeGUI.set(inv, 20,
                     new ItemBuilder(Material.EMERALD)
-                            .name("§6✦ §fPrendre en charge §6✦")
+                            .name("§6✦ §fPrendre cette mission §6✦")
                             .lore(
                                     "§8• §7Entreprise : §e" + shortText(business.getName(), 16),
-                                    "§8• §7Budget client : §e" + VaultHook.format(request.getBudget()),
+                                    "§8• §7Prix client : §e" + VaultHook.format(request.getBudget()),
                                     "§8• §7Délai : §b" + request.getDueDays() + "j",
                                     "",
-                                    "§a✔ §fCrée le contrat directement",
-                                    "§8• §7L'argent du client sera bloqué"
+                                    "§a✔ §fCrée la mission en cours",
+                                    "§8• §7L'argent du client sera sécurisé"
                             )
                             .action("request_take")
                             .target(request.getId())
@@ -74,31 +66,26 @@ public final class RequestDetailGUI {
         }
 
         if (request.getCreatorUuid().equals(p.getUniqueId())) {
-
-            SafeGUI.set(
-                    inv,
-                    20,
+            SafeGUI.set(inv, 20,
                     new ItemBuilder(Material.CHEST)
-                            .name("§6✦ §fSuivi de la demande §6✦")
+                            .name("§6✦ §fSuivi de la mission §6✦")
                             .lore(
                                     "§8• §7Une entreprise peut la prendre",
-                                    "§8• §7Contrat créé automatiquement",
-                                    "§8• §7Argent bloqué à la prise en charge",
+                                    "§8• §7Mission en cours créée automatiquement",
+                                    "§8• §7Argent sécurisé à la prise en charge",
                                     "",
-                                    "§e➜ §fAucune offre à accepter"
+                                    "§e➜ §fAucune offre à gérer"
                             )
                             .build()
             );
 
             if (request.getStatus().isOpen()) {
-                SafeGUI.set(
-                        inv,
-                        24,
+                SafeGUI.set(inv, 24,
                         new ItemBuilder(Material.REDSTONE_BLOCK)
-                                .name("§c✦ §fAnnuler la demande §c✦")
+                                .name("§c✦ §fAnnuler la mission §c✦")
                                 .lore(
-                                        "§8• §7Ferme cette demande",
-                                        "§8• §7Aucun contrat ne sera créé",
+                                        "§8• §7Ferme cette mission",
+                                        "§8• §7Aucune entreprise ne pourra la prendre",
                                         "",
                                         "§c✖ §fClique pour annuler"
                                 )
@@ -109,13 +96,11 @@ public final class RequestDetailGUI {
             }
         }
 
-        SafeGUI.set(
-                inv,
-                40,
+        SafeGUI.set(inv, 40,
                 new ItemBuilder(Material.BARRIER)
                         .name("§6✦ §fRetour §6✦")
-                        .lore("§8• §7Menu demandes")
-                        .action("open_requests")
+                        .lore("§8• §7Bureau des Entreprises")
+                        .action("back_main")
                         .build()
         );
 
